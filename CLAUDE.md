@@ -371,14 +371,19 @@ Harmless — deletable from the app in one click.
 
 ## GitHub + auto-deploy (Sep 1, 2026)
 
-The project is now a git repo, pushed to **private** `netanel152/honeymoon-trip`, and the
+The project is now a git repo, pushed to `netanel152/honeymoon-trip`, and the
 Netlify site builds from it. This exists so the owner can request changes from the Claude
 app while travelling without a laptop.
 
+**The repo is PUBLIC** (verified via the GitHub API on Sep 1, 2026: `"private": false`,
+`"visibility": "public"` — an earlier note here claimed private, which was wrong). The owner
+was told and chose to leave it public. Consequence: anything committed is world-readable, so
+never commit a credential, and assume the four private documents below are already public.
+
 - `build.mjs` copies `index.html` and `sw.js` into `dist/`; `netlify.toml` publishes **only
-  `dist/`**. That is deliberate: the Word doc, the expenses xlsx and the two booking PDFs sit
-  in the repo root and must never be reachable from the web. Never set `publish` to the repo
-  root.
+  `dist/`**. That keeps the Word doc, the expenses xlsx and the two booking PDFs off the
+  *website* — but they are tracked in git, and the repo being public means GitHub serves them
+  anyway. `publish = "dist"` is not a privacy control; never set `publish` to the repo root.
 - `dist/` is now gitignored — it is a build artifact. Do not re-add it.
 - `.gitattributes` pins `eol=lf` everywhere so a checkout on Linux (a cloud Claude session)
   and one on Windows produce a byte-identical `index.html`. Confirmed: worktree SHA1 equals
