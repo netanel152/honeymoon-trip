@@ -360,3 +360,32 @@ Deployed as `6a96b2ce674868763d4f5099`; sw.js cache bumped `hm-v6` → `hm-v7`.
 
 Leftover in the shared store: a test note "בדיקה" on day 1 from an earlier verification pass.
 Harmless — deletable from the app in one click.
+
+## GitHub + auto-deploy (Sep 1, 2026)
+
+The project is now a git repo, pushed to **private** `netanel152/honeymoon-trip`, and the
+Netlify site builds from it. This exists so the owner can request changes from the Claude
+app while travelling without a laptop.
+
+- `build.mjs` copies `index.html` and `sw.js` into `dist/`; `netlify.toml` publishes **only
+  `dist/`**. That is deliberate: the Word doc, the expenses xlsx and the two booking PDFs sit
+  in the repo root and must never be reachable from the web. Never set `publish` to the repo
+  root.
+- `dist/` is now gitignored — it is a build artifact. Do not re-add it.
+- `.gitattributes` pins `eol=lf` everywhere so a checkout on Linux (a cloud Claude session)
+  and one on Windows produce a byte-identical `index.html`. Confirmed: worktree SHA1 equals
+  the staged blob's.
+- `deploy.mjs` still works for a manual deploy from this machine and now runs `build.mjs`
+  first, so `dist/` cannot drift from the source.
+- Linking was done through the API, not the Netlify UI: create a deploy key
+  (`POST /deploy_keys`), register its `public_key` as a **read-only** repo key, `PATCH
+  /sites/{id}` with a `repo` object (`provider`, `repo_path`, `repo_branch`, `cmd`, `dir`,
+  `functions_dir`, `deploy_key_id`), then add a GitHub `push` webhook pointing at
+  `https://api.netlify.com/hooks/github`.
+- Because Netlify now builds the function itself, it injects `NETLIFY_BLOBS_CONTEXT`. The
+  explicit `BLOBS_SITE_ID`/`BLOBS_TOKEN` fallback in `trip.js` stays as a safety net and is
+  harmless.
+
+`.netlify-token.txt` is **not** in the repo — `.gitignore` matches `.netlify-token*`, and
+every staged file was scanned for the token's literal value plus `nfp_`/`gh?_` patterns
+before the first push. Re-run that scan before adding any new file type.
