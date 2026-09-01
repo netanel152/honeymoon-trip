@@ -1,6 +1,6 @@
 /* ירח דבש · עדי ונתנאל — Service Worker
    מטרה: שהאתר ייפתח מלא גם בלי רשת (טיסות, רכבות בהרים, אזורים בלי קליטה). */
-const VERSION   = 'hm-v9';
+const VERSION   = 'hm-v10';
 const SHELL     = VERSION + '-shell';
 const FONTS     = VERSION + '-fonts';
 const TILES     = VERSION + '-tiles';

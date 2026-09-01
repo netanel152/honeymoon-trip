@@ -1228,6 +1228,12 @@ a.food-item:hover .f-go{color:var(--tw)}
 #costSum .clock:last-child{border-bottom:0}
 #costSum+details{margin-top:14px}
 
+/* --- שינוי בלוח הזמנים של טיסה: תג עיכוב והזמן המקורי --- */
+.bp-delay{display:inline-block;margin-inline-start:8px;padding:2px 8px;border-radius:999px;
+  background:#B3261E;color:#fff;font-family:inherit;font-size:11px;font-weight:700;letter-spacing:0;vertical-align:middle}
+.bp-ap small.bp-was{margin-top:1px;font-size:11px;font-weight:600;color:#B3261E}
+.bp-ap small.bp-was s{opacity:.9}
+
 /* ===== מצב כהה: נגזר מהעדפת המערכת ===== */
 @media (prefers-color-scheme: dark){
   :root{
@@ -1304,6 +1310,8 @@ a.food-item:hover .f-go{color:var(--tw)}
   #toTop:hover{background:#1E2942}
   .rem-mine{color:#E2B457}
   .doc-tbl tr.cost-total td{background:#16283A}
+  .bp-ap small.bp-was{color:#F2A9A2}
+  .bp-delay{background:#C8372D;color:#fff}  /* .bp-top * מאפס צבע — צריך להחזיר כאן, אחרי הבלוק הראשון */
 }
 </style>
 </head>
@@ -1341,7 +1349,7 @@ a.food-item:hover .f-go{color:var(--tw)}
 <section class="pane" id="pane-overview">
   <div class="pane-head"><h2>שלום עדי ונתנאל 👋</h2><p>הכל מעודכן לפי אישור הטיסות של אמירייטס מ-23.8, מסמך המסלול ואישור השכרת הרכב.</p></div>
   <div class="ov-grid">
-<div class="ov-card next-up"><small>✈️ הטיסה הראשונה</small><b>EK 2346 · 1.9 · 20:45</b><p>נתב"ג → דובאי (נחיתה 01:30) · המשך ב-EK366 ב-04:05 · נחיתה בטאיפיי 16:35</p></div>
+<div class="ov-card next-up"><small>✈️ הטיסה הראשונה</small><b>EK 2346 · 1.9 · 20:45</b><p>נתב"ג → דובאי (נחיתה 01:30) · המשך ב-EK366 ב-<strong>06:30</strong> (נדחתה מ-04:05) · נחיתה בטאיפיי <strong>19:00</strong></p></div>
 <div class="ov-card"><small>📅 משך הטיול</small><b>36 ימים · 35 לילות</b><p>1.9 → 8.10.2026 · טאיוואן (18 ימים) + יפן (18 ימים)</p></div>
 <div class="ov-card"><small>🏨 לינות</small><b>13 מלונות</b><p>מטאיפיי ועד שינג׳וקו · כל הלינות סגורות ✓</p></div>
 <div class="ov-card"><small>🚙 רכב בטאיוואן</small><b>Nissan Kicks · 14 ימים</b><p>איסוף 6.9 09:00 · החזרה 19.9 עד 17:00 · סניף Yuanshan</p></div>
@@ -1391,7 +1399,8 @@ a.food-item:hover .f-go{color:var(--tw)}
   </div>
   <span class="chev">▾</span>
 </summary>
-<div class="day-body"><div class="stay-strip"><span>🏨</span><div><strong>Just Sleep Ximending · טאיפיי</strong><small>2.9–6.9 · 472 ₪ ללילה · כולל ארוחת בוקר</small></div></div><div class="day-note">⚠️ טיסת EK366 נוחתת בטאיפיי 16:35 · יש ערב שלם — אפשר להספיק את שימנדינג ואת שוק הלילה</div><p class="day-lead">הגעה לטאיפי</p><p>נחיתה בטאיפי באזור 16:35 נסיעה ברכבת האקספרס למרכז העיר, והתמקמות ברובע Ximending, במלון שלנו just sleep.</p>
+<div class="day-body"><div class="stay-strip"><span>🏨</span><div><strong>Just Sleep Ximending · טאיפיי</strong><small>2.9–6.9 · 472 ₪ ללילה · כולל ארוחת בוקר</small></div></div><div class="day-note">⏱ עדכון 1.9: EK366 נדחתה — יציאה מדובאי 06:30 במקום 04:05, נחיתה בטאיפיי <strong>19:00</strong> במקום 16:35 · הערב מתקצר בכשעתיים וחצי: שימנדינג וארוחה כן, שוק לילה גדול רק אם יש כוח</div><p class="day-lead">הגעה לטאיפי</p><p>נחיתה בטאיפי באזור 19:00 (אחרי העיכוב), נסיעה ברכבת האקספרס למרכז העיר, והתמקמות ברובע Ximending, במלון שלנו just sleep.</p>
+<p>לוח זמנים משוער אחרי הדחייה: יציאה מהטרמינל בסביבות 19:45–20:00, רכבת אקספרס, וכניסה למלון בסביבות 21:00 — הרבה לפני הרכבת האחרונה ב-22:50, אבל שווה לעשות צ׳ק-אין מהיר ולצאת לאכול לפני שהכל נסגר.</p>
 <p>לא לשכוח לקנות בשדה כרטיס easy card לתחבורה הציבורית.</p>
 <p>הרחבה הגעה למלון: עולים על רכבת ה-Taoyuan Airport MRT (הקו הסגול - Express). הרכבת האחרונה יוצאת סביב 22:50. הגעה לתחנת Taipei Main Station. משם עוברים קו אחד ברכבת התחתית (הקו הכחול Bannan Line) לתחנת Ximen (יציאה 5 או 6) – מרחק של כ-3 דקות נסיעה, או פשוט מונית/אובר קצרה של 5 דקות ישר לפתחי מלון Just Sleep. או ברגל שזה 13 דקות הליכה.</p>
 <p><strong>אוכל לערב:</strong> סושי ב sushiro (ממש ליד המלון) או נשנושים בסבן אילבן (כריך סלט ביצים, שניצל, אונגורי, קינוחים)</p><details class="sub-info places-block"><summary>🗺️ כל המקומות של היום ב-Google Maps <span class="cnt">6</span> <span class="chev">▾</span></summary><div class="body"><div class="place-list"><a class="place k-transport" href="https://www.google.com/maps/search/?api=1&query=Taoyuan%20International%20Airport%20Taiwan" target="_blank" rel="noopener noreferrer" title="פתיחה בגוגל מפות: Taoyuan International Airport Taiwan"><span class="p-ic" aria-hidden="true">🚉</span><span class="p-txt"><b>נמל התעופה טאויואן (TPE)</b><small>Taoyuan International Airport Taiwan</small></span><span class="p-go" aria-hidden="true">↗</span></a><a class="place k-transport" href="https://www.google.com/maps/search/?api=1&query=Taipei%20Main%20Station" target="_blank" rel="noopener noreferrer" title="פתיחה בגוגל מפות: Taipei Main Station"><span class="p-ic" aria-hidden="true">🚉</span><span class="p-txt"><b>תחנת Taipei Main Station</b><small>Taipei Main Station</small></span><span class="p-go" aria-hidden="true">↗</span></a><a class="place k-transport" href="https://www.google.com/maps/search/?api=1&query=Ximen%20Station%20Taipei" target="_blank" rel="noopener noreferrer" title="פתיחה בגוגל מפות: Ximen Station Taipei"><span class="p-ic" aria-hidden="true">🚉</span><span class="p-txt"><b>תחנת Ximen (יציאה 5/6)</b><small>Ximen Station Taipei</small></span><span class="p-go" aria-hidden="true">↗</span></a><a class="place k-stay" href="https://www.google.com/maps/search/?api=1&query=Just%20Sleep%20Ximending%20Taipei" target="_blank" rel="noopener noreferrer" title="פתיחה בגוגל מפות: Just Sleep Ximending Taipei"><span class="p-ic" aria-hidden="true">🏨</span><span class="p-txt"><b>Just Sleep Ximending</b><small>Just Sleep Ximending Taipei</small></span><span class="p-go" aria-hidden="true">↗</span></a><a class="place k-sight" href="https://www.google.com/maps/search/?api=1&query=Ximending%20Taipei" target="_blank" rel="noopener noreferrer" title="פתיחה בגוגל מפות: Ximending Taipei"><span class="p-ic" aria-hidden="true">📍</span><span class="p-txt"><b>מדרחוב שימנדינג</b><small>Ximending Taipei</small></span><span class="p-go" aria-hidden="true">↗</span></a><a class="place k-food" href="https://www.google.com/maps/search/?api=1&query=Sushiro%20Ximending%20Taipei" target="_blank" rel="noopener noreferrer" title="פתיחה בגוגל מפות: Sushiro Ximending Taipei"><span class="p-ic" aria-hidden="true">🍜</span><span class="p-txt"><b>Sushiro שימנדינג</b><small>Sushiro Ximending Taipei</small></span><span class="p-go" aria-hidden="true">↗</span></a></div></div></details></div>
@@ -2400,12 +2409,12 @@ a.food-item:hover .f-go{color:var(--tw)}
 <article class="bpass">
   <div class="bp-top">
     <div class="bp-airline"><b>EK 366</b><small>Emirates · Airbus A380-800</small></div>
-    <div class="bp-date" dir="ltr">2.9.2026</div>
+    <div class="bp-date" dir="ltr">2.9.2026<span class="bp-delay">⏱ עיכוב 2:25</span></div>
   </div>
   <div class="bp-route" dir="ltr">
-    <div class="bp-ap"><b>DXB</b><small>דובאי</small><span class="bp-time">04:05</span><small class="bp-term">טרמינל 3</small></div>
+    <div class="bp-ap"><b>DXB</b><small>דובאי</small><span class="bp-time">06:30</span><small class="bp-was">במקום <s>04:05</s></small><small class="bp-term">טרמינל 3</small></div>
     <div class="bp-line"><span class="dot"></span><span class="rail"></span><span class="plane">✈</span><span class="rail"></span><span class="dot"></span></div>
-    <div class="bp-ap"><b>TPE</b><small>טאיפיי</small><span class="bp-time">16:35</span><small class="bp-term">טרמינל 2</small></div>
+    <div class="bp-ap"><b>TPE</b><small>טאיפיי</small><span class="bp-time">19:00</span><small class="bp-was">במקום <s>16:35</s></small><small class="bp-term">טרמינל 2</small></div>
   </div>
   <div class="bp-perf"></div>
   <div class="bp-bottom">
@@ -2413,7 +2422,7 @@ a.food-item:hover .f-go{color:var(--tw)}
     <div><small>כבודה</small><b>30 ק"ג</b></div>
     <div><small>נחיתה</small><b dir="ltr">2.9.2026</b></div>
   </div>
-  <div class="bp-note">8 שעות 30 דק׳ · ארוחות כשרות הוזמנו ✓ · קונקשן בדובאי 2 שעות 35 דק׳</div>
+  <div class="bp-note">8 שעות 30 דק׳ · ארוחות כשרות הוזמנו ✓ · <strong>עודכן 1.9: הטיסה נדחתה בשעתיים ו-25 דקות</strong> · הקונקשן בדובאי התארך משעתיים וחצי לכחמש שעות — יש זמן ללאונג׳ או לפינת מנוחה בטרמינל 3</div>
 </article>
 <article class="bpass">
   <div class="bp-top">
