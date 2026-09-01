@@ -389,3 +389,35 @@ app while travelling without a laptop.
 `.netlify-token.txt` is **not** in the repo — `.gitignore` matches `.netlify-token*`, and
 every staged file was scanned for the token's literal value plus `nfp_`/`gh?_` patterns
 before the first push. Re-run that scan before adding any new file type.
+
+## The expenses table is editable (Sep 1, 2026)
+
+The budget card in `pane-tools` is no longer static markup — it is wired into the same
+editing/sync layer as reminders, notes, places and the checklist. A new section **`costs`**
+was added to `SECTIONS` in both `index.html` and `netlify/functions/trip.js`, so rows merge
+per-item last-write-wins and propagate between Netanel's and Adi's devices like everything
+else.
+
+- The 18 built-in rows live in the HTML as `<tr data-cid="k1..k18" data-cat data-name
+  data-who data-ils data-local data-note>` with **empty cells** — `initCosts()` reads the
+  attributes into `costBase`, empties the tbody, and renders from data. Do not hand-write
+  cell contents there; they would be wiped on first render.
+- `data-cat` is one of `flight|car|train|hotel|other`. The summary rows above the table and
+  the grand total are **derived** from the live rows, so an edit can never leave a stale
+  headline number. Row order follows `COST_ORDER`, and `Array.sort` stability preserves the
+  original order inside each category.
+- Deleting a custom row tombstones it (`{del:true}`); "restore original" clears built-in
+  overrides (`{cleared:true}`) and tombstones custom ones — same rule as reminders.
+- The "N changes" counter is derived from what is **visible** (`r.mine||r.edited`), not from
+  the number of keys in `data.costs`. Counting keys — which is what `renderRem` does — leaves
+  the counter and the restore button showing after a full restore, because the tombstones
+  legitimately stay in storage for sync.
+
+**Trap that cost a debug cycle:** the module was first written with Python-style `\U0001f697`
+escapes inside JavaScript string literals. JS has no `\U` escape, so the emoji rendered as
+the literal text `U0001f697`. Use surrogate pairs (`\ud83d\ude97`) or `\u{1f697}`.
+
+Verified in-browser end to end: add → row appears, total 33,946 → 34,161; edit a built-in →
+"נערך" badge, total follows; reload → both survive; delete → row gone and totals recomputed;
+restore → back to exactly 33,946 with the original GAYA row. No overflow at 390px; the table
+scrolls inside its own `.tbl-wrap`.
