@@ -1,0 +1,8 @@
+# שומרים על LF בכל מקום — הקבצים נערכים גם מלינוקס (קלוד בענן) וגם מוינדוס,
+# ו-index.html חייב להישאר זהה בייט-בייט בין הסביבות.
+* text=auto eol=lf
+
+*.docx binary
+*.xlsx binary
+*.pdf binary
+*.png binary

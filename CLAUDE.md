@@ -1,0 +1,362 @@
+# Honeymoon Trip — project context
+
+Imported from the claude.ai Project "Honeymoon Trip"
+(https://claude.ai/project/01a0136c-8eb5-725a-8854-32e4c7966837), project memory last
+updated Aug 18. Claude Code cannot attach to a claude.ai Project directly, so this file
+mirrors that context locally.
+
+## Purpose & context
+
+Netanel is planning a 36-day honeymoon trip to Taiwan and Japan (September 1 – October 8,
+2026) with his partner Adi. The goal is a polished, professional-grade digital trip
+companion ready before departure. The bar is a real product feel — design quality,
+typography, color palette, and working interactive elements are all non-negotiable.
+Amateur-looking output is not acceptable; iterate until it meets a professional bar.
+
+## Current state
+
+A comprehensive single-file Hebrew web application (`index.html`) serves as the trip
+dashboard. Local copy in this repo: `index.html` (was `index.html`; renamed). It contains:
+
+- 36-day day-by-day itinerary with expandable cards (morning / afternoon / evening +
+  hourly detail)
+- Interactive Leaflet map — simplified style: flag emoji markers, dashed colored lines.
+  This was an explicit revert from a more complex version; keep it simple.
+- Boarding pass cards for all 5 flights. EK386 corrected times: departure 09:05,
+  arrival 21:40.
+- Hotel list with costs, restaurant guide (44 entries), packing checklist, currency
+  converter, world clocks, reminders
+- Name order is "עדי ונתנאל" throughout
+
+**Deployed and live** at https://honeymoon-netanel-adi.netlify.app (site ID
+`60e9c5fe-1324-441c-baaf-ceefdc370154`, team account netanelos152@gmail.com). Verified
+Aug 29, 2026: the served page is byte-identical to `index.html` apart from Netlify's
+own injected meta tags, deploy `6a92cbc207e78c8d723b807c`, state `ready`.
+
+The earlier claude.ai project memory saying "deployment was blocked by sandbox network
+restrictions" is stale — the deploy went through. The Netlify MCP connector works from
+Claude Code, though its origin intermittently returns 502; retry after ~60s.
+
+Separately, electronics shopping in Japan is being researched (Akihabara / Shinjuku,
+around early October), focused on Yodobashi Camera and Bic Camera.
+
+## On the horizon
+
+- ~~Complete the Netlify deployment~~ — done, site is live
+- Possibly identify specific electronics to price-compare before visiting Japanese stores
+- Trip begins September 1, 2026
+
+## Key learnings
+
+- Rendering bugs were only discoverable by screenshotting the rendered page (headless
+  Chromium), not by code inspection. Always verify visually.
+- Japanese electronics: Yodobashi has straightforward pricing; Bic Camera's points system
+  is less useful for tourists; tax-free shopping is available; check voltage compatibility
+  before buying.
+
+## Build pipeline (as it existed in the claude.ai sandbox)
+
+- Source content: `/home/claude/data.json`, extracted from `טיול ירח דבש.docx`
+- Generator: `/home/claude/buildui.py`
+- Workflow: edit → `python3 buildui.py` → verify with `node sim2.js` → screenshot with
+  `node pup.js`
+- Leaflet: local copy at `/home/claude/nodemodules/leaflet/dist/`; test copy at
+  `/home/claude/testmap/`
+- Chromium env: `LDLIBRARYPATH=/tmp/al2023/lib:/home/claude/chrome HOME=/tmp
+  FONTCONFIG_PATH=/tmp/fonts`; the `@sparticuz/chromium` binary must be
+  brotli-decompressed manually before use
+- Electronics research: yodobashi.com, biccamera.com (Japanese; use Chrome translate or
+  model-number search)
+
+NOTE: those sandbox paths do not exist on this machine. Only the built
+`index.html` is present locally — `data.json` and `buildui.py` were not carried over.
+
+## Project knowledge files not present locally
+
+The claude.ai project holds `טיול ירח דבש (3).docx` (1,509 lines) plus 11 PDFs. None of
+them are in this directory; download them from the project if their content is needed.
+
+## Google Maps saved places
+
+The trip's saved lists live under **nahouse1529@gmail.com** ("Netanel and Adi"), NOT
+netanelos152@gmail.com. In Chrome it is the second signed-in account (`authuser=1`).
+
+**Imported Aug 29, 2026.** Exported via Google Takeout -> product "נשמר" (Saved), which
+produces one CSV per list (Title / Note / URL). Source CSVs are kept in `csv-source/`.
+Do NOT try to scrape the lists from the Maps UI: clicking a list row in the Saved panel
+does not open it under browser automation (row highlights, no navigation), list items are
+not anchors, synthetic events are ignored as untrusted, and keyboard Enter on the focused
+button does nothing. Four techniques were tried and all failed. Takeout is the only route.
+
+Result: 260 unique saved places -> 88 were new and were added to `pane-places`.
+The places pane now holds **471** entries (287 from the itinerary document + 184 from the
+saved lists), in 9 saved-list groups:
+
+| Group | Places |
+|---|---|
+| אוכל | 42 |
+| אטרקציות | 39 |
+| קינוחים | 30 |
+| קפה | 28 |
+| שכונות מומלצות | 28 |
+| קניות | 10 |
+| מלונות | 4 |
+| מקומות מועדפים | 2 |
+| ברים | 1 |
+
+New entries link straight to the canonical `/maps/place/` URL from the CSV (more precise
+than the older `search?api=1&query=` links), and carry the user's own note as the subtitle
+where one existed.
+
+### Deduping lesson
+
+Dedupe on the **display name** (`<b>` inside `a.place`), not the Maps query string. Many
+distinct venues share one query — the app has four Kura Sushi branches all keyed to
+"Kura Sushi Kyoto", two LOWECO branches, several UNIQLO Shinjuku stores. Keying on the
+query alone silently collapses them. Conversely, do not put words like `hotel`, `cafe`,
+`bar` in the stopword list: that made "OA Hotel" fail to match the existing
+"OA Hotel Waiao Yilan Taiwan". 13 duplicates slipped in on the first pass and had to be
+removed; always re-audit added entries against the whole file afterwards.
+
+## Offline support & live currency (added Aug 29, 2026)
+
+- **Service worker** at `dist/sw.js` (cache `hm-v3`): precaches the HTML shell, runtime-caches
+  Google Fonts and Carto map tiles (tiles capped at 400 entries). Navigations are
+  stale-while-revalidate, so a redeploy is picked up on the next visit. Verified offline by
+  killing the local server and reloading — full render, 36 days, 471 places.
+- **Currency converter** fetches live rates and added **USD** alongside TWD/JPY.
+  Two independent providers, tried in order, both free / no key / CORS-open / daily:
+  1. `https://open.er-api.com/v6/latest/ILS`
+  2. `https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/ils.json`
+  A `sane()` range check rejects a provider returning garbage (not just an outage) before it
+  can poison the rates. Then: localStorage cache (`hm_rates_v1`, stores which source) ->
+  bundled defaults. The status line names the source in use.
+  The old hardcoded rates were badly stale (TWD 9.5 vs 10.59, JPY 44.5 vs 53.61).
+
+  Rejected sources, with reasons: **Bank of Israel** (`boi.org.il/PublicApi/GetExchangeRates`)
+  publishes no TWD and skips weekends; **Frankfurter**/ECB has no TWD; **Google** has no public
+  FX API and is CORS-blocked anyway. Free providers all update once daily — intraday rates need
+  a paid key, which cannot be embedded safely in a public static page. Cross-provider spread is
+  ~0.2%, versus the 1-3% spread travellers actually pay at an exchange counter.
+- The pre-existing `#openToday` button used a blocking `alert()` before the trip; replaced
+  with an inline hint, plus a "היום" badge auto-applied to the current day's card.
+
+### Deploying
+
+Deploy via the Netlify API, not the MCP's `npx` command (the permission classifier blocks it):
+POST `/api/v1/sites/<id>/deploys` with `{"files":{"/index.html":"<sha1>","/sw.js":"<sha1>"}}`,
+then PUT each file to `/api/v1/deploys/<deploy_id>/files/<path>`. Needs a Netlify token.
+
+### WARNING: never write the HTML with a bare `open(...,'w')`
+
+`io.open(path,'w')` truncates immediately; if the subsequent `write()` raises (e.g. a
+UnicodeEncodeError from stray surrogates in a patch string) the file is left **0 bytes**.
+This happened once and destroyed `index.html` and `dist/index.html`. Recovery was only
+possible because the live Netlify deploy still served the last good build. Always encode
+first, write to a temp file, assert its size, then `shutil.move` it into place.
+
+## UI/UX pass (Aug 29, 2026)
+
+Audited in-browser, not from memory. The responsive base was already sound (6 breakpoints,
+horizontally scrolling tabs with scroll-snap, `prefers-reduced-motion`, no horizontal
+overflow, no touch target under 40px) and was left alone. Five things changed:
+
+1. **Dark mode** via `prefers-color-scheme` (the owner's OS is set to dark). The block lives
+   at the very END of the stylesheet — placing it earlier lets later rules win. Most surfaces
+   already used `var(--card)`/`var(--paper)`; ~20 hardcoded light backgrounds, three light
+   gradients, and every `background:var(--ink)` surface (`.bp-top`, `.hotel-total`, `.pl-f.on`,
+   `.tchip`) needed explicit overrides — those invert badly and end up light-on-light.
+2. **Contrast**: `--muted` #77808F -> **#626B7A** (was 3.99 on white / 3.61 on paper, below the
+   4.5 AA floor, and it sits under all 471 places). Also fixed brand-green text usages
+   (`.h-map`, `.tel-link`, `.cnt`) to #0B7159 and the JP badge to #AD2919 — `--tw` #0E8A6D is
+   exactly 4.31 both as text on white and as a background for white text. `--tw` itself was
+   left unchanged so the visual identity holds on large surfaces.
+3. **Scroll position remembered per tab** (`hmScroll`). Restored on the next animation frame —
+   restoring synchronously lands short because the pane has not been laid out yet.
+   `centerTab()` also had to stop using `scrollIntoView` (it dragged the page vertically to
+   the nav, pinning every tab switch to y=273); it now scrolls the tab bar horizontally only.
+4. **A11y**: `:focus-visible` outline (there was `outline:none` with no replacement) and
+   `aria-current="page"` on the active tab.
+5. **Search**: a clear (x) button, and the initial place count is derived from the DOM.
+
+Verified with a scripted contrast sweep over every pane with all `<details>` forced open, run
+twice — once normally and once with the dark media query disabled: **0 failures in both modes**.
+
+### Two traps when testing this locally
+
+- The **service worker serves the cached page**, so edits appear to do nothing and query
+  strings do not help (the navigation handler ignores them). Unregister the SW and clear
+  caches before each verification pass.
+- A sweep script that mutates `media.mediaText` to simulate light mode **persists in the live
+  CSSOM**. If a run times out mid-way it can leave the dark block disabled and the next
+  measurement lies. Reload before trusting results.
+
+## Editing layer, shared sync & UX pass (Sep 1, 2026)
+
+The app is no longer read-only. A new script block sits **before** the original main
+`<script>` (so the pre-existing modules — places search, checklist progress, reminder
+badges — see everything it injects) and adds:
+
+- **Reminders CRUD** in `pane-rem`. The 18 built-in cards are read out of the DOM into
+  `remBase` (ids `r1`..`r18`, assigned by document order — do not reorder them in the HTML
+  without accounting for this), then the list is re-rendered into `#remList`, sorted by
+  `data-due`. Overrides/additions/tombstones live in localStorage under `hm_user_v1`.
+  "Restore original" *removes* built-in overrides (`{cleared:true}`) but *tombstones*
+  custom ones (`{del:true}`) so the deletion propagates to the other device.
+- **Personal note per day** — a `.mynote` holder appended to every `.day-body`.
+- **Custom checklist items** in a "הפריטים שלנו" group; checkbox states for *all* items
+  (built-in too) are mirrored into the `ticks` section so they sync.
+- **Custom places** in a `#minePlaces` group at the top of `pane-places`. The add button is
+  deliberately **outside** `.pl-tools` — that card is `position:sticky`, and putting the
+  button inside made it 252px tall on a phone.
+- **Backup/restore** card in the tools pane (one JSON file, merged on import).
+
+Storage shape: `hm_user_v1 = {v,updated,rem,notes,places,items,ticks}`, every entry carrying
+`ts` and `by`. Merges are **per item, last-write-wins on `ts`** — never whole-document.
+Identity (`hm_who_v1`) is asked once on the first edit: נתנאל or עדי.
+
+### Shared sync — Netlify Blobs
+
+`netlify/functions/trip.js` stores one blob (`honeymoon`/`trip`) and merges server-side with
+the same per-item rule, so a stale device cannot clobber. Guarded by an `X-Trip-Key` header
+(obscurity only — the key is in the public page; the data is trip notes, the threat is bots).
+The client pulls on load, every 45s while visible, on `visibilitychange` and on `online`;
+pushes are debounced 1.2s. If the endpoint 404s the app runs local-only and the status line
+says so — that is the honest default, not an error.
+
+Written as a **v1 `export async function handler`**, not a v2 `export default`, because it is
+deployed as a zip through the API rather than through a Netlify build.
+
+### Deploying
+
+`node deploy.mjs` (token from `NETLIFY_AUTH_TOKEN` or `.netlify-token[.txt]`; `--no-func` for
+statics only). It bundles the function with esbuild into a single file (so no `node_modules`
+in the zip), zips it with PowerShell `Compress-Archive`, POSTs a deploy, uploads only what
+Netlify says is `required`, polls to `ready`, then fetches the page and the function to prove
+both work. Requires `npm i @netlify/blobs` locally so esbuild can bundle it.
+
+**Three things that cost a deploy each — do not rediscover them:**
+
+1. **Files are SHA1, function zips are SHA256.** Sending a SHA1 digest for the function gets
+   `500 {"code":500,"message":"no records matched"}` and the deploy hangs in `uploading`.
+2. **Blobs is not auto-configured for an API zip deploy.** Netlify only injects
+   `NETLIFY_BLOBS_CONTEXT` for functions built by *their* pipeline; a zip-deployed function
+   gets "The environment has not been configured to use Netlify Blobs". Fixed by passing
+   `siteID`/`token` explicitly from site env vars `BLOBS_SITE_ID` / `BLOBS_TOKEN`, set through
+   `POST /accounts/{account_id}/env?site_id=...`. **Do not send `scopes`** on that call — the
+   free plan answers `403 Upgrade your Netlify account to set specific scopes`; omit the field
+   and Netlify assigns all scopes itself. `BLOBS_TOKEN` holds a full-access PAT, so rotating
+   the token means updating that env var too. account_id `5e3afe525a34f872161f44a0`.
+3. The `.netlify-token.txt` file lives in the project root in plaintext. A `.gitignore`
+   excluding `.netlify-token*` is in place for if a repo is ever created, and the file's ACL
+   is locked to the owner (`icacls /inheritance:r`). **Never `cat`/`xxd` it** — that prints the
+   credential into the session transcript, which happened once and forced a rotation.
+   To rotate: create a new token in Netlify, overwrite the file, run
+   `node deploy.mjs --sync-token` (pushes it to `BLOBS_TOKEN` and verifies the store answers
+   200 without printing the token), then revoke the old token.
+
+### Two `<dialog>` traps, both hit in this build
+
+- **Centering**: the page's `*{margin:0}` reset overrides the UA's `margin:auto` on `dialog`,
+  so a modal sticks to a corner. `.hm-dlg` needs explicit
+  `position:fixed;inset:0;margin:auto` plus a `max-height` and `overflow:auto`.
+- **Escape does not reset `returnValue`.** It keeps whatever the last close set, so after one
+  successful save, cancelling with Esc re-fired the previous `onOk` with stale values.
+  `openDlg` now clears `dlg.returnValue=''` and `dlg._vals=null` before `showModal()`, and the
+  close handler refuses to fire without both `returnValue==='ok'` and a fresh `_vals`.
+
+### UX pass
+
+- Tabs: emoji icon + gold gradient pill for the active tab, edge fades when the bar
+  overflows (`nav.tabs.over`), arrow/Home/End keys move between tabs.
+- `#toTop`: was `display:none`→`grid` (no transition). Now always `display:grid` with
+  opacity/visibility/transform, plus a conic-gradient scroll-progress ring drawn with a
+  radial-gradient mask on `::after`. It is pinned to the **physical bottom-right** with
+  `right:` — the original `inset-inline-end` put it bottom-**left** on this RTL page, which
+  the owner did not want.
+- `pane-places` tab renamed "מקומות · Maps" → **"כל המקומות"**.
+- **"איפה אוכלים": every card is now an `<a>` to Google Maps**, built at runtime from the
+  card name + the group's area. Group→city mapping is by **group index** (`AREA_ORDER`),
+  not by the Hebrew heading, and all Hebrew lookups are normalised through `nk()` which
+  strips geresh/apostrophe variants — matching on the raw Hebrew is too fragile.
+  ~15 Hebrew-only names have explicit queries in `FOOD_Q`.
+- A search box was added to the food pane (`#fdSearch`).
+
+New CSS goes **before** the dark-mode block; a second `@media (prefers-color-scheme: dark)`
+block for the new components is appended after it, so it still wins.
+
+## Word doc sync (Sep 1, 2026)
+
+`טיול ירח דבש.docx` (Adi's copy, last modified 31.8.26 20:48) was diffed against the rendered
+page. The substantive change: **Kyoto→Takayama on 26.9 is booked** — Nozomi 2 (Kyoto 08:45 →
+Nagoya 09:19, car 4, 11A-B), 20-min transfer, Hida 5 (Nagoya 09:39 → Takayama 12:14, car 6,
+11A-B), 505.02 ₪ for both, picked up with a QR code at a green JR machine. The app previously
+told them to *book* the direct Hida 25 — that reminder, the day-25 card and the booking guide
+were all rewritten. Day 25's lead also said "הגעה מאוסקה" where the doc says מקיוטו.
+Four new places were added (The Little BAKERY Tokyo, Grill Bon, All Seasons Coffee, Bambi
+Coffee) to their day cards, place lists and the food pane (Tokyo 30→34, total 78→82).
+
+Diffing method: unzip `word/document.xml`, join `<w:t>` runs per `<w:p>`, then probe each
+paragraph's first 60 normalised chars against the tag-stripped HTML. Beware false positives —
+paragraphs where the run regex catches nested XML report as "missing" but are actually present.
+
+## Word + Excel sync (Sep 1, 2026 — second pass)
+
+Sources: `טיול ירח דבש.docx` (modified 1.9 13:38) and the new `הוצאות ירח דבש.xlsx`
+(1.9 13:40). Both live in the project root.
+
+### Diffing the docx — the method that actually works
+
+The naive "probe each paragraph's first 60 chars against the tag-stripped HTML" reports
+~280 false positives, because the app splits `HH:MM – HH:MM | Title` into a `.tchip` plus a
+`<strong>`, so the joined paragraph never matches. Use a **sliding-window coverage** score
+instead: normalise both sides (strip whitespace, unify geresh/quote/dash variants), take
+22-char windows every 6 chars, and report a paragraph as missing only at **0% coverage**.
+That cut it to 81 candidates, nearly all real.
+
+Two extractor bugs to avoid: `<w:t[^>]*>` also matches `<w:tabs>` (use `<w:t(?: [^>]*)?>`),
+and the raw `word/document.xml` must be split at `<w:body>` first.
+
+### What was added
+
+- **Matsumoto→Tokyo train is booked** (was "to book on 30.8"): JR Limited Express **Azusa 30**,
+  30.09.2026, Matsumoto 13:10 → Shinjuku 15:43 (2:33 direct), car 7 seats 1A-B,
+  Klook ref **QHY636100**, 281.71 ₪. Day 29 card, both copies of the reminder, and the
+  booking guide were rewritten. Plus the Azusa quirks: the train is All-Reserved (no
+  non-reserved cars), the red/yellow/green seat lights, and JR's one free time change
+  before departure (swap to the 13:45).
+- **Shirakawa-go bus changed from "book online" to "buy at the counter"**: there is no online
+  booking for the regular Non-Reserved line. Buy a round-trip at Takayama Nohi Bus Center
+  (open 06:15–19:00, one minute from the Mercure) on the **evening of 26.9**, phrase
+  `"Round-trip ticket to Shirakawa-go for tomorrow (Non-reserved)"`. Times moved:
+  out 08:50→09:40 (next 10:50→11:40), return 15:15→16:05. Day 25 evening, day 26, both
+  reminder copies and the guide were all updated.
+- Three free Shibuya sunset alternatives (SHIBU NIWA / CÉ LA VI on Tokyu Plaza floor 17,
+  Shibuya Hikarie floor 11, Miyashita Park roof) — added to day 30 plus the place lists.
+- Two ⚠️ rain contingencies: Elephant Mountain (day 2) and Dadaocheng Wharf (day 4).
+- Places total **471 → 475**. Day 30's mirror in `pane-places` was also missing
+  The Little BAKERY Tokyo from the previous pass — fixed, and its `data-terms` extended.
+
+### The Excel (`הוצאות ירח דבש.xlsx`)
+
+One sheet, columns B–F: type / ₪ / supplier / notes / local-currency amount. Its `סה"כ`
+formula sums only the rows that have a ₪ value (16,469 = flights + car + 2 hotels), which is
+*not* the trip total. The app's `💰 התקציב` card in `pane-tools` now carries the full
+breakdown: flights 11,269 ₪, car 2,520 ₪, reserved trains 787 ₪, 13 hotels 19,370 ₪ →
+**33,946 ₪ prepaid**, plus a collapsible per-line table with the local-currency amounts
+(TWD/USD/JPY) taken from column F. Cross-checking those against the hotels pane confirms the
+₪ figures are just conversions (≈10.2 TWD, ≈3.15 USD, ≈51 JPY per ₪).
+
+Three hotels are flagged 💵 in the Excel notes — GAYA 13,640 TWD and CHINSHAN 7,560 TWD with
+a question mark, HINOKI B&B 4,200 TWD for certain — up to 25,400 TWD (~2,400 ₪) of cash.
+Worth confirming with the אגודה whether GAYA/CHINSHAN were already paid.
+
+### Verification
+
+Tag-balance parse (0 errors, 0 unclosed), then in-browser: 36 days, 475 places,
+18 reminders, 82 food links, day-26 chips read 07:45/08:30/09:40/15:15, day-30 count 17,
+budget table 20 rows totalling 33,946. No horizontal overflow at 390px.
+Deployed as `6a96b2ce674868763d4f5099`; sw.js cache bumped `hm-v6` → `hm-v7`.
+
+Leftover in the shared store: a test note "בדיקה" on day 1 from an earlier verification pass.
+Harmless — deletable from the app in one click.

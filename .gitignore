@@ -1,0 +1,14 @@
+# סודות — לעולם לא להעלות
+.netlify-token*
+*.token
+.env
+.env.*
+
+# תוצרי בנייה וזמניים
+node_modules/
+.deploy-tmp/
+.playwright-mcp/
+*.tmp
+
+# dist נבנית אוטומטית ע"י build.mjs בכל פריסה
+dist/
