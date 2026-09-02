@@ -732,6 +732,8 @@ h1.title em{font-style:normal;background:linear-gradient(90deg,#F0B35B,#E86A50);
 .tab:focus-visible{outline-offset:-2px}
 /* nav */
 nav.tabs{position:sticky;top:0;z-index:1000;background:rgba(15,24,48,.92);backdrop-filter:blur(10px);border-bottom:1px solid rgba(255,255,255,.08)}
+@media (display-mode:standalone){.hero-in{padding-block-start:calc(26px + env(safe-area-inset-top,0px))}
+  nav.tabs{padding-top:env(safe-area-inset-top,0px)}}
 .tabs-in{display:flex;gap:2px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;scroll-snap-type:x proximity}
 .tab{scroll-snap-align:center}
 .tabs-in::-webkit-scrollbar{display:none}
@@ -909,7 +911,7 @@ label.chk input:focus-visible+.box{outline:2px solid var(--gold);outline-offset:
 .tool{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:18px;box-shadow:var(--shadow)}
 .tool h3{font-size:16px;margin-bottom:12px}
 .clock{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:9px 0;border-bottom:1px dashed #EEF1EE}
-.clock>span:first-child{white-space:nowrap;min-width:0}
+.clock>span:first-child{white-space:normal;min-width:0;overflow-wrap:anywhere}
 @media(max-width:430px){.clock{flex-wrap:wrap;gap:2px 10px}.clock>span:first-child{white-space:normal;flex:1 1 100%}.clock .c-val{align-items:flex-start}}
 .clock:last-child{border-bottom:0}
 .clock b{font-family:'IBM Plex Mono',monospace;font-size:21px}
@@ -1287,6 +1289,51 @@ a.food-item:hover .f-go{color:var(--tw)}
   img,.leaflet-tile{filter:brightness(.88) contrast(1.04)}
 }
 
+/* ===== פאנל "היום", חיפוש ביומן ומזג אוויר (ספטמבר 2026) ===== */
+#todayPanel{background:linear-gradient(150deg,#0F1830,#1B2A4A 60%,#233458);color:#F3F5FA;
+  border-radius:var(--r);padding:18px 18px 16px;margin-bottom:22px;box-shadow:var(--shadow)}
+.td-top{display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-size:12.5px;color:#C7D2EA}
+.td-badge{background:var(--gold);color:#221A05;font-weight:800;border-radius:999px;padding:3px 11px;font-size:12px}
+.td-meta{background:rgba(255,255,255,.09);border-radius:999px;padding:3px 10px;unicode-bidi:isolate}
+.td-title{font-size:20px;font-weight:800;margin:10px 0 12px;line-height:1.35;color:#fff}
+.td-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(170px,100%),1fr));gap:10px}
+.td-box{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:10px 12px;
+  display:flex;flex-direction:column;gap:3px;min-width:0}
+.td-box small{font-size:11.5px;color:#B9C3DB}
+.td-box b{font-size:14.5px;font-weight:700;overflow-wrap:anywhere}
+.td-link{color:#8FE7C8;font-weight:700;text-decoration:none;font-size:14.5px;overflow-wrap:anywhere}
+.td-link:hover{text-decoration:underline}
+.td-move{font-size:12px;color:var(--gold);margin-top:3px}
+.td-line{list-style:none;margin:12px 0 0;padding:0;display:flex;flex-direction:column;gap:7px}
+.td-line li{display:flex;gap:8px;align-items:flex-start;font-size:13.5px;color:#E4EAF7;line-height:1.5}
+.td-line .tchip{flex:0 0 auto;background:rgba(255,255,255,.12);color:#fff;border:0}
+.td-more{font-size:12px;color:#B9C3DB;margin-top:7px}
+.td-ops{margin-top:13px}
+.td-ops .btn{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.2);color:#fff}
+.td-ops .btn:hover{background:rgba(255,255,255,.2)}
+
+.day-search{position:relative;margin-bottom:10px}
+#daySearch{width:100%;font-family:inherit;font-size:15px;padding:11px 40px 11px 14px;border:1px solid var(--line);
+  border-radius:12px;background:var(--card);color:var(--ink)}
+#daySearch:focus{outline:2px solid var(--tw);border-color:transparent}
+.day-search .pl-clear{position:absolute;inset-inline-start:8px;top:50%;transform:translateY(-50%)}
+.day-search-hint{font-size:12.5px;color:var(--muted);margin-top:6px}
+.day-search-empty{text-align:center;color:var(--muted);padding:22px 0}
+details.day.hide,.country-divider.hide,details.info-card.hide{display:none}
+
+#wxCity{width:100%;font-family:inherit;font-size:14px;padding:9px 11px;border:1px solid var(--line);
+  border-radius:10px;background:var(--card);color:var(--ink);margin-bottom:10px}
+.wx-now{display:flex;align-items:baseline;gap:9px;margin-bottom:8px}
+.wx-now b{font-family:'IBM Plex Mono',monospace;font-size:23px}
+.wx-now span{font-size:13px;color:var(--muted)}
+.wx-days{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.wx-day{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:8px 4px;text-align:center;
+  display:flex;flex-direction:column;gap:2px;min-width:0}
+.wx-day small{font-size:11px;color:var(--muted)}
+.wx-day b{font-size:17px;line-height:1.1}
+.wx-day span{font-size:11.5px;font-family:'IBM Plex Mono',monospace;unicode-bidi:isolate}
+.wx-day i{font-size:10.5px;color:var(--muted);font-style:normal;min-height:13px}
+
 /* ===== מצב כהה עבור רכיבי העריכה החדשים ===== */
 @media (prefers-color-scheme: dark){
   .iconbtn{background:#121A2C;color:var(--ink2)}
@@ -1312,6 +1359,9 @@ a.food-item:hover .f-go{color:var(--tw)}
   .doc-tbl tr.cost-total td{background:#16283A}
   .bp-ap small.bp-was{color:#F2A9A2}
   .bp-delay{background:#C8372D;color:#fff}  /* .bp-top * מאפס צבע — צריך להחזיר כאן, אחרי הבלוק הראשון */
+  #daySearch,#wxCity{background:#121A2C;color:var(--ink);border-color:var(--line)}
+  .wx-day{background:#121A2C;border-color:#26314B}
+  #todayPanel{box-shadow:0 1px 2px rgba(0,0,0,.5),0 12px 34px -14px rgba(0,0,0,.7)}
 }
 </style>
 </head>
@@ -1330,6 +1380,8 @@ a.food-item:hover .f-go{color:var(--tw)}
     <div class="countdown" id="countdown"></div>
     <div class="route-strip"><div class="rs-stop tw"><i></i><span>טאיפיי</span></div><div class="rs-seg"></div><div class="rs-stop tw"><i></i><span>וואיאאו</span></div><div class="rs-seg"></div><div class="rs-stop tw"><i></i><span>טאיטונג</span></div><div class="rs-seg"></div><div class="rs-stop tw"><i></i><span>קנטינג</span></div><div class="rs-seg"></div><div class="rs-stop tw"><i></i><span>אלישאן</span></div><div class="rs-seg"></div><div class="rs-stop tw"><i></i><span>סאן מון לייק</span></div><div class="rs-seg"></div><div class="rs-stop tw"><i></i><span>טאיפיי</span></div><div class="rs-seg"></div><div class="rs-stop jp"><i></i><span>אוסקה</span></div><div class="rs-seg"></div><div class="rs-stop jp"><i></i><span>קיוטו</span></div><div class="rs-seg"></div><div class="rs-stop jp"><i></i><span>טאקיאמה</span></div><div class="rs-seg"></div><div class="rs-stop jp"><i></i><span>מאצומוטו</span></div><div class="rs-seg"></div><div class="rs-stop jp"><i></i><span>טוקיו</span></div></div>
   </div>
+</header>
+
   <nav class="tabs" aria-label="ניווט ראשי"><div class="wrap tabs-in">
     <button class="tab" data-pane="pane-overview"><span class="t-ic" aria-hidden="true">🧭</span>סקירה</button>
     <button class="tab" data-pane="pane-days"><span class="t-ic" aria-hidden="true">🗓️</span>היומן · 36 ימים</button>
@@ -1342,11 +1394,11 @@ a.food-item:hover .f-go{color:var(--tw)}
     <button class="tab" data-pane="pane-tools"><span class="t-ic" aria-hidden="true">🧰</span>כלים</button>
     <button class="tab" data-pane="pane-rem"><span class="t-ic" aria-hidden="true">⏰</span>תזכורות</button>
   </div></nav>
-</header>
 
 <main class="wrap">
 
 <section class="pane" id="pane-overview">
+  <div id="todayPanel" hidden></div>
   <div class="pane-head"><h2>שלום עדי ונתנאל 👋</h2><p>הכל מעודכן לפי אישור הטיסות של אמירייטס מ-23.8, מסמך המסלול ואישור השכרת הרכב.</p></div>
   <div class="ov-grid">
 <div class="ov-card next-up"><small>✈️ הטיסה הראשונה</small><b>EK 2346 · 1.9 · 20:45</b><p>נתב"ג → דובאי (נחיתה 01:30) · המשך ב-EK366 ב-<strong>06:30</strong> (נדחתה מ-04:05) · נחיתה בטאיפיי <strong>19:00</strong></p></div>
@@ -1375,6 +1427,11 @@ a.food-item:hover .f-go{color:var(--tw)}
 
 <section class="pane" id="pane-days">
   <div class="pane-head"><h2>היומן המלא — יום אחר יום</h2><p>כל פרט מהתכנון המקורי, כולל שעות, דרכי הגעה, חניות וטיפים. לוחצים על יום כדי לפתוח.</p></div>
+  <div class="day-search">
+    <input id="daySearch" type="search" autocomplete="off" placeholder="חיפוש ביומן — מקום, מנה, שעה או עיר…" aria-label="חיפוש ביומן">
+    <p class="day-search-hint" id="daySearchCount"></p>
+  </div>
+  <p class="day-search-empty" id="daySearchEmpty" hidden>לא נמצא יום מתאים — נסו מילה אחרת.</p>
   <div class="jump-day">
     <select id="daySel" aria-label="קפיצה ליום"><option value="">קפיצה ליום…</option><option value="day1">יום 1 · 2.9 · נחיתה בטאיפיי והתמקמות בשימנדינג</option><option value="day2">יום 2 · 3.9 · שימנדינג, יונגקאנג, טאיפיי 101 והר הפיל</option><option value="day3">יום 3 · 4.9 · שיפן, מפל הזהב וגיופן</option><option value="day4">יום 4 · 5.9 · פארק יאנגמינגשאן, דיחואה ושוק נינגשיה</option><option value="day5">יום 5 · 6.9 · איסוף הרכב ומעבר לחוף השחור Waiao</option><option value="day6">יום 6 · 7.9 · גלישה בוואיאאו וטבע באילן</option><option value="day7">יום 7 · 8.9 · נסיעה נופית בכביש 11 לטאיטונג</option><option value="day8">יום 8 · 9.9 · גלישה בדולאן וערב ב-Tiehua</option><option value="day9">יום 9 · 10.9 · ג׳יאלולאן, שיאוליאו ומעיינות ז׳יבן</option><option value="day10">יום 10 · 11.9 · ירידה דרומה לקנטינג ושקיעה בלונגפאן</option><option value="day11">יום 11 · 12.9 · שנורקלינג בהוביהו, מפלי ציקונג והנגצ׳ון</option><option value="day12">יום 12 · 13.9 · מגדלור אלואנבי, ג׳יאלישואי ושקיעה בשיאו-וואן</option><option value="day13">יום 13 · 14.9 · מנזר פו גואנג שאן ועלייה לאלישאן</option><option value="day14">יום 14 · 15.9 · זריחה מעל ים העננים ויערות העצים העתיקים</option><option value="day15">יום 15 · 16.9 · פנצ׳יהו, שדות התה ומעבר ל-B&amp;B</option><option value="day16">יום 16 · 17.9 · נסיעה נופית, פגודת צה-אן והרכבל</option><option value="day17">יום 17 · 18.9 · הקפת האגם באופניים חשמליים</option><option value="day18">יום 18 · 19.9 · חזרה לטאיפיי, החזרת הרכב וסגירת טאיוואן</option><option value="day19">יום 19 · 20.9 · טיסה ליפן ונחיתה באוסקה</option><option value="day20">יום 20 · 21.9 · טירת אוסקה, נאמבה, שינסאיבאשי ואומדה</option><option value="day21">יום 21 · 22.9 · מעבר לקיוטו, טירת ניג׳ו ורובע גיון</option><option value="day22">יום 22 · 23.9 · קיומיזו-דרה, שוק נישיקי ונהר הקאמו</option><option value="day23">יום 23 · 24.9 · נארה — עיר האיילים + פושימי אינארי</option><option value="day24">יום 24 · 25.9 · אראשיימה, מקדש הזהב וערב חג סוכות</option><option value="day25">יום 25 · 26.9 · רכבת נופית לאלפים היפניים וסאנמאצ׳י סוג׳י</option><option value="day26">יום 26 · 27.9 · כפר הגלויה שירקאווה-גו</option><option value="day27">יום 27 · 28.9 · שוק הבוקר, מבשלות סאקה וגשר נאקאבאשי</option><option value="day28">יום 28 · 29.9 · קאמיקוצ׳י, אונסן וארוחת קאיסקי</option><option value="day29">יום 29 · 30.9 · מאצומוטו ומעבר לשינג׳וקו</option><option value="day30">יום 30 · 1.10 · האראג׳וקו, אומטסנדו ושיבויה סקיי</option><option value="day31">יום 31 · 2.10 · שימוקיטזאווה ואקיהברה</option><option value="day32">יום 32 · 3.10 · אסאקוסה, קאפאבאשי, אואנו וסקייטרי</option><option value="day33">יום 33 · 4.10 · teamLab, צוקיג׳י וגינזה</option><option value="day34">יום 34 · 5.10 · יום טיול לקמקורה</option><option value="day35">יום 35 · 6.10 · שינג׳וקו גיואן, שופינג וסגירה חלומית</option><option value="day36">יום 36 · 7.10 · יום השלמות אחרון וטיסה הביתה מהנדה</option></select>
     <button id="openToday">📍 היום שלנו</button>
@@ -2659,14 +2716,22 @@ a.food-item:hover .f-go{color:var(--tw)}
       <div class="clock"><span>טאקס-פרי טאיוואן</span><b style="font-size:15px">מ-2,000 NT$ עם דרכון</b></div>
     </div>
 
+    <div class="tool" id="wxCard"><h3>🌤️ מזג האוויר במסלול</h3>
+      <select id="wxCity" aria-label="בחירת יעד"></select>
+      <div id="wxNow" class="wx-now"></div>
+      <div id="wxDays" class="wx-days"></div>
+      <p class="tool-note" id="wxNote">טוען…</p>
+    </div>
+
     <div class="tool"><h3>🆘 חירום ומספרים חשובים</h3>
       <div class="clock"><span>משטרה · טאיוואן ויפן</span><b style="font-size:16px"><a class="tel-link" href="tel:110">110</a></b></div>
       <div class="clock"><span>אמבולנס ומכבי אש · שתיהן</span><b style="font-size:16px"><a class="tel-link" href="tel:119">119</a></b></div>
-      <div class="clock"><span>קו סיוע לתיירים · טאיוואן</span><b style="font-size:15px"><a class="tel-link" href="tel:0800011765">0800-011-765</a></b></div>
-      <div class="clock"><span>קו סיוע לתיירים · יפן (24/7)</span><b style="font-size:15px"><a class="tel-link" href="tel:+81503816-2787">050-3816-2787</a></b></div>
+      <div class="clock"><span>קו סיוע לתיירים · טאיוואן <small class="c-off">(חינם בטאיוואן)</small></span><b style="font-size:15px"><a class="tel-link" href="tel:0800011765">0800-011-765</a></b></div>
+      <div class="clock"><span>קו סיוע לתיירים · יפן (24/7)</span><b style="font-size:15px"><a class="tel-link" href="tel:+815038162787">050-3816-2787</a></b></div>
       <div class="clock"><span>IWS השכרת רכב</span><b style="font-size:15px"><a class="tel-link" href="tel:+886225995033">02-2599-5033</a></b></div>
-      <div class="clock"><span>לשכת ישראל בטאיפיי</span><b style="font-size:15px"><a class="tel-link" href="tel:+886027576735">02-2757-6735</a></b></div>
+      <div class="clock"><span>לשכת ישראל בטאיפיי</span><b style="font-size:15px"><a class="tel-link" href="tel:+886227576735">02-2757-6735</a></b></div>
       <div class="clock"><span>שגרירות ישראל בטוקיו</span><b style="font-size:15px"><a class="tel-link" href="tel:+81332640911">03-3264-0911</a></b></div>
+      <div class="clock"><span>ביטוח נסיעות <small class="c-off">(שולם 340 ₪)</small></span><b style="font-size:13.5px;text-align:left">להוסיף כאן מספר פוליסה<br>וטלפון חירום 24/7</b></div>
       <p class="tool-note">חשוב: לצלם דרכונים, כרטיסי טיסה ואת השובר של הרכב ולשמור בענן. בתאונה עם הרכב — קודם משטרה מקומית, אחר כך IWS, ולצלם הכל.</p>
     </div>
 
@@ -2823,7 +2888,11 @@ function fire(){listeners.forEach(function(f){try{f()}catch(e){}})}
 
 function stamp(obj){obj.ts=Date.now();obj.by=who||'';return obj}
 function put(section,id,obj){
-  data[section][id]=stamp(Object.assign({},data[section][id]||{},obj));
+  var prev=data[section][id]||{};
+  /* אחרי "שחזור למקורי" נשאר דגל cleared. בלי לנקות אותו כאן, העריכה או המחיקה
+     הבאה נשמרות אבל לא נראות — cleared מנצח בעת הרינדור. */
+  if(prev.cleared&&!('cleared' in obj))prev={};
+  data[section][id]=stamp(Object.assign({},prev,obj));
   data.updated=Date.now();
   jset(KEY,data); fire(); schedulePush();
 }
@@ -2883,7 +2952,8 @@ dlg.className='hm-dlg'; dlg.setAttribute('dir','rtl');
 document.body.appendChild(dlg);
 var dlgCb=null;
 
-function esc(t){var d=document.createElement('div');d.textContent=t==null?'':String(t);return d.innerHTML}
+function esc(t){return String(t==null?'':t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+  .replace(/"/g,'&quot;').replace(/'/g,'&#39;')}   /* גם גרשיים — אחרת ערך בתוך attribute נשבר */
 
 function openDlg(opt){
   var f=opt.fields||[];
@@ -2970,7 +3040,7 @@ function paintSync(msg){
    1. תזכורות — הוספה, עריכה ומחיקה
    ============================================================ */
 var CLS=[['hot','🔴 דחוף'],['warn','🟡 חשוב'],['info','🔵 לידיעה']];
-var remBase=[], remWrap=null;
+var remBase=[], remWrap=null, remTop=null;
 
 function initRem(){
   var pane=document.getElementById('pane-rem');
@@ -3004,6 +3074,15 @@ function initRem(){
   remWrap.id='remList';
   cards[0].parentNode.insertBefore(remWrap,cards[0]);
   cards.forEach(function(c){c.parentNode.removeChild(c)});
+
+  /* הכרטיסים שבסקירה היו עותק סטטי — מחיקה או עריכה כאן לא נראתה שם.
+     מחליפים אותם במיכל שמתרנדר מאותם נתונים. */
+  var ovr=[].slice.call(document.querySelectorAll('#pane-overview .rem'));
+  if(ovr.length){
+    remTop=document.createElement('div'); remTop.id='remTop';
+    ovr[0].parentNode.insertBefore(remTop,ovr[0]);
+    ovr.forEach(function(c){c.parentNode.removeChild(c)});
+  }
 
   document.getElementById('remAdd').addEventListener('click',needWho(function(){
     var today=new Date(), pad=function(n){return (n<10?'0':'')+n};
@@ -3066,7 +3145,36 @@ function badgeFor(due){
   if(days===1)return['today','מחר'];
   return[days<=7?'soon':'later','בעוד '+days+' ימים'];
 }
+/* לסקירה: קודם מה שעוד לפנינו, ואם אין מספיק — האחרונות שעבר זמנן */
+function remSoon(n){
+  var list=remList(), t=new Date(); t.setHours(0,0,0,0);
+  var fut=[], past=[];
+  list.forEach(function(r){
+    var d=r.due?new Date(r.due+'T00:00:00'):null;
+    (d&&!isNaN(d)&&d>=t?fut:past).push(r);
+  });
+  return fut.concat(past.reverse()).slice(0,n);
+}
+function remCard(r){
+  var b=badgeFor(r.due);
+  return '<div class="rem '+esc(r.cls||'info')+(b&&b[0]==='today'?' due-now':'')+'" data-rid="'+esc(r.id)+'"'+
+    (r.due?' data-due="'+esc(r.due)+'"':'')+'>'+
+    '<div class="rem-when">'+esc(r.when||fmtWhen(r.due))+
+      (b?'<span class="rem-badge '+b[0]+'">'+esc(b[1])+'</span>':'')+'</div>'+
+    '<div class="rem-body"><b>'+esc(r.title)+'</b>'+(r.body?'<p>'+esc(r.body)+'</p>':'')+'</div></div>';
+}
+function renderRemTop(){
+  if(!remTop)return;
+  var list=remSoon(3);
+  remTop.innerHTML=list.map(remCard).join('')+
+    '<button type="button" class="addbtn" id="remAll">⏰ כל '+remList().length+' התזכורות</button>';
+  var b=document.getElementById('remAll');
+  if(b)b.addEventListener('click',function(){
+    var t=document.querySelector('.tab[data-pane="pane-rem"]'); if(t)t.click();
+  });
+}
 function renderRem(){
+  renderRemTop();
   if(!remWrap)return;
   var list=remList();
   remWrap.innerHTML=list.map(function(r){
@@ -3084,9 +3192,11 @@ function renderRem(){
         '<button type="button" class="iconbtn danger" data-act="del" title="מחיקה" aria-label="מחיקת התזכורת">🗑️</button>'+
       '</div></div>';
   }).join('');
-  var n=Object.keys(data.rem).filter(function(k){var o=data.rem[k];return o&&!o.cleared}).length;
+  /* סופרים מה שנראה עכשיו, לא את מצבות המחיקה — הן נשארות באחסון לצורך הסנכרון */
+  var n=list.filter(function(r){return r.mine||r.edited}).length;
   var note=document.getElementById('remNote'), rst=document.getElementById('remReset');
-  if(note)note.textContent=list.length+' תזכורות'+(n?' · '+n+' שינויים שלכם':'');
+  if(note)note.textContent=list.length+' תזכורות'+
+    (n?' · '+(n===1?'שינוי אחד שלכם':n+' שינויים שלכם'):'');
   if(rst)rst.hidden=!n;
 }
 document.addEventListener('click',function(e){
@@ -3650,8 +3760,243 @@ document.addEventListener('click',function(e){
   }
 });
 
+/* ============================================================
+   9. פאנל "היום", חיפוש ביומן ומזג אוויר
+   ============================================================ */
+var DAY1=new Date('2026-09-02T00:00:00+08:00'), TRIP_DAYS=36;
+function tripDay(){ var d=Math.floor((Date.now()-DAY1)/86400000)+1; return (d>=1&&d<=TRIP_DAYS)?d:null }
+
+/* איזה מלון פעיל ביום מסוים — לפי טווח הימים שכתוב בעצירות המפה */
+function stopForDay(n){
+  var st=(typeof MAP_STOPS!=='undefined')?MAP_STOPS:[];
+  for(var i=0;i<st.length;i++){
+    var txt=String(st[i].d||''), a, b;
+    var many=txt.match(/ימים\s*(\d+)\s*[–—-]\s*(\d+)/), one=txt.match(/יום\s*(\d+)/);
+    if(many){a=+many[1];b=+many[2]} else if(one){a=b=+one[1]} else continue;
+    if(n>=a&&n<=b)return {i:i,s:st[i]};
+  }
+  return null;
+}
+function ownText(el){
+  var t='';
+  if(el)[].forEach.call(el.childNodes,function(x){ if(x.nodeType===3)t+=x.textContent });
+  return t.trim();
+}
+function mapsHref(q){ return 'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(q) }
+
+function renderToday(){
+  var host=document.getElementById('todayPanel');
+  if(!host)return;
+  var n=tripDay(), el=n?document.getElementById('day'+n):null;
+  if(!n||!el){ host.hidden=true; host.innerHTML=''; return }
+  host.hidden=false;
+
+  var h3=el.querySelector('.day-head h3');
+  var title=ownText(h3)||(h3?h3.textContent:'');
+  var date=(el.querySelector('.d-date')||{}).textContent||'';
+  var wd=(el.querySelector('.d-wd')||{}).textContent||'';
+  var city=(el.querySelector('.d-city')||{}).textContent||'';
+
+  var lines=[].slice.call(el.querySelectorAll('.day-body p.tline')).map(function(pp){
+    var chip=(pp.querySelector('.tchip')||{}).textContent||'';
+    var strong=pp.querySelector('strong');
+    var s=(strong?strong.textContent:pp.textContent)||'';
+    return {t:chip.trim(), s:s.replace(/^[\s–—.\-·]+/,'').trim()};
+  }).filter(function(x){return x.t||x.s});
+  /* ימים בלי לוח שעות (יום הגעה, יום מעבר) — לוקחים את הפתיח והמשפט הראשון */
+  if(!lines.length){
+    var lead=el.querySelector('.day-lead');
+    if(lead)lines.push({t:'',s:lead.textContent});
+    [].slice.call(el.querySelectorAll('.day-body > p')).some(function(pp){
+      if(pp.className)return false;
+      lines.push({t:'',s:pp.textContent});
+      return lines.length>=2;
+    });
+  }
+
+  var cur=stopForDay(n), nxt=stopForDay(n+1);
+  var hotel=cur?'<a class="td-link" target="_blank" rel="noopener noreferrer" href="'+
+      esc(mapsHref(cur.s.q||cur.s.name))+'">'+esc(cur.s.name)+' ↗</a>':'—';
+  var move=(nxt&&cur&&nxt.i!==cur.i)?'<p class="td-move">🧳 מחר עוברים ל־'+esc(nxt.s.name)+'</p>':'';
+
+  var soon=remSoon(1)[0], bg=soon?badgeFor(soon.due):null;
+  var remHtml=soon?('<b>'+esc(soon.title)+'</b>'+(bg?'<small>'+esc(bg[1])+'</small>':'')):'<b>אין תזכורת פתוחה</b>';
+
+  var visible=lines.slice(0,4), more=lines.length-visible.length;
+  host.innerHTML=
+    '<div class="td-top"><span class="td-badge">יום '+n+' מתוך '+TRIP_DAYS+'</span>'+
+      '<span class="td-meta" dir="ltr">'+esc(date)+'</span><span class="td-meta">'+esc(wd)+'</span>'+
+      '<span class="td-meta">'+esc(city)+'</span></div>'+
+    '<h2 class="td-title">'+esc(title)+'</h2>'+
+    '<div class="td-grid">'+
+      '<div class="td-box"><small>🏨 הלילה</small>'+hotel+move+'</div>'+
+      '<div class="td-box"><small>⏰ התזכורת הקרובה</small>'+remHtml+'</div>'+
+      '<div class="td-box" id="tdWx"><small>🌤️ מזג האוויר</small><b>—</b></div>'+
+    '</div>'+
+    (visible.length?('<ol class="td-line">'+visible.map(function(x){
+        return '<li>'+(x.t?'<span class="tchip" dir="ltr">'+esc(x.t)+'</span>':'')+
+               '<span>'+esc(x.s.length>90?x.s.slice(0,90)+'…':x.s)+'</span></li>';
+      }).join('')+'</ol>'+(more>0?'<p class="td-more">ועוד '+more+' בהמשך היום</p>':'')):'')+
+    '<div class="td-ops"><button type="button" class="btn primary" id="tdOpen">📖 לפתוח את היום המלא</button></div>';
+
+  var btn=document.getElementById('tdOpen');
+  if(btn)btn.addEventListener('click',function(){
+    var t=document.querySelector('.tab[data-pane="pane-days"]');
+    if(t)t.click();
+    setTimeout(function(){
+      var d=document.getElementById('day'+n);
+      if(d){ d.open=true; d.scrollIntoView({block:'start'}) }
+    },80);
+  });
+  if(cur)wxGet(cur.i).then(function(rec){ paintTdWx(rec) });
+}
+function paintTdWx(rec){
+  var box=document.getElementById('tdWx');
+  if(!box)return;
+  if(!rec||!rec.daily){ box.innerHTML='<small>🌤️ מזג האוויר</small><b>—</b><small>אין נתונים אופליין</small>'; return }
+  var d=rec.daily, w=wxLabel(d.weather_code[0]);
+  box.innerHTML='<small>🌤️ מזג האוויר</small><b>'+w[0]+' '+Math.round(d.temperature_2m_max[0])+'° / '+
+    Math.round(d.temperature_2m_min[0])+'°</b><small>'+esc(w[1])+
+    (d.precipitation_probability_max&&d.precipitation_probability_max[0]!=null?
+      ' · סיכוי גשם '+d.precipitation_probability_max[0]+'%':'')+'</small>';
+}
+
+/* ---------- מזג אוויר: Open-Meteo, בלי מפתח, עם מטמון מקומי ---------- */
+var WX_KEY='hm_wx_v1', WX_CITY='hm_wx_city_v1';
+var WX_CODE={0:['☀️','בהיר'],1:['🌤️','בהיר ברובו'],2:['⛅','מעונן חלקית'],3:['☁️','מעונן'],
+  45:['🌫️','ערפל'],48:['🌫️','ערפל'],51:['🌦️','טפטוף קל'],53:['🌦️','טפטוף'],55:['🌦️','טפטוף חזק'],
+  56:['🌧️','טפטוף קפוא'],57:['🌧️','טפטוף קפוא'],61:['🌧️','גשם קל'],63:['🌧️','גשם'],65:['🌧️','גשם חזק'],
+  66:['🌧️','גשם קפוא'],67:['🌧️','גשם קפוא'],71:['🌨️','שלג קל'],73:['🌨️','שלג'],75:['🌨️','שלג כבד'],
+  77:['🌨️','גרגרי שלג'],80:['🌦️','ממטרים'],81:['🌧️','ממטרים'],82:['⛈️','ממטרים עזים'],
+  85:['🌨️','ממטרי שלג'],86:['🌨️','ממטרי שלג'],95:['⛈️','סופת רעמים'],96:['⛈️','סופת רעמים וברד'],
+  99:['⛈️','סופת רעמים וברד']};
+function wxLabel(c){ return WX_CODE[c]||['🌡️','—'] }
+
+function wxGet(i,force){
+  var st=(typeof MAP_STOPS!=='undefined')?MAP_STOPS:[], s=st[i];
+  if(!s)return Promise.resolve(null);
+  var all=jget(WX_KEY,{})||{}, hit=all['s'+i];
+  if(hit&&!force&&Date.now()-hit.ts<3*3600*1000)return Promise.resolve(hit);
+  if(!navigator.onLine)return Promise.resolve(hit||null);
+  var url='https://api.open-meteo.com/v1/forecast?latitude='+s.lat+'&longitude='+s.lng+
+    '&current=temperature_2m,weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min,'+
+    'precipitation_probability_max&timezone=auto&forecast_days=5';
+  var ctl=new AbortController(), to=setTimeout(function(){ctl.abort()},9000);
+  return fetch(url,{signal:ctl.signal})
+    .then(function(r){ if(!r.ok)throw new Error('HTTP '+r.status); return r.json() })
+    .then(function(d){
+      if(!d||!d.daily||!d.daily.time||!d.daily.time.length)throw new Error('bad payload');
+      var rec={ts:Date.now(),tz:d.timezone||'',now:d.current||null,daily:d.daily};
+      all['s'+i]=rec; jset(WX_KEY,all);
+      return rec;
+    })
+    .catch(function(){ return hit||null })
+    .then(function(v){ clearTimeout(to); return v });
+}
+function wxLabelDay(iso,k){
+  var d=new Date(iso+'T00:00:00');
+  if(isNaN(d))return iso;
+  if(k===0)return 'היום';
+  if(k===1)return 'מחר';
+  return new Intl.DateTimeFormat('he-IL',{weekday:'short'}).format(d);
+}
+function wxPaint(i,rec){
+  var now=document.getElementById('wxNow'), days=document.getElementById('wxDays'), note=document.getElementById('wxNote');
+  if(!now||!days||!note)return;
+  if(!rec||!rec.daily){
+    now.innerHTML=''; days.innerHTML='';
+    note.textContent=navigator.onLine?'לא הצלחנו למשוך תחזית כרגע.':'אין חיבור — התחזית תתעדכן כשתחזור רשת.';
+    return;
+  }
+  var d=rec.daily;
+  if(rec.now&&rec.now.temperature_2m!=null){
+    var wn=wxLabel(rec.now.weather_code);
+    now.innerHTML='<b>'+wn[0]+' '+Math.round(rec.now.temperature_2m)+'°</b><span>'+esc(wn[1])+'</span>';
+  } else now.innerHTML='';
+  days.innerHTML=d.time.slice(0,5).map(function(t,k){
+    var w=wxLabel(d.weather_code[k]);
+    var rain=(d.precipitation_probability_max&&d.precipitation_probability_max[k]!=null)?d.precipitation_probability_max[k]:null;
+    return '<div class="wx-day"><small>'+esc(wxLabelDay(t,k))+'</small><b>'+w[0]+'</b>'+
+      '<span dir="ltr">'+Math.round(d.temperature_2m_max[k])+'° / '+Math.round(d.temperature_2m_min[k])+'°</span>'+
+      (rain!=null?'<i>💧'+rain+'%</i>':'<i></i>')+'</div>';
+  }).join('');
+  var age=Date.now()-rec.ts, mins=Math.round(age/60000);
+  note.textContent='מקור: Open-Meteo · עודכן '+(mins<2?'עכשיו':(mins<60?('לפני '+mins+' דק׳'):
+    ('לפני '+Math.round(mins/60)+' שע׳')))+(navigator.onLine?'':' · אופליין');
+}
+function initWx(){
+  var sel=document.getElementById('wxCity');
+  if(!sel||typeof MAP_STOPS==='undefined')return;
+  sel.innerHTML=MAP_STOPS.map(function(s,i){
+    return '<option value="'+i+'">'+esc(s.name)+' · '+esc(s.d)+'</option>';
+  }).join('');
+  var day=tripDay(), cur=day?stopForDay(day):null;
+  var saved=jget(WX_CITY,null);
+  var start=(saved!=null&&MAP_STOPS[saved])?+saved:(cur?cur.i:0);
+  sel.value=String(start);
+  function load(force){
+    var i=+sel.value;
+    document.getElementById('wxNote').textContent='טוען…';
+    wxGet(i,force).then(function(rec){ wxPaint(i,rec) });
+  }
+  sel.addEventListener('change',function(){ jset(WX_CITY,+sel.value); load(false) });
+  load(false);
+  addEventListener('online',function(){ load(true); renderToday() });
+}
+
+/* ---------- חיפוש חופשי ביומן ---------- */
+function initDaySearch(){
+  var box=document.getElementById('daySearch');
+  if(!box)return;
+  var pane=document.getElementById('pane-days');
+  var cnt=document.getElementById('daySearchCount'), empty=document.getElementById('daySearchEmpty');
+  var extras=[].slice.call(pane.querySelectorAll('.country-divider, details.info-card'));
+  var cache=[], opened=[];
+  function build(){
+    cache=[].slice.call(pane.querySelectorAll('details.day')).map(function(d){
+      return {el:d, txt:d.textContent.toLowerCase()};
+    });
+  }
+  build();
+  onChange(function(){ build() });   /* הערות אישיות שנוספו צריכות להיות ניתנות לחיפוש */
+
+  var clear=document.createElement('button');
+  clear.type='button'; clear.className='pl-clear'; clear.textContent='✕';
+  clear.setAttribute('aria-label','ניקוי החיפוש'); clear.hidden=true;
+  box.insertAdjacentElement('afterend',clear);
+
+  function apply(){
+    var q=(box.value||'').trim().toLowerCase();
+    clear.hidden=!box.value;
+    if(!q){
+      cache.forEach(function(c){ c.el.classList.remove('hide') });
+      extras.forEach(function(e){ e.classList.remove('hide') });
+      opened.forEach(function(d){ d.open=false }); opened=[];
+      cnt.textContent=''; empty.hidden=true;
+      return;
+    }
+    var hits=[];
+    cache.forEach(function(c){
+      var ok=c.txt.indexOf(q)>=0;
+      c.el.classList.toggle('hide',!ok);
+      if(ok)hits.push(c.el);
+    });
+    extras.forEach(function(e){ e.classList.add('hide') });
+    opened.forEach(function(d){ if(hits.indexOf(d)<0)d.open=false });
+    opened=[];
+    if(hits.length<=8)hits.forEach(function(d){ if(!d.open){d.open=true; opened.push(d)} });
+    cnt.textContent = hits.length===1 ? 'יום אחד מתאים' : (hits.length+' ימים מתאימים');
+    empty.hidden=hits.length>0;
+  }
+  box.addEventListener('input',apply);
+  clear.addEventListener('click',function(){ box.value=''; apply(); box.focus() });
+}
+
 /* ---------- הפעלה ---------- */
 initRem(); initNotes(); initChk(); initPlaces(); initFood(); initNav(); initBackup(); initCosts();
+initDaySearch(); initWx(); renderToday();
+onChange(renderToday);
+setInterval(renderToday,600000);
 paintSync();
 syncTicksToDom();
 
