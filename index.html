@@ -1151,8 +1151,6 @@ nav.tabs.over::before,nav.tabs.over::after{opacity:1}
 .hm-msg{font-size:14.5px;color:var(--ink2);line-height:1.75}
 .hm-actions{display:flex;gap:8px;margin-top:5px;flex-wrap:wrap}
 .hm-actions .btn{flex:1 1 auto;justify-content:center}
-.hm-who{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.hm-who .btn{justify-content:center;font-size:15px;padding:14px}
 
 /* --- תזכורות הניתנות לעריכה --- */
 .rem{grid-template-columns:170px 1fr auto;align-items:start}
@@ -1219,7 +1217,6 @@ a.food-item:hover .f-go{color:var(--tw)}
 .sync-bar.ok .sync-dot{background:var(--tw)}
 .sync-bar.off .sync-dot{background:var(--gold)}
 .sync-bar.err .sync-dot{background:var(--jp)}
-.sync-bar .who{font-weight:700;color:var(--ink2)}
 .sync-bar button{border:0;background:none;color:var(--tw);font:inherit;font-size:12.5px;cursor:pointer;
   text-decoration:underline;padding:2px 4px;border-radius:6px}
 
@@ -2922,7 +2919,7 @@ body.has-upd #toTop{bottom:calc(78px + env(safe-area-inset-bottom))}
 'use strict';
 
 /* ---------- אחסון מקומי + סנכרון משותף ---------- */
-var KEY='hm_user_v1', WHO='hm_who_v1';
+var KEY='hm_user_v1';
 var SYNC={
   url:'/.netlify/functions/trip',   // פונקציית Netlify — אם אינה קיימת, הכל עובד מקומית
   key:'adi-netanel-2026',
@@ -2936,12 +2933,13 @@ function blank(){var o={v:1,updated:0};SECTIONS.forEach(function(s){o[s]={}});re
 function norm(o){o=o||{};if(!o.v)o.v=1;SECTIONS.forEach(function(s){if(!o[s]||typeof o[s]!=='object')o[s]={}});return o}
 
 var data=norm(jget(KEY,blank()));
-var who=jget(WHO,null);
 var listeners=[];
 function onChange(fn){listeners.push(fn)}
 function fire(){listeners.forEach(function(f){try{f()}catch(e){}})}
 
-function stamp(obj){obj.ts=Date.now();obj.by=who||'';return obj}
+/* פעם נשמר גם מי ערך. זה בוטל: הזהות נבחרה פעם אחת לכל מכשיר, ולכן כל מה
+   שנוסף מאותו טלפון יוחס לאותו אדם — מטעה יותר משהוא עוזר. */
+function stamp(obj){obj.ts=Date.now();return obj}
 function put(section,id,obj){
   var prev=data[section][id]||{};
   /* אחרי "שחזור למקורי" נשאר דגל cleared. בלי לנקות אותו כאן, העריכה או המחיקה
@@ -3056,26 +3054,9 @@ function confirmBox(title,message,okText){
   });
 }
 
-/* ---------- מי עורך ---------- */
-function askWho(){
-  return new Promise(function(res){
-    if(who)return res(who);
-    dlg.innerHTML='<form method="dialog" class="hm-form"><h3>מי עורך עכשיו?</h3>'+
-      '<p class="hm-msg">כדי שתדעו מי הוסיף מה. אפשר לשנות בכל רגע מהשורה שמעל התזכורות.</p>'+
-      '<div class="hm-who"><button type="submit" value="נתנאל" class="btn primary">נתנאל</button>'+
-      '<button type="submit" value="עדי" class="btn primary">עדי</button></div></form>';
-    dlgCb=null; dlg._vals=null; dlg.returnValue='';
-    var done=function(){
-      dlg.removeEventListener('close',done);
-      var v=dlg.returnValue;
-      if(v==='נתנאל'||v==='עדי'){who=v;jset(WHO,who);paintSync()}
-      res(who);
-    };
-    dlg.addEventListener('close',done);
-    dlg.showModal();
-  });
-}
-function needWho(fn){ return function(){ var a=arguments,t=this; askWho().then(function(w){ if(w)fn.apply(t,a) }) } }
+/* ---------- אין בחירת עורך: כל עריכה נשמרת בלי שיוך ---------- */
+function askWho(){ return Promise.resolve(true) }
+function needWho(fn){ return fn }
 
 /* ---------- שורת מצב הסנכרון ---------- */
 var syncBar=null;
@@ -3084,11 +3065,7 @@ function paintSync(msg){
   syncBar.className='sync-bar '+(syncState==='ok'?'ok':syncState==='err'?'err':'off');
   var txt = syncState==='ok' ? 'מסונכרן בין המכשירים' :
             (navigator.onLine?'נשמר במכשיר הזה בלבד':'אופליין — יסתנכרן כשתחזור רשת');
-  syncBar.innerHTML='<span class="sync-dot"></span><span>'+esc(msg||txt)+'</span>'+
-    '<span>·</span><span>עורך/ת: <span class="who">'+esc(who||'לא נבחר')+'</span></span>'+
-    '<button type="button" id="syncWho">החלפה</button>';
-  var b=document.getElementById('syncWho');
-  if(b)b.addEventListener('click',function(){who=null;jset(WHO,null);askWho()});
+  syncBar.innerHTML='<span class="sync-dot"></span><span>'+esc(msg||txt)+'</span>';
 }
 
 /* ============================================================
@@ -3157,8 +3134,8 @@ function initRem(){
     confirmBox('לשחזר את רשימת התזכורות המקורית?','כל התזכורות שהוספתם והשינויים שערכתם יימחקו. שאר הדברים באתר לא ייגעו.','שחזור')
       .then(function(ok){ if(!ok)return;
         Object.keys(data.rem).forEach(function(k){
-          if(k.charAt(0)==='u') data.rem[k]={del:true,ts:Date.now(),by:who||''};
-          else data.rem[k]={ts:Date.now(),by:who||'',cleared:true};
+          if(k.charAt(0)==='u') data.rem[k]={del:true,ts:Date.now()};
+          else data.rem[k]={ts:Date.now(),cleared:true};
         });
         data.updated=Date.now(); jset(KEY,data); fire(); schedulePush();
       });
@@ -3241,7 +3218,7 @@ function renderRem(){
         (r.mine?'<span class="rem-mine">שלנו</span>':(r.edited?'<span class="rem-mine">נערך</span>':''))+
       '</div>'+
       '<div class="rem-body"><b>'+esc(r.title)+'</b>'+(r.body?'<p>'+esc(r.body)+'</p>':'')+
-        (r.by?'<p style="font-size:12px;color:var(--muted)">— '+esc(r.by)+'</p>':'')+'</div>'+
+        '</div>'+
       '<div class="rem-ops">'+
         '<button type="button" class="iconbtn" data-act="edit" title="עריכה" aria-label="עריכת התזכורת">✏️</button>'+
         '<button type="button" class="iconbtn danger" data-act="del" title="מחיקה" aria-label="מחיקת התזכורת">🗑️</button>'+
@@ -3298,7 +3275,7 @@ function renderNotes(){
   [].forEach.call(document.querySelectorAll('.mynote'),function(h){
     var id=h.getAttribute('data-day'), n=data.notes[id];
     if(n&&!n.del&&n.text){
-      h.innerHTML='<div class="nb"><div class="nb-txt"><small>📝 הערה שלנו'+(n.by?' · '+esc(n.by):'')+'</small><p>'+esc(n.text)+'</p></div>'+
+      h.innerHTML='<div class="nb"><div class="nb-txt"><small>📝 הערה שלנו</small><p>'+esc(n.text)+'</p></div>'+
         '<button type="button" class="iconbtn" data-note="edit" title="עריכה">✏️</button>'+
         '<button type="button" class="iconbtn danger" data-note="del" title="מחיקה">🗑️</button></div>';
     }else{
@@ -3440,7 +3417,7 @@ function renderPlaces(){
         'href="https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(p.q||p.name)+'" '+
         'title="פתיחה בגוגל מפות: '+esc(p.q||p.name)+'">'+
         '<span class="p-ic" aria-hidden="true">'+(ICON[kind]||'📍')+'</span>'+
-        '<span class="p-txt"><b>'+esc(p.name)+'</b><small>'+esc(p.q||p.name)+(p.by?' · '+esc(p.by):'')+'</small></span>'+
+        '<span class="p-txt"><b>'+esc(p.name)+'</b><small>'+esc(p.q||p.name)+'</small></span>'+
         '<span class="p-go" aria-hidden="true">↗</span></a>'+
         '<button type="button" class="iconbtn e2" data-pl="edit" data-id="'+esc(k)+'" title="עריכה" aria-label="עריכת המקום">✏️</button>'+
         '<button type="button" class="iconbtn danger" data-pl="del" data-id="'+esc(k)+'" title="מחיקה" aria-label="מחיקת המקום">🗑️</button></div>';
@@ -3712,8 +3689,8 @@ function initCosts(){
       '\u05db\u05dc \u05d4\u05e9\u05d5\u05e8\u05d5\u05ea \u05e9\u05d4\u05d5\u05e1\u05e4\u05ea\u05dd \u05d5\u05d4\u05e2\u05e8\u05d9\u05db\u05d5\u05ea \u05e9\u05dc\u05db\u05dd \u05d9\u05d9\u05de\u05d7\u05e7\u05d5. \u05e9\u05d0\u05e8 \u05d4\u05d3\u05d1\u05e8\u05d9\u05dd \u05d1\u05d0\u05ea\u05e8 \u05dc\u05d0 \u05d9\u05d9\u05d2\u05e2\u05d5.','\u05e9\u05d7\u05d6\u05d5\u05e8')
       .then(function(ok){ if(!ok)return;
         Object.keys(data.costs).forEach(function(k){
-          if(k.charAt(0)==='u') data.costs[k]={del:true,ts:Date.now(),by:who||''};
-          else data.costs[k]={ts:Date.now(),by:who||'',cleared:true};
+          if(k.charAt(0)==='u') data.costs[k]={del:true,ts:Date.now()};
+          else data.costs[k]={ts:Date.now(),cleared:true};
         });
         data.updated=Date.now(); jset(KEY,data); fire(); schedulePush();
       });
@@ -4170,7 +4147,7 @@ function renderSpend(){
     /* שלוש עמודות בלבד — טבלה רחבה יותר לא נכנסת למסך טלפון בלי גלילה צדדית */
     rows+='<tr data-sid="'+esc(s.id)+'">'+
       '<td><span class="spend-ic" title="'+esc(lbl)+'">'+esc(ic)+'</span>'+esc(s.txt)+
-        '<small class="spend-by">'+esc(lbl.replace(/^\S+\s/,''))+(s.by?' · '+esc(s.by):'')+'</small></td>'+
+        '<small class="spend-by">'+esc(lbl.replace(/^\S+\s/,''))+'</small></td>'+
       '<td dir="ltr" class="spend-amt">'+esc(CUR_SYM[s.cur]||s.cur)+' '+money(s.amt,(s.cur==='ILS'||s.cur==='USD')?2:0)+
         '<small><b>'+money(s.ils)+' ₪</b></small></td>'+
       '<td class="cost-ops">'+
