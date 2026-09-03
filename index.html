@@ -1359,8 +1359,24 @@ body.has-upd #toTop{bottom:calc(78px + env(safe-area-inset-bottom))}
 .td-sun{color:#B9C3DB}
 
 #spendSum .clock:last-of-type{border-bottom:0}
-.spend-cats{font-size:12.5px;color:var(--muted);line-height:1.9;margin-top:9px}
+.spend-cats{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:12.5px;color:var(--muted);line-height:1.7;margin-top:12px;
+  padding-top:10px;border-top:1px dashed var(--line)}
+.spend-cats span{white-space:nowrap}
 .spend-cats b{color:var(--ink2);font-family:'IBM Plex Mono',monospace;unicode-bidi:isolate}
+.sp-hero{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:2px 12px;padding:2px 0 12px;
+  border-bottom:1px dashed var(--line)}
+.sp-lbl{font-size:14px;font-weight:600;color:var(--ink2)}
+.sp-big{font-family:'IBM Plex Mono',monospace;font-size:28px;font-weight:700;line-height:1.1;unicode-bidi:isolate}
+.sp-sub{flex:1 1 100%;font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:var(--muted);text-align:right;unicode-bidi:isolate}
+.sp-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+@media(min-width:700px){.sp-grid{grid-template-columns:repeat(4,1fr)}}
+.sp-tile{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:9px 11px;display:flex;flex-direction:column;gap:2px;min-width:0}
+.sp-tile small{font-size:11.5px;font-weight:600;color:var(--muted)}
+.sp-tile b{font-family:'IBM Plex Mono',monospace;font-size:17px;unicode-bidi:isolate;overflow-wrap:anywhere;text-align:right}
+.sp-tile.cash b{color:#1F5C3A}
+.sp-tile.card b{color:#33477A}
+.sp-fee{font-size:12.5px;color:var(--muted);line-height:1.8;margin-top:10px}
+.sp-fee b{color:var(--ink2);font-family:'IBM Plex Mono',monospace;unicode-bidi:isolate}
 .doc-tbl tr.spend-day td{background:var(--tw-soft);font-weight:700;font-size:13px}
 .spend-empty{color:var(--muted);text-align:center;padding:18px 0}
 .spend-by{display:block;font-size:11px;color:var(--muted);font-weight:500;margin-top:1px}
@@ -1424,6 +1440,9 @@ body.has-upd #toTop{bottom:calc(78px + env(safe-area-inset-bottom))}
   .spend-pay.cash{background:#13342C;color:#7FE3C4}
   .spend-pay.card{background:#1E2942;color:#B9C3DB}
   .spend-filt select{background:#121A2C;color:var(--ink);border-color:var(--line)}
+  .sp-tile{background:#121A2C;border-color:#26314B}
+  .sp-tile.cash b{color:#7FE3C4}
+  .sp-tile.card b{color:#B9C3DB}
   .fee-edit{background:#13342C;color:#7FE3C4}
   #daySearch,#wxCity{background:#121A2C;color:var(--ink);border-color:var(--line)}
   .wx-day{background:#121A2C;border-color:#26314B}
@@ -4332,24 +4351,27 @@ function renderSpend(){
   var nDays=Object.keys(days).length;
   var box=document.getElementById('spendSum');
   if(box){
-    var chips='<div class="clock"><span>סה"כ הוצאנו בדרך</span><b style="font-size:19px">'+money(total)+' ₪</b></div>';
-    ['TWD','JPY','USD'].forEach(function(c){
-      if(byCur[c])chips+='<div class="clock"><span>'+esc(CUR_SYM[c])+' '+c+'</span><b style="font-size:16px">'+
-        money(byCur[c],c==='USD'?2:0)+'</b></div>';
-    });
-    chips+='<div class="clock"><span>היום</span><b style="font-size:16px">'+money(spendTodayIls())+' ₪</b></div>';
-    if(list.length)chips+='<div class="clock"><span>'+esc(payLabel('cash'))+' · '+esc(payLabel('card'))+'</span>'+
-      '<b style="font-size:15px" dir="ltr">'+money(byPay.cash)+' ₪ · '+money(byPay.card)+' ₪</b></div>';
-    if(cardFx)chips+='<div class="clock"><span>עמלת המרה משוערת על אשראי · <button type="button" class="fee-edit" id="feeEdit" title="שינוי אחוז העמלה">'+
-      esc(String(feePct()))+'%</button><small class="fee-note">לא כלולה בסה"כ</small></span><b style="font-size:15px" dir="ltr">≈ '+money(fee,fee<100?1:0)+' ₪</b></div>';
+    /* היררכיה: סה"כ (כותרת) → קצב (היום מול ממוצע ליום) → איך שילמנו (מזומן מול אשראי)
+       → עמלה → על מה (קטגוריות). שורה לכל מספר הייתה ערימה גבוהה בלי סדר. */
+    var local=['TWD','JPY','USD'].filter(function(c){return byCur[c]}).map(function(c){
+      return esc(CUR_SYM[c])+' '+money(byCur[c],c==='USD'?2:0);
+    }).join(' · ');
+    var chips='<div class="sp-hero"><span class="sp-lbl">סה"כ הוצאנו בדרך</span><b class="sp-big" dir="ltr">'+money(total)+' ₪</b>'+
+      (local?'<small class="sp-sub" dir="ltr">'+local+'</small>':'')+'</div>';
+    chips+='<div class="sp-grid">'+
+      '<div class="sp-tile"><small>היום</small><b dir="ltr">'+money(spendTodayIls())+' ₪</b></div>'+
+      '<div class="sp-tile"><small>ממוצע ליום'+(nDays>1?' · '+nDays+' ימים':'')+'</small><b dir="ltr">'+money(nDays?total/nDays:0)+' ₪</b></div>'+
+      '<div class="sp-tile cash"><small>'+esc(payLabel('cash'))+'</small><b dir="ltr">'+money(byPay.cash)+' ₪</b></div>'+
+      '<div class="sp-tile card"><small>'+esc(payLabel('card'))+'</small><b dir="ltr">'+money(byPay.card)+' ₪</b></div>'+
+    '</div>';
+    if(cardFx)chips+='<p class="sp-fee">עמלת המרה משוערת על האשראי <button type="button" class="fee-edit" id="feeEdit" title="שינוי אחוז העמלה">'+
+      esc(String(feePct()))+'%</button> <b dir="ltr">≈ '+money(fee,fee<100?1:0)+' ₪</b> · לא כלולה בסה"כ</p>';
     if(nGuess)chips+='<p class="spend-guess">'+(nGuess===1?'רישום אחד':nGuess+' רישומים')+
       ' עם אמצעי תשלום שנקבע לפי התיאור (מסומנים ב-?). עריכה ושמירה מאשרות אותו.</p>';
-    if(nDays>1)chips+='<div class="clock"><span class="muted">ממוצע ליום פעיל · '+nDays+' ימים</span><b style="font-size:16px">'+
-      money(total/nDays)+' ₪</b></div>';
     var cats=Object.keys(byCat).sort(function(a,b){return byCat[b]-byCat[a]});
     if(cats.length)chips+='<p class="spend-cats">'+cats.map(function(c){
-      return esc(catLabel(c))+' <b dir="ltr">'+money(byCat[c])+' ₪</b>';
-    }).join(' · ')+'</p>';
+      return '<span>'+esc(catLabel(c))+' <b dir="ltr">'+money(byCat[c])+' ₪</b></span>';
+    }).join('')+'</p>';
     box.innerHTML=chips;
     var fe=document.getElementById('feeEdit');
     if(fe)fe.addEventListener('click',function(){
