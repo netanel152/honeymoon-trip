@@ -1369,6 +1369,13 @@ body.has-upd #toTop{bottom:calc(78px + env(safe-area-inset-bottom))}
 .spend-amt small{display:block;font-size:12px;color:var(--muted);margin-top:1px}
 .spend-amt small b{color:var(--ink2)}
 #spendDetails{margin-top:14px}
+.spend-pay{display:inline-block;margin-inline-start:6px;padding:0 7px;border-radius:999px;font-size:10.5px;font-weight:700;
+  line-height:17px;vertical-align:1px;unicode-bidi:isolate;white-space:nowrap}
+.spend-pay.cash{background:#E6F4EC;color:#1F5C3A}
+.spend-pay.card{background:#E9EEFA;color:#33477A}
+.spend-pay.auto{outline:1px dashed currentColor;outline-offset:-1px;opacity:.85}
+.spend-pay i{font-style:normal;margin-inline-start:3px;opacity:.8}
+.spend-guess{font-size:12px;color:var(--muted);line-height:1.6;margin-top:8px}
 
 /* ===== מצב כהה עבור רכיבי העריכה החדשים ===== */
 @media (prefers-color-scheme: dark){
@@ -1397,6 +1404,8 @@ body.has-upd #toTop{bottom:calc(78px + env(safe-area-inset-bottom))}
   .bp-delay{background:#C8372D;color:#fff}  /* .bp-top * מאפס צבע — צריך להחזיר כאן, אחרי הבלוק הראשון */
   #hmUpd{background:#1B2540;box-shadow:0 10px 34px -10px rgba(0,0,0,.75)}
   .doc-tbl tr.spend-day td{background:#16283A}
+  .spend-pay.cash{background:#13342C;color:#7FE3C4}
+  .spend-pay.card{background:#1E2942;color:#B9C3DB}
   #daySearch,#wxCity{background:#121A2C;color:var(--ink);border-color:var(--line)}
   .wx-day{background:#121A2C;border-color:#26314B}
   #todayPanel{box-shadow:0 1px 2px rgba(0,0,0,.5),0 12px 34px -14px rgba(0,0,0,.7)}
@@ -2980,6 +2989,10 @@ function mergeInto(base,incoming){
 /* --- סנכרון: משיכה תקופתית ודחיפה מושהית --- */
 var syncState='local', pushTimer=null, pulling=false;
 function setSync(state,msg){syncState=state;paintSync(msg)}
+/* פעולות שרצות פעם אחת אחרי המשיכה הראשונה שהצליחה — למשל תיקון נתונים ישנים.
+   לא לפני: מיגרציה על עותק מקומי מיושן תדרוס עריכה טרייה מהמכשיר השני. */
+var firstPullFns=[], pulledOnce=false;
+function onFirstPull(fn){ if(pulledOnce)fn(); else firstPullFns.push(fn) }
 function req(method,body){
   var ctl=new AbortController(), to=setTimeout(function(){ctl.abort()},9000);
   return fetch(SYNC.url,{
@@ -2998,6 +3011,7 @@ function pull(){
     var changed=mergeInto(data,remote&&remote.data?remote.data:remote);
     if(changed){jset(KEY,data);fire()}
     setSync('ok');
+    if(!pulledOnce){ pulledOnce=true; firstPullFns.forEach(function(f){try{f()}catch(e){}}) }
     return changed;
   }).catch(function(){ setSync(navigator.onLine?'off':'off'); return false; })
     .finally(function(){pulling=false});
@@ -4060,6 +4074,21 @@ var SPEND_CAT=[['food','🍜 אוכל'],['transport','🚉 תחבורה'],['tick
                ['shop','🛍️ קניות'],['stay','🏨 לינה'],['other','🧾 אחר']];
 var SPEND_CUR=[['TWD','NT$ · דולר טאיוואני'],['JPY','¥ · יין יפני'],['ILS','₪ · שקל'],['USD','$ · דולר']];
 var CUR_SYM={TWD:'NT$',JPY:'¥',ILS:'₪',USD:'$'};
+var SPEND_PAY=[['cash','\ud83d\udcb5 מזומן'],['card','\ud83d\udcb3 אשראי']];
+/* ניחוש אמצעי התשלום מהתיאור — לרישומים שנשמרו לפני שהשדה היה קיים, ולברירת
+   המחדל בדיאלוג. "שוק" נבדק עם גבול כדי לא לתפוס "שוקולד". \b לא עובד בעברית. */
+var PAY_CASH_RX=/מזומן|מזומנים|קאש|כספומט|משיכה|שוק(?=$|[\s,.:;·\-)])|דוכן|דוכנ|מקדש|תרומה|מכונת|אוטומט|לוקר|מונית|טיפ(?=$|[\s,.:;·\-)])|\bcash\b|\batm\b|market|stall|street|temple|shrine|vending|locker|\btaxi\b|\btip\b/i;
+var PAY_CARD_RX=/אשראי|כרטיס|ויזה|מאסטר|מלון|טיסה|שינקנסן|רכבת|השכרה|דלק|אונליין|יודובאשי|יוניקלו|דונקי|\bvisa\b|master|\bamex\b|\bcard\b|credit|apple pay|google pay|paypay|suica|pasmo|icoca|easycard|hotel|flight|\bjr\b|shinkansen|klook|booking|agoda|rental|\bgas\b|yodobashi|\bbic\b|uniqlo|don quijote|amazon|online/i;
+function guessPay(txt,cat){
+  var t=String(txt||'');
+  if(PAY_CASH_RX.test(t))return 'cash';
+  if(PAY_CARD_RX.test(t))return 'card';
+  /* בלי רמז בתיאור: לינה, קניות וכרטיסים בדרך כלל באשראי; אוכל ותחבורה במזומן */
+  return (cat==='stay'||cat==='shop'||cat==='tickets')?'card':'cash';
+}
+function payLabel(k){ return k==='card'?SPEND_PAY[1][1]:SPEND_PAY[0][1] }
+/* אמצעי התשלום בפועל של רישום: מה שנשמר, ואם אין — ניחוש. auto = לא אושר ידנית */
+function payOf(s){ return {pay:s.pay||guessPay(s.txt,s.cat), auto:!s.pay||!!s.payAuto} }
 var SPEND_FALLBACK={TWD:10.59,JPY:53.61,USD:0.335,ILS:1};
 
 function spendRates(){
@@ -4107,8 +4136,18 @@ function spendFields(s){
     {k:'amt', label:'כמה', type:'number', value:(s.amt!=null?s.amt:'')},
     {k:'cur', label:'מטבע', type:'select', value:s.cur||defCur(), options:SPEND_CUR},
     {k:'cat', label:'קטגוריה', type:'select', value:s.cat||'food', options:SPEND_CAT},
+    {k:'pay', label:'אמצעי תשלום', type:'select', value:s.pay||guessPay(s.txt,s.cat), options:SPEND_PAY},
     {k:'d',   label:'תאריך', type:'date', value:s.d||today10()}
   ];
+}
+/* בזמן ההקלדה הבורר עוקב אחרי התיאור והקטגוריה — עד שנוגעים בו ידנית */
+function wirePayGuess(){
+  var txt=dlg.querySelector('#hf_txt'), cat=dlg.querySelector('#hf_cat'), pay=dlg.querySelector('#hf_pay');
+  if(!txt||!cat||!pay)return;
+  var touched=false;
+  pay.addEventListener('change',function(){touched=true});
+  var follow=function(){ if(!touched)pay.value=guessPay(txt.value,cat.value) };
+  txt.addEventListener('input',follow); cat.addEventListener('change',follow);
 }
 function spendVals(v,prev){
   var amt=parseFloat(String(v.amt).replace(/[^0-9.\-]/g,''));
@@ -4117,6 +4156,7 @@ function spendVals(v,prev){
   /* שומרים את הסכום בשקלים לפי השער של רגע הרישום, כדי שההיסטוריה לא תזוז */
   var ils=(prev&&prev.amt===amt&&prev.cur===cur&&prev.ils)?prev.ils:toIls(amt,cur);
   return {txt:(v.txt||'').trim(), amt:amt, cur:cur, cat:v.cat||'other',
+          pay:(v.pay==='card'?'card':'cash'), payAuto:false,
           d:v.d||today10(), ils:Math.round(ils*100)/100, del:false};
 }
 function spendTodayIls(){
@@ -4135,19 +4175,36 @@ function initSpend(){
       put('spend','s'+Date.now().toString(36)+Math.random().toString(36).slice(2,5),vals);
       var d=document.getElementById('spendDetails'); if(d)d.open=true;
     }});
+    wirePayGuess();
   }));
   onChange(renderSpend);
   renderSpend();
+  onFirstPull(migrateSpendPay);
+}
+/* רישומים שנשמרו לפני שהיה שדה אמצעי תשלום מקבלים אותו לפי התיאור, פעם אחת,
+   ומסומנים payAuto כדי שיהיה ברור שזה ניחוש עד שעורכים. רץ רק אחרי משיכה
+   מוצלחת מהמאגר המשותף, ובכתיבה אחת (לא put לכל שורה — כל put מרנדר ודוחף). */
+function migrateSpendPay(){
+  var n=0;
+  Object.keys(data.spend).forEach(function(k){
+    var s=data.spend[k];
+    if(!s||s.del||s.pay)return;
+    data.spend[k]=stamp(Object.assign({},s,{pay:guessPay(s.txt,s.cat),payAuto:true}));
+    n++;
+  });
+  if(n){ data.updated=Date.now(); jset(KEY,data); fire(); schedulePush() }
+  return n;
 }
 function renderSpend(){
   var host=document.getElementById('spendRows');
   if(!host)return;
-  var list=spendList(), total=0, byCur={}, byCat={}, days={};
+  var list=spendList(), total=0, byCur={}, byCat={}, days={}, byPay={cash:0,card:0}, nGuess=0;
   list.forEach(function(s){
     total+=(+s.ils||0);
     byCur[s.cur]=(byCur[s.cur]||0)+(+s.amt||0);
     byCat[s.cat]=(byCat[s.cat]||0)+(+s.ils||0);
     if(s.d)days[s.d]=(days[s.d]||0)+(+s.ils||0);
+    var p=payOf(s); byPay[p.pay]+=(+s.ils||0); if(p.auto)nGuess++;
   });
 
   var rows='', lastDay=null;
@@ -4157,11 +4214,14 @@ function renderSpend(){
       rows+='<tr class="spend-day"><td colspan="2">'+esc(fmtWhen(s.d)||s.d)+
         '</td><td dir="ltr">'+money(days[s.d])+' ₪</td></tr>';
     }
-    var lbl=catLabel(s.cat), ic=lbl.split(' ')[0];
+    var lbl=catLabel(s.cat), ic=lbl.split(' ')[0], p=payOf(s);
+    var payChip='<span class="spend-pay '+p.pay+(p.auto?' auto':'')+'"'+
+      (p.auto?' title="נקבע לפי התיאור — לחצו על עריכה כדי לאשר"':'')+'>'+esc(payLabel(p.pay))+
+      (p.auto?'<i>?</i>':'')+'</span>';
     /* שלוש עמודות בלבד — טבלה רחבה יותר לא נכנסת למסך טלפון בלי גלילה צדדית */
     rows+='<tr data-sid="'+esc(s.id)+'">'+
       '<td><span class="spend-ic" title="'+esc(lbl)+'">'+esc(ic)+'</span>'+esc(s.txt)+
-        '<small class="spend-by">'+esc(lbl.replace(/^\S+\s/,''))+'</small></td>'+
+        '<small class="spend-by">'+esc(lbl.replace(/^\S+\s/,''))+payChip+'</small></td>'+
       '<td dir="ltr" class="spend-amt">'+esc(CUR_SYM[s.cur]||s.cur)+' '+money(s.amt,(s.cur==='ILS'||s.cur==='USD')?2:0)+
         '<small><b>'+money(s.ils)+' ₪</b></small></td>'+
       '<td class="cost-ops">'+
@@ -4180,6 +4240,10 @@ function renderSpend(){
         money(byCur[c],c==='USD'?2:0)+'</b></div>';
     });
     chips+='<div class="clock"><span>היום</span><b style="font-size:16px">'+money(spendTodayIls())+' ₪</b></div>';
+    if(list.length)chips+='<div class="clock"><span>'+esc(payLabel('cash'))+' · '+esc(payLabel('card'))+'</span>'+
+      '<b style="font-size:15px" dir="ltr">'+money(byPay.cash)+' ₪ · '+money(byPay.card)+' ₪</b></div>';
+    if(nGuess)chips+='<p class="spend-guess">'+(nGuess===1?'רישום אחד':nGuess+' רישומים')+
+      ' עם אמצעי תשלום שנקבע לפי התיאור (מסומנים ב-?). עריכה ושמירה מאשרות אותו.</p>';
     if(nDays>1)chips+='<div class="clock"><span class="muted">ממוצע ליום פעיל · '+nDays+' ימים</span><b style="font-size:16px">'+
       money(total/nDays)+' ₪</b></div>';
     var cats=Object.keys(byCat).sort(function(a,b){return byCat[b]-byCat[a]});
@@ -4210,6 +4274,8 @@ document.addEventListener('click',function(e){
       if(!vals.amt)return;
       put('spend',id,vals);
     }});
+    /* רישום שאמצעי התשלום שלו רק נוחש ממשיך לעקוב אחרי התיאור; מאושר — לא */
+    if(payOf(cur).auto)wirePayGuess();
   });
 });
 
