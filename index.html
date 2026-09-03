@@ -1302,6 +1302,10 @@ a.food-item:hover .f-go{color:var(--tw)}
 .td-box b{font-size:14.5px;font-weight:700;overflow-wrap:anywhere}
 .td-link{color:#8FE7C8;font-weight:700;text-decoration:none;font-size:14.5px;overflow-wrap:anywhere}
 .td-link:hover{text-decoration:underline}
+.td-go{align-self:flex-start;margin-top:5px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);
+  color:#fff;font-family:inherit;font-size:12px;font-weight:700;border-radius:999px;padding:5px 11px;cursor:pointer;
+  min-height:0;line-height:1.3}
+.td-go:hover{background:rgba(255,255,255,.22)}
 .td-move{font-size:12px;color:var(--gold);margin-top:3px}
 .td-line{list-style:none;margin:12px 0 0;padding:0;display:flex;flex-direction:column;gap:7px}
 .td-line li{display:flex;gap:8px;align-items:flex-start;font-size:13.5px;color:#E4EAF7;line-height:1.5}
@@ -3871,8 +3875,10 @@ function renderToday(){
       '<div class="td-box"><small>🏨 הלילה</small>'+hotel+move+'</div>'+
       '<div class="td-box"><small>⏰ התזכורת הקרובה</small>'+remHtml+'</div>'+
       '<div class="td-box" id="tdWx"><small>🌤️ מזג האוויר</small><b>—</b></div>'+
-      (spendTodayIls()?('<div class="td-box"><small>💸 הוצאות היום</small><b dir="ltr">'+
-         money(spendTodayIls())+' ₪</b></div>'):'')+
+      /* מוצג תמיד בימי הטיול — גם ב-0 ₪, כי אז דווקא צריך את הכפתור לרישום */
+      '<div class="td-box"><small>💸 הוצאות היום</small><b dir="ltr">'+
+         money(spendTodayIls())+' ₪</b>'+
+         '<button type="button" class="td-go" data-gotab="pane-money">כל ההוצאות ↗</button></div>'+
     '</div>'+
     (visible.length?('<ol class="td-line">'+visible.map(function(x){
         return '<li>'+(x.t?'<span class="tchip" dir="ltr">'+esc(x.t)+'</span>':'')+
