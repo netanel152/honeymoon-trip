@@ -371,8 +371,15 @@ Harmless — deletable from the app in one click.
 
 ## GitHub + auto-deploy (Sep 1, 2026)
 
-The project is now a git repo, pushed to **private** `netanel152/honeymoon-trip`, and the
-Netlify site builds from it. This exists so the owner can request changes from the Claude
+The project is now a git repo, pushed to `netanel152/honeymoon-trip`, and the
+Netlify site builds from it.
+
+> **תיקון (3.9.2026): הריפו הוא ציבורי, לא פרטי.** נבדק מול GitHub API —
+> `"private": false`, `"visibility": "public"`, `forks_count: 0`. המשפט המקורי כאן
+> ("private") היה שגוי מאז 1.9. המשמעות: `טיול ירח דבש.docx`, `הוצאות ירח דבש.xlsx`,
+> `0918009-4117.pdf` (פוליסת הביטוח — **מכילה ת"ז של שני המבוטחים**) ו-`Fwd Your
+> itinerary - CMPWEJ.pdf` היו קריאים לכל אחד ברשת מ-1.9.2026. ההסתרה של `dist/`
+> מגנה רק על האתר, לא על הריפו. לפני שמסתמכים על "זה בריפו הפרטי" — **לאמת**. This exists so the owner can request changes from the Claude
 app while travelling without a laptop.
 
 - `build.mjs` copies `index.html` and `sw.js` into `dist/`; `netlify.toml` publishes **only
