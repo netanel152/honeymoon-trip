@@ -1376,6 +1376,23 @@ body.has-upd #toTop{bottom:calc(78px + env(safe-area-inset-bottom))}
 .spend-pay.auto{outline:1px dashed currentColor;outline-offset:-1px;opacity:.85}
 .spend-pay i{font-style:normal;margin-inline-start:3px;opacity:.8}
 .spend-guess{font-size:12px;color:var(--muted);line-height:1.6;margin-top:8px}
+.spend-quick{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:10px}
+.spend-quick .hm-note{font-size:13px;color:var(--muted)}
+.spend-filt{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px}
+.spend-filt select{flex:1 1 130px;min-width:0;font-family:inherit;font-size:13.5px;padding:8px 10px;min-height:40px;
+  border:1px solid var(--line);border-radius:10px;background:var(--paper);color:var(--ink)}
+.spend-filt select:focus{outline:2px solid var(--tw);outline-offset:1px;border-color:var(--tw)}
+.spend-filt .btn{min-height:40px;padding:6px 12px;font-size:13px}
+.spend-filt-sum{font-size:13px;color:var(--muted);margin:0 0 10px;line-height:1.7}
+.spend-filt-sum b{color:var(--ink2);unicode-bidi:isolate}
+.fee-edit{font:inherit;font-weight:700;color:#0B7159;background:var(--tw-soft,#E6F4EC);border:0;border-radius:999px;
+  padding:1px 8px;cursor:pointer;min-height:0;line-height:1.5;unicode-bidi:isolate}
+.fee-edit:hover{filter:brightness(.95)}
+.fee-note{display:block;font-size:11px;color:var(--muted);font-weight:500}
+.td-quick{display:flex;flex-wrap:wrap;gap:6px;margin-top:7px}
+.td-qb{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);border-radius:10px;min-width:40px;min-height:36px;
+  font-size:17px;line-height:1;padding:0 6px;cursor:pointer;color:#fff}
+.td-qb:hover{background:rgba(255,255,255,.24)}
 
 /* ===== מצב כהה עבור רכיבי העריכה החדשים ===== */
 @media (prefers-color-scheme: dark){
@@ -1406,6 +1423,8 @@ body.has-upd #toTop{bottom:calc(78px + env(safe-area-inset-bottom))}
   .doc-tbl tr.spend-day td{background:#16283A}
   .spend-pay.cash{background:#13342C;color:#7FE3C4}
   .spend-pay.card{background:#1E2942;color:#B9C3DB}
+  .spend-filt select{background:#121A2C;color:var(--ink);border-color:var(--line)}
+  .fee-edit{background:#13342C;color:#7FE3C4}
   #daySearch,#wxCity{background:#121A2C;color:var(--ink);border-color:var(--line)}
   .wx-day{background:#121A2C;border-color:#26314B}
   #todayPanel{box-shadow:0 1px 2px rgba(0,0,0,.5),0 12px 34px -14px rgba(0,0,0,.7)}
@@ -2495,7 +2514,20 @@ body.has-upd #toTop{bottom:calc(78px + env(safe-area-inset-bottom))}
         <button type="button" class="btn sm" data-gotab="pane-tools">💱 ממיר המטבעות</button>
         <span class="hm-note" id="spendNote"></span>
       </div>
+      <div class="spend-quick" role="group" aria-label="הוספה מהירה לפי קטגוריה"><span class="hm-note">מהיר:</span>
+        <button type="button" class="pl-f" data-quick="food">🍜 אוכל</button>
+        <button type="button" class="pl-f" data-quick="transport">🚉 תחבורה</button>
+        <button type="button" class="pl-f" data-quick="tickets">🎟️ כניסה</button>
+        <button type="button" class="pl-f" data-quick="shop">🛍️ קניות</button>
+      </div>
       <details class="sub-info" id="spendDetails"><summary>🧾 כל ההוצאות <span class="chev">▾</span></summary><div class="body">
+        <div class="spend-filt" role="group" aria-label="סינון ההוצאות">
+          <select id="sfCountry" aria-label="מדינה"><option value="all">🌏 כל הטיול</option><option value="tw">🇹🇼 טאיוואן</option><option value="jp">🇯🇵 יפן</option></select>
+          <select id="sfPay" aria-label="אמצעי תשלום"><option value="all">💵💳 הכל</option><option value="cash">💵 מזומן</option><option value="card">💳 אשראי</option></select>
+          <select id="sfCat" aria-label="קטגוריה"><option value="all">🗂️ כל הקטגוריות</option></select>
+          <button type="button" class="btn ghost" id="sfClear" hidden>✕ ניקוי</button>
+        </div>
+        <p class="spend-filt-sum" id="spendFiltSum" hidden></p>
         <div class="tbl-wrap"><table class="doc-tbl"><thead><tr><th>מה</th><th>סכום</th><th></th></tr></thead><tbody id="spendRows"></tbody></table></div>
       </div></details>
       <p class="tool-note">ההמרה לשקלים נעשית לפי השער שהיה בזמן הרישום, אז הסכום לא זז אחר כך. הרשימה מסתנכרנת בין שני הטלפונים כמו כל השאר.</p>
@@ -3893,7 +3925,10 @@ function renderToday(){
       /* מוצג תמיד בימי הטיול — גם ב-0 ₪, כי אז דווקא צריך את הכפתור לרישום */
       '<div class="td-box"><small>💸 הוצאות היום</small><b dir="ltr">'+
          money(spendTodayIls())+' ₪</b>'+
-         '<button type="button" class="td-go" data-gotab="pane-money">כל ההוצאות ↗</button></div>'+
+         '<button type="button" class="td-go" data-gotab="pane-money">כל ההוצאות ↗</button>'+
+         '<div class="td-quick">'+SPEND_QUICK.map(function(c){ var l=catLabel(c);
+            return '<button type="button" class="td-qb" data-quick="'+c+'" title="הוצאה חדשה · '+esc(l)+'" aria-label="הוצאה חדשה · '+esc(l)+'">'+esc(l.split(' ')[0])+'</button>';
+          }).join('')+'</div></div>'+
     '</div>'+
     (visible.length?('<ol class="td-line">'+visible.map(function(x){
         return '<li>'+(x.t?'<span class="tchip" dir="ltr">'+esc(x.t)+'</span>':'')+
@@ -4087,6 +4122,23 @@ function guessPay(txt,cat){
   return (cat==='stay'||cat==='shop'||cat==='tickets')?'card':'cash';
 }
 function payLabel(k){ return k==='card'?SPEND_PAY[1][1]:SPEND_PAY[0][1] }
+var SPEND_QUICK=['food','transport','tickets','shop'];
+/* עמלת המרה על עסקאות אשראי במט"ח — אחוז, נשמר לכל מכשיר. ברירת המחדל 1% (הכרטיס שלנו) */
+var FEE_KEY='hm_fee_v1';
+function feePct(){ var v=parseFloat(jget(FEE_KEY,null)); return (isFinite(v)&&v>=0&&v<=20)?v:1 }
+/* מדינה לפי תאריך הרישום: ימים 1–18 טאיוואן, 19–36 יפן, מחוץ לטיול — אחר */
+function countryOf(d){
+  var m=/^(\d{4})-(\d{2})-(\d{2})$/.exec(String(d||'')); if(!m)return 'other';
+  var n=Math.round((Date.UTC(+m[1],+m[2]-1,+m[3])-Date.UTC(2026,8,2))/86400000)+1;
+  return n<1||n>TRIP_DAYS?'other':(n<=18?'tw':'jp');
+}
+var spendFilter={country:'all',pay:'all',cat:'all'};
+function filterOn(){ return spendFilter.country!=='all'||spendFilter.pay!=='all'||spendFilter.cat!=='all' }
+function passFilter(s){
+  return (spendFilter.country==='all'||countryOf(s.d)===spendFilter.country)&&
+         (spendFilter.pay==='all'||payOf(s).pay===spendFilter.pay)&&
+         (spendFilter.cat==='all'||s.cat===spendFilter.cat);
+}
 /* אמצעי התשלום בפועל של רישום: מה שנשמר, ואם אין — ניחוש. auto = לא אושר ידנית */
 function payOf(s){ return {pay:s.pay||guessPay(s.txt,s.cat), auto:!s.pay||!!s.payAuto} }
 var SPEND_FALLBACK={TWD:10.59,JPY:53.61,USD:0.335,ILS:1};
@@ -4164,19 +4216,47 @@ function spendTodayIls(){
   spendList().forEach(function(s){ if(s.d===t)sum+=(+s.ils||0) });
   return sum;
 }
+/* דיאלוג הוספה. preset.cat = הוספה מהירה: הקטגוריה כבר נבחרה והפוקוס על הסכום */
+function openSpendDlg(preset){
+  preset=preset||{};
+  var seed=preset.cat?{cat:preset.cat,pay:guessPay('',preset.cat)}:null;
+  openDlg({title:'הוצאה חדשה'+(preset.cat?' · '+catLabel(preset.cat):''),okText:'הוספה',fields:spendFields(seed),onOk:function(v){
+    var vals=spendVals(v,null);
+    if(!vals.amt)return;
+    if(!vals.txt)vals.txt=catLabel(vals.cat).replace(/^\S+\s/,'');
+    put('spend','s'+Date.now().toString(36)+Math.random().toString(36).slice(2,5),vals);
+    var d=document.getElementById('spendDetails'); if(d)d.open=true;
+  }});
+  wirePayGuess();
+  var amt=dlg.querySelector('#hf_amt');
+  if(amt){
+    amt.setAttribute('inputmode','decimal');
+    /* openDlg ממקד את השדה הראשון אחרי 40ms — כאן עוקפים אותו אחרי שהוא רץ */
+    if(preset.cat)setTimeout(function(){amt.focus()},90);
+  }
+}
 function initSpend(){
   var host=document.getElementById('spendRows');
   if(!host)return;
-  document.getElementById('spendAdd').addEventListener('click',needWho(function(){
-    openDlg({title:'הוצאה חדשה',okText:'הוספה',fields:spendFields(null),onOk:function(v){
-      var vals=spendVals(v,null);
-      if(!vals.amt)return;
-      if(!vals.txt)vals.txt=catLabel(vals.cat).replace(/^\S+\s/,'');
-      put('spend','s'+Date.now().toString(36)+Math.random().toString(36).slice(2,5),vals);
-      var d=document.getElementById('spendDetails'); if(d)d.open=true;
-    }});
-    wirePayGuess();
-  }));
+  document.getElementById('spendAdd').addEventListener('click',needWho(function(){ openSpendDlg(null) }));
+  /* צ'יפים של הוספה מהירה — בפאנל היום ובכרטיס ההוצאות */
+  document.addEventListener('click',function(e){
+    var b=e.target.closest?e.target.closest('[data-quick]'):null;
+    if(b)askWho().then(function(w){ if(w)openSpendDlg({cat:b.getAttribute('data-quick')}) });
+  });
+  /* סינון */
+  var sfCat=document.getElementById('sfCat');
+  if(sfCat)SPEND_CAT.forEach(function(c){ var o=document.createElement('option'); o.value=c[0]; o.textContent=c[1]; sfCat.appendChild(o) });
+  [['sfCountry','country'],['sfPay','pay'],['sfCat','cat']].forEach(function(p){
+    var el=document.getElementById(p[0]); if(!el)return;
+    el.addEventListener('change',function(){ spendFilter[p[1]]=el.value; renderSpend() });
+  });
+  var clr=document.getElementById('sfClear');
+  if(clr)clr.addEventListener('click',function(){
+    spendFilter={country:'all',pay:'all',cat:'all'};
+    ['sfCountry','sfPay','sfCat'].forEach(function(id){ var el=document.getElementById(id); if(el)el.value='all' });
+    renderSpend();
+  });
   onChange(renderSpend);
   renderSpend();
   onFirstPull(migrateSpendPay);
@@ -4198,21 +4278,38 @@ function migrateSpendPay(){
 function renderSpend(){
   var host=document.getElementById('spendRows');
   if(!host)return;
-  var list=spendList(), total=0, byCur={}, byCat={}, days={}, byPay={cash:0,card:0}, nGuess=0;
+  var list=spendList(), total=0, byCur={}, byCat={}, byPay={cash:0,card:0}, nGuess=0, cardFx=0, days={};
   list.forEach(function(s){
     total+=(+s.ils||0);
     byCur[s.cur]=(byCur[s.cur]||0)+(+s.amt||0);
     byCat[s.cat]=(byCat[s.cat]||0)+(+s.ils||0);
     if(s.d)days[s.d]=(days[s.d]||0)+(+s.ils||0);
     var p=payOf(s); byPay[p.pay]+=(+s.ils||0); if(p.auto)nGuess++;
+    /* עמלת המרה רק על אשראי במט"ח — עסקה בשקלים לא עולה עמלה */
+    if(p.pay==='card'&&s.cur!=='ILS')cardFx+=(+s.ils||0);
   });
+  var fee=cardFx*feePct()/100;
+
+  /* הטבלה מכבדת את הסינון; הסיכומים שמעל מציגים תמיד את כל הטיול */
+  var shown=filterOn()?list.filter(passFilter):list, fdays={}, fsum={n:0,ils:0,cash:0,card:0};
+  shown.forEach(function(s){
+    if(s.d)fdays[s.d]=(fdays[s.d]||0)+(+s.ils||0);
+    fsum.n++; fsum.ils+=(+s.ils||0); fsum[payOf(s).pay]+=(+s.ils||0);
+  });
+  var fs=document.getElementById('spendFiltSum'), fc=document.getElementById('sfClear');
+  if(fs){
+    fs.hidden=!filterOn();
+    fs.innerHTML=filterOn()?('<b>'+(fsum.n===1?'רישום אחד':fsum.n+' רישומים')+'</b> · <b dir="ltr">'+money(fsum.ils)+' ₪</b>'+
+      ' · '+esc(payLabel('cash'))+' <span dir="ltr">'+money(fsum.cash)+' ₪</span> · '+esc(payLabel('card'))+' <span dir="ltr">'+money(fsum.card)+' ₪</span>'):'';
+  }
+  if(fc)fc.hidden=!filterOn();
 
   var rows='', lastDay=null;
-  list.forEach(function(s){
+  shown.forEach(function(s){
     if(s.d!==lastDay){
       lastDay=s.d;
       rows+='<tr class="spend-day"><td colspan="2">'+esc(fmtWhen(s.d)||s.d)+
-        '</td><td dir="ltr">'+money(days[s.d])+' ₪</td></tr>';
+        '</td><td dir="ltr">'+money(fdays[s.d])+' ₪</td></tr>';
     }
     var lbl=catLabel(s.cat), ic=lbl.split(' ')[0], p=payOf(s);
     var payChip='<span class="spend-pay '+p.pay+(p.auto?' auto':'')+'"'+
@@ -4229,7 +4326,8 @@ function renderSpend(){
         '<button type="button" class="iconbtn danger" data-sact="del" title="מחיקה" aria-label="מחיקת ההוצאה">🗑️</button>'+
       '</td></tr>';
   });
-  host.innerHTML=rows||'<tr><td colspan="3" class="spend-empty">עוד לא רשמתם הוצאות. כל קנייה שתוסיפו כאן תופיע גם אצל השני/ה.</td></tr>';
+  host.innerHTML=rows||'<tr><td colspan="3" class="spend-empty">'+(filterOn()&&list.length?'אין רישומים שמתאימים לסינון.':
+    'עוד לא רשמתם הוצאות. כל קנייה שתוסיפו כאן תופיע גם אצל השני/ה.')+'</td></tr>';
 
   var nDays=Object.keys(days).length;
   var box=document.getElementById('spendSum');
@@ -4242,6 +4340,8 @@ function renderSpend(){
     chips+='<div class="clock"><span>היום</span><b style="font-size:16px">'+money(spendTodayIls())+' ₪</b></div>';
     if(list.length)chips+='<div class="clock"><span>'+esc(payLabel('cash'))+' · '+esc(payLabel('card'))+'</span>'+
       '<b style="font-size:15px" dir="ltr">'+money(byPay.cash)+' ₪ · '+money(byPay.card)+' ₪</b></div>';
+    if(cardFx)chips+='<div class="clock"><span>עמלת המרה משוערת על אשראי · <button type="button" class="fee-edit" id="feeEdit" title="שינוי אחוז העמלה">'+
+      esc(String(feePct()))+'%</button><small class="fee-note">לא כלולה בסה"כ</small></span><b style="font-size:15px" dir="ltr">≈ '+money(fee,fee<100?1:0)+' ₪</b></div>';
     if(nGuess)chips+='<p class="spend-guess">'+(nGuess===1?'רישום אחד':nGuess+' רישומים')+
       ' עם אמצעי תשלום שנקבע לפי התיאור (מסומנים ב-?). עריכה ושמירה מאשרות אותו.</p>';
     if(nDays>1)chips+='<div class="clock"><span class="muted">ממוצע ליום פעיל · '+nDays+' ימים</span><b style="font-size:16px">'+
@@ -4251,6 +4351,15 @@ function renderSpend(){
       return esc(catLabel(c))+' <b dir="ltr">'+money(byCat[c])+' ₪</b>';
     }).join(' · ')+'</p>';
     box.innerHTML=chips;
+    var fe=document.getElementById('feeEdit');
+    if(fe)fe.addEventListener('click',function(){
+      openDlg({title:'עמלת המרה על אשראי',message:'האחוז שהכרטיס שלכם גובה על עסקה במטבע זר. נשמר במכשיר הזה בלבד.',
+        fields:[{k:'pct',label:'אחוז העמלה',type:'number',value:feePct()}],onOk:function(v){
+          var p=parseFloat(String(v.pct).replace(',','.'));
+          if(isFinite(p)&&p>=0&&p<=20){ jset(FEE_KEY,p); renderSpend() }
+        }});
+      var inp=dlg.querySelector('#hf_pct'); if(inp){inp.step='0.1';inp.min='0';inp.max='20';inp.setAttribute('inputmode','decimal')}
+    });
   }
   var det=document.getElementById('spendDetails');
   /* פעם אחת בלבד — אחרי זה מכבדים את מה שהמשתמש סגר */
