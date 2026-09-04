@@ -729,6 +729,9 @@ h1.title em{font-style:normal;background:linear-gradient(90deg,#F0B35B,#E86A50);
 .rs-stop.jp i{background:#F0705E}
 .rs-seg{height:2px;min-width:26px;flex:1;background-image:linear-gradient(90deg,#5A6C95 55%,transparent 0);background-size:9px 2px;margin-bottom:26px}
 
+/* hidden חייב לנצח כל display של מחלקה (.btn הוא inline-flex) — אחרת כפתורי
+   "שחזור" ו-"ניקוי" מוצגים גם כשאין מה לשחזר או לנקות */
+[hidden]{display:none!important}
 /* ===== חיווי פוקוס למקלדת ===== */
 :focus-visible{outline:2px solid var(--gold);outline-offset:2px;border-radius:8px}
 .tab:focus-visible{outline-offset:-2px}
@@ -921,7 +924,7 @@ label.chk input:focus-visible+.box{outline:2px solid var(--gold);outline-offset:
 .clock .c-val{display:flex;flex-direction:column;align-items:flex-start;line-height:1.25;flex:0 0 auto;text-align:left}
 .clock .c-off{color:var(--muted);font-weight:500;direction:ltr;unicode-bidi:isolate}
 .clock small{white-space:nowrap;unicode-bidi:isolate}
-.cur-row{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;margin-bottom:9px}
+.cur-row{display:grid;grid-template-columns:1fr 84px;gap:8px;align-items:center;margin-bottom:9px}
 .cur-row input{font-family:'IBM Plex Mono',monospace;font-size:16px;padding:9px 12px;border:1px solid var(--line);border-radius:10px;width:100%;direction:ltr;text-align:left;color:var(--ink);background:#FBFCFB}
 .cur-row input:focus{outline:2px solid var(--tw);border-color:transparent}
 .cur-tag{font-weight:700;font-size:13px;color:var(--ink2);min-width:44px}
@@ -939,7 +942,7 @@ details.day.jp .day-lead{background:var(--jp-soft)}
 .h-map{display:inline-block;margin-top:4px;font-size:12.5px;color:var(--tw);text-decoration:none;font-weight:600}
 .h-map:hover{text-decoration:underline}
 .tool-note{font-size:12.5px;color:var(--muted);line-height:1.65;margin-top:11px;padding-top:11px;border-top:1px dashed #EEF1EE}
-.tel-link{color:var(--tw);font-weight:700;text-decoration:none;white-space:nowrap}
+.tel-link{color:var(--tw);font-weight:700;text-decoration:none;white-space:nowrap;display:inline-block;padding:6px 0;margin:-6px 0}
 .tel-link:hover{text-decoration:underline}
 /* ---------- places / maps links ---------- */
 .place-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(260px,100%),1fr));gap:8px}
@@ -969,7 +972,7 @@ a.place.k-sight{border-inline-start:3px solid var(--tw)}
 .pl-clear:hover{background:var(--paper);color:var(--ink)}
 /* places pane */
 .pl-tools{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:14px;
-  margin-bottom:18px;box-shadow:var(--shadow);position:sticky;top:52px;z-index:60}
+  margin-bottom:18px;box-shadow:var(--shadow);position:sticky;top:60px;z-index:60}
 #plSearch{width:100%;padding:12px 14px;border:1px solid var(--line);border-radius:11px;background:var(--paper);min-height:48px}
 .pl-filters{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
 .pl-f{border:1px solid var(--line);background:var(--paper);border-radius:20px;padding:7px 13px;
@@ -1456,6 +1459,47 @@ body.has-upd .hm-toast{bottom:calc(82px + env(safe-area-inset-bottom))}
 .td-qb{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);border-radius:10px;min-width:40px;min-height:36px;
   font-size:17px;line-height:1;padding:0 6px;cursor:pointer;color:#fff}
 .td-qb:hover{background:rgba(255,255,255,.24)}
+
+/* ===== פאס UX/UI 4.9 — הירו בזמן הטיול, תזכורות שעברו, סרגלי היומן והמקומות, טבלת התקציב בנייד ===== */
+.rem-past{margin-top:14px;border:1px dashed var(--line);border-radius:var(--r);background:transparent}
+.rem-past>summary{cursor:pointer;padding:12px 14px;font-weight:700;color:var(--muted);list-style:none;display:flex;align-items:center;gap:8px;min-height:46px}
+.rem-past>summary::-webkit-details-marker{display:none}
+.rem-past>summary::after{content:'▾';margin-inline-start:auto;transition:transform .2s}
+.rem-past[open]>summary::after{transform:rotate(180deg)}
+.rem-past-in{padding:0 10px 10px}
+.rem-past .rem{opacity:.72}
+.rem-past .rem:hover,.rem-past .rem:focus-within{opacity:1}
+.rem-empty{color:var(--muted);font-size:14px;padding:14px 4px}
+.cost-sub{display:none}
+.doc-tbl tr.spend-day td[dir="ltr"]{white-space:nowrap}
+#openToday.today-on{background:var(--tw);color:#fff;border-color:var(--tw);font-weight:700}
+@media(max-width:760px){
+  /* הירו: בזמן הטיול תא אחד + טקסט בשורה, ובלי כותרת המשנה — חוסך ~90px מעל התוכן */
+  .countdown.mid{display:flex;flex-wrap:nowrap;align-items:center;gap:12px;margin:14px 0 2px}
+  .countdown.mid .cd-cell{flex:0 0 auto;padding:8px 14px}
+  .countdown.mid .cd-live{text-align:right;margin:0;flex:1 1 auto;min-width:0}
+  .countdown.post{display:block}
+  body.mid-trip .hero-sub{display:none}
+  /* סרגל היומן: הבורר ברוחב מלא, שלושת הכפתורים בשורה אחת */
+  .jump-day{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .jump-day select,#openToday{grid-column:1/-1}
+  .jump-day button{padding-inline:6px;font-size:14px}
+  /* סרגל המקומות הדביק: הצ'יפים בשורה נגללת במקום שלוש שורות, כדי שלא יתפוס חצי מסך */
+  .pl-tools{padding:10px 12px}
+  .pl-filters{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;margin-inline:-12px;padding-inline:12px;scroll-snap-type:x proximity}
+  .pl-filters::-webkit-scrollbar{display:none}
+  .pl-f{flex:0 0 auto;scroll-snap-align:start}
+  .pl-hint{margin-top:7px;font-size:12px}
+  #plSearch{min-height:44px;padding:10px 40px 10px 12px}
+  .pl-clear{top:17px}
+  /* טבלת התקציב: שלוש עמודות — הספק, ההערה והסכום המקומי יורדים לשורות משנה */
+  .cost-tbl th:nth-child(2),.cost-tbl td:nth-child(2),
+  .cost-tbl th:nth-child(4),.cost-tbl td:nth-child(4),
+  .cost-tbl th:nth-child(5),.cost-tbl td:nth-child(5){display:none}
+  .cost-sub{display:block;font-weight:400;font-size:12px;color:var(--muted);margin-top:2px;line-height:1.35}
+  td[dir="ltr"] .cost-sub{text-align:left;white-space:nowrap}
+  .cost-tbl td.cost-ops{padding:5px 4px}
+}
 
 /* ===== מצב כהה עבור רכיבי העריכה החדשים ===== */
 @media (prefers-color-scheme: dark){
@@ -2611,7 +2655,7 @@ body.has-upd .hm-toast{bottom:calc(82px + env(safe-area-inset-bottom))}
       <div id="costSum"></div>
       <details class="sub-info"><summary>🧾 הפירוט המלא · אפשר לערוך <span class="chev">▾</span></summary><div class="body">
       <div class="hm-tools"><button type="button" class="btn primary" id="costAdd">➕ שורת הוצאה</button><button type="button" class="btn ghost" id="costReset" hidden>↺ שחזור הטבלה המקורית</button><span class="hm-note" id="costNote"></span></div>
-      <div class="tbl-wrap"><table class="doc-tbl"><thead><tr><th>סוג הוצאה</th><th>ספק</th><th>₪</th><th>במטבע מקומי</th><th>הערות</th><th></th></tr></thead><tbody id="costRows"><tr data-cid="k1" data-cat="flight" data-name="טיסה בינלאומית" data-who="Emirates" data-ils="9759" data-local="" data-note=""></tr><tr data-cid="k2" data-cat="flight" data-name="טיסת פנים" data-who="Tigerair Taiwan" data-ils="1510" data-local="" data-note=""></tr><tr data-cid="k3" data-cat="car" data-name="רכב בטאיוואן" data-who="IWS" data-ils="2520" data-local="" data-note="14 ימים"></tr><tr data-cid="k4" data-cat="train" data-name="רכבת קיוטו→טאקיאמה" data-who="JR · 26.9" data-ils="505" data-local="" data-note="Nozomi 2 + Hida 5"></tr><tr data-cid="k5" data-cat="train" data-name="רכבת מאצומוטו→טוקיו" data-who="Klook · 30.9" data-ils="282" data-local="" data-note="Azusa 30 · QHY636100"></tr><tr data-cid="k6" data-cat="hotel" data-name="מלון טאיפיי 1" data-who="JUST SLEEP" data-ils="1888" data-local="" data-note=""></tr><tr data-cid="k7" data-cat="hotel" data-name="מלון ואיאו" data-who="OA" data-ils="790" data-local="" data-note=""></tr><tr data-cid="k8" data-cat="hotel" data-name="מלון דולאן וטאיטונג" data-who="GAYA" data-ils="1290" data-local="13,640 TWD" data-note="💵 לבדוק — ייתכן מזומן במקום"></tr><tr data-cid="k9" data-cat="hotel" data-name="מלון קנטינג" data-who="DUA" data-ils="2016" data-local="20,570 TWD" data-note=""></tr><tr data-cid="k10" data-cat="hotel" data-name="מלון אלישאן 1" data-who="CHINSHAN" data-ils="720" data-local="7,560 TWD" data-note="💵 לבדוק — ייתכן מזומן במקום"></tr><tr data-cid="k11" data-cat="hotel" data-name="מלון אלישאן 2" data-who="HINOKI B&amp;B" data-ils="390" data-local="4,200 TWD" data-note="💵 מזומן במקום"></tr><tr data-cid="k12" data-cat="hotel" data-name="מלון סאן מון לייק" data-who="WYNDHAM" data-ils="1760" data-local="17,961 TWD" data-note=""></tr><tr data-cid="k13" data-cat="hotel" data-name="מלון טאיפיי 2" data-who="ROADERS" data-ils="445" data-local="4,516 TWD" data-note=""></tr><tr data-cid="k14" data-cat="hotel" data-name="מלון אוסקה" data-who="CROSS" data-ils="1266" data-local="403 USD" data-note=""></tr><tr data-cid="k15" data-cat="hotel" data-name="מלון קיוטו" data-who="VISCHIO" data-ils="1532" data-local="486 USD" data-note=""></tr><tr data-cid="k16" data-cat="hotel" data-name="מלון האלפים היפנים" data-who="MERCURE" data-ils="2016" data-local="103,653 JPY" data-note="+ מס אונסן ~25 ₪"></tr><tr data-cid="k17" data-cat="hotel" data-name="מלון מאצומוטו" data-who="SHOHO" data-ils="1260" data-local="63,610 JPY" data-note="כולל ארוחת קאיסקי"></tr><tr data-cid="k18" data-cat="hotel" data-name="מלון טוקיו" data-who="WASHINGTON" data-ils="3997" data-local="" data-note="שובר במייל"></tr><tr data-cid="k19" data-cat="other" data-name="ביטוח נסיעות" data-who="מנורה מבטחים" data-ils="857" data-local="286.68 USD" data-note="TOP TRAVEL · 143.34$ לכל אחד"></tr></tbody></table></div>
+      <div class="tbl-wrap"><table class="doc-tbl cost-tbl"><thead><tr><th>סוג הוצאה</th><th>ספק</th><th>₪</th><th>במטבע מקומי</th><th>הערות</th><th></th></tr></thead><tbody id="costRows"><tr data-cid="k1" data-cat="flight" data-name="טיסה בינלאומית" data-who="Emirates" data-ils="9759" data-local="" data-note=""></tr><tr data-cid="k2" data-cat="flight" data-name="טיסת פנים" data-who="Tigerair Taiwan" data-ils="1510" data-local="" data-note=""></tr><tr data-cid="k3" data-cat="car" data-name="רכב בטאיוואן" data-who="IWS" data-ils="2520" data-local="" data-note="14 ימים"></tr><tr data-cid="k4" data-cat="train" data-name="רכבת קיוטו→טאקיאמה" data-who="JR · 26.9" data-ils="505" data-local="" data-note="Nozomi 2 + Hida 5"></tr><tr data-cid="k5" data-cat="train" data-name="רכבת מאצומוטו→טוקיו" data-who="Klook · 30.9" data-ils="282" data-local="" data-note="Azusa 30 · QHY636100"></tr><tr data-cid="k6" data-cat="hotel" data-name="מלון טאיפיי 1" data-who="JUST SLEEP" data-ils="1888" data-local="" data-note=""></tr><tr data-cid="k7" data-cat="hotel" data-name="מלון ואיאו" data-who="OA" data-ils="790" data-local="" data-note=""></tr><tr data-cid="k8" data-cat="hotel" data-name="מלון דולאן וטאיטונג" data-who="GAYA" data-ils="1290" data-local="13,640 TWD" data-note="💵 לבדוק — ייתכן מזומן במקום"></tr><tr data-cid="k9" data-cat="hotel" data-name="מלון קנטינג" data-who="DUA" data-ils="2016" data-local="20,570 TWD" data-note=""></tr><tr data-cid="k10" data-cat="hotel" data-name="מלון אלישאן 1" data-who="CHINSHAN" data-ils="720" data-local="7,560 TWD" data-note="💵 לבדוק — ייתכן מזומן במקום"></tr><tr data-cid="k11" data-cat="hotel" data-name="מלון אלישאן 2" data-who="HINOKI B&amp;B" data-ils="390" data-local="4,200 TWD" data-note="💵 מזומן במקום"></tr><tr data-cid="k12" data-cat="hotel" data-name="מלון סאן מון לייק" data-who="WYNDHAM" data-ils="1760" data-local="17,961 TWD" data-note=""></tr><tr data-cid="k13" data-cat="hotel" data-name="מלון טאיפיי 2" data-who="ROADERS" data-ils="445" data-local="4,516 TWD" data-note=""></tr><tr data-cid="k14" data-cat="hotel" data-name="מלון אוסקה" data-who="CROSS" data-ils="1266" data-local="403 USD" data-note=""></tr><tr data-cid="k15" data-cat="hotel" data-name="מלון קיוטו" data-who="VISCHIO" data-ils="1532" data-local="486 USD" data-note=""></tr><tr data-cid="k16" data-cat="hotel" data-name="מלון האלפים היפנים" data-who="MERCURE" data-ils="2016" data-local="103,653 JPY" data-note="+ מס אונסן ~25 ₪"></tr><tr data-cid="k17" data-cat="hotel" data-name="מלון מאצומוטו" data-who="SHOHO" data-ils="1260" data-local="63,610 JPY" data-note="כולל ארוחת קאיסקי"></tr><tr data-cid="k18" data-cat="hotel" data-name="מלון טוקיו" data-who="WASHINGTON" data-ils="3997" data-local="" data-note="שובר במייל"></tr><tr data-cid="k19" data-cat="other" data-name="ביטוח נסיעות" data-who="מנורה מבטחים" data-ils="857" data-local="286.68 USD" data-note="TOP TRAVEL · 143.34$ לכל אחד"></tr></tbody></table></div>
       <p class="tool-note">הסכומים במטבע מקומי הם מה שיופיע בפועל בחיוב או בקופה — שווה להצליב מול הממיר למעלה לפני שמשלמים. שלוש המלונות שמסומנים ב-💵 הם הסיבה להחזיק מזומן ב-TWD: בסך הכל עד <strong dir="ltr">25,400 TWD</strong> (כ-2,400 ₪) — כדאי לוודא מראש מול GAYA ו-CHINSHAN אם התשלום כבר בוצע דרך האגודה.</p>
       </div></details>
       <p class="tool-note" id="costFieldNote">עוד לתשלום בשטח (הערכות מהמסמך, לזוג): שיעור גלישה בוואיאאו ~360 ₪ · שיעור גלישה בדולאן ~360–410 ₪ · שנורקלינג בהוביהו ~85–120 ₪ · אופניים חשמליים ~100 ₪ · רכבת Rap:t ~74 ₪ · אוטובוס לשירקאווה-גו (נקנה במקום) · Shibuya Sky ~110–130 ₪ · teamLab ~190–240 ₪ · סקייטרי ~100–130 ₪ · טירת ניג׳ו ~66 ₪ · קמקורה הלוך-חזור ~96 ₪ · אוטובוס להנדה ~70 ₪ · מס אונסן בטאקיאמה ~25 ₪. בנוסף: רכבות עירוניות, אוכל, קניות ודלק.</p>
@@ -3058,7 +3102,16 @@ var SECTIONS=['rem','notes','places','items','ticks','costs','spend','cash'];
 function jget(k,d){try{var v=JSON.parse(localStorage.getItem(k));return v==null?d:v}catch(e){return d}}
 function jset(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
 function blank(){var o={v:1,updated:0};SECTIONS.forEach(function(s){o[s]={}});return o}
-function norm(o){o=o||{};if(!o.v)o.v=1;SECTIONS.forEach(function(s){if(!o[s]||typeof o[s]!=='object')o[s]={}});return o}
+function norm(o){
+  if(!o||typeof o!=='object'||Array.isArray(o))o={};
+  if(!o.v)o.v=1;
+  SECTIONS.forEach(function(s){
+    if(!o[s]||typeof o[s]!=='object'||Array.isArray(o[s]))o[s]={};
+    /* רשומה שאינה אובייקט (גיבוי ערוך ביד) הייתה מפילה את הרינדור ב-.del */
+    Object.keys(o[s]).forEach(function(k){ if(!o[s][k]||typeof o[s][k]!=='object')delete o[s][k] });
+  });
+  return o;
+}
 
 var data=norm(jget(KEY,blank()));
 var listeners=[];
@@ -3106,16 +3159,16 @@ function mergeInto(base,incoming){
 }
 
 /* --- סנכרון: משיכה תקופתית ודחיפה מושהית --- */
-var syncState='local', pushTimer=null, pulling=false;
+var syncState='local', pushTimer=null, pulling=false, dirty=false;
 function setSync(state,msg){syncState=state;paintSync(msg)}
 /* פעולות שרצות פעם אחת אחרי המשיכה הראשונה שהצליחה — למשל תיקון נתונים ישנים.
    לא לפני: מיגרציה על עותק מקומי מיושן תדרוס עריכה טרייה מהמכשיר השני. */
 var firstPullFns=[], pulledOnce=false;
 function onFirstPull(fn){ if(pulledOnce)fn(); else firstPullFns.push(fn) }
-function req(method,body){
+function req(method,body,keepalive){
   var ctl=new AbortController(), to=setTimeout(function(){ctl.abort()},9000);
   return fetch(SYNC.url,{
-    method:method, signal:ctl.signal, cache:'no-store',
+    method:method, signal:ctl.signal, cache:'no-store', keepalive:!!keepalive,
     headers:{'Content-Type':'application/json','X-Trip-Key':SYNC.key},
     body:body?JSON.stringify(body):undefined
   }).then(function(r){
@@ -3127,22 +3180,51 @@ function pull(){
   if(pulling||!navigator.onLine)return Promise.resolve(false);
   pulling=true;
   return req('GET').then(function(remote){
-    var changed=mergeInto(data,remote&&remote.data?remote.data:remote);
+    var rd=remote&&remote.data?remote.data:remote;
+    var changed=mergeInto(data,rd);
     if(changed){jset(KEY,data);fire()}
     setSync('ok');
     if(!pulledOnce){ pulledOnce=true; firstPullFns.forEach(function(f){try{f()}catch(e){}}) }
+    /* דחיפה שנכשלה (הטלפון ננעל לפני שהטיימר רץ, timeout ברשת של מלון) לא חזרה
+       על עצמה, והמשיכה הבאה סימנה "מסונכרן" למרות שהעריכה נשארה מקומית. עכשיו כל
+       משיכה בודקת אם יש אצלנו פריט שהשרת לא מכיר או ישן אצלו, ודוחפת שוב. */
+    if(dirty||needsPush(rd))schedulePush();
     return changed;
   }).catch(function(){ setSync(navigator.onLine?'off':'off'); return false; })
     .finally(function(){pulling=false});
 }
+function needsPush(remote){
+  remote=norm(remote);
+  return SECTIONS.some(function(sec){
+    return Object.keys(data[sec]).some(function(k){
+      var r=remote[sec][k]; return !r||(data[sec][k].ts||0)>(r.ts||0);
+    });
+  });
+}
 function schedulePush(){
+  dirty=true;
   clearTimeout(pushTimer);
   pushTimer=setTimeout(pushNow,1200);
 }
-function pushNow(){
+function pushNow(keepalive){
   if(!navigator.onLine)return setSync('off');
-  req('PUT',{data:data}).then(function(){setSync('ok')}).catch(function(){setSync('off')});
+  clearTimeout(pushTimer);
+  dirty=false;
+  return req('PUT',{data:data},keepalive).then(function(res){
+    /* השרת מחזיר את המסמך הממוזג — קולטים מיד מה שהמכשיר השני דחף בינתיים */
+    var rd=res&&res.data; if(rd&&mergeInto(data,rd)){jset(KEY,data);fire()}
+    setSync('ok');
+  }).catch(function(){ dirty=true; setSync('off') });
 }
+/* יציאה מהאפליקציה עם עריכה שעוד לא נדחפה — דוחפים מיד, ב-keepalive שממשיך גם
+   אחרי שהדף נסגר (מוגבל ל-64KB, ולכן רק אם המסמך קטן מספיק) */
+function flushPush(){
+  if(!dirty||!navigator.onLine)return;
+  var small=true; try{ small=JSON.stringify(data).length<60000 }catch(e){}
+  pushNow(small);
+}
+document.addEventListener('visibilitychange',function(){ if(document.hidden)flushPush() });
+addEventListener('pagehide',flushPush);
 
 /* ---------- דיאלוג עריכה ---------- */
 var dlg=document.createElement('dialog');
@@ -3361,7 +3443,11 @@ function renderRem(){
   renderRemTop();
   if(!remWrap)return;
   var list=remList();
-  remWrap.innerHTML=list.map(function(r){
+  /* מה שעבר זמנו יורד לקבוצה מקופלת בסוף — בזמן הטיול נצברות תזכורות של "לפני היציאה"
+     שממלאות את המסך הראשון בלי סיבה. הסדר בתוך כל קבוצה נשאר לפי תאריך. */
+  var past=[], ahead=[];
+  list.forEach(function(r){ var b=badgeFor(r.due); (b&&b[0]==='late'?past:ahead).push(r) });
+  var card=function(r){
     var b=badgeFor(r.due);
     var due=r.due?' data-due="'+esc(r.due)+'"':'';
     return '<div class="rem '+esc(r.cls||'info')+(b&&(b[0]==='today')?' due-now':'')+'" data-rid="'+esc(r.id)+'"'+due+'>'+
@@ -3375,7 +3461,12 @@ function renderRem(){
         '<button type="button" class="iconbtn" data-act="edit" title="עריכה" aria-label="עריכת התזכורת">✏️</button>'+
         '<button type="button" class="iconbtn danger" data-act="del" title="מחיקה" aria-label="מחיקת התזכורת">🗑️</button>'+
       '</div></div>';
-  }).join('');
+  };
+  var pastEl=document.getElementById('remPast'), wasOpen=!!(pastEl&&pastEl.open);
+  remWrap.innerHTML=ahead.map(card).join('')+
+    (ahead.length?'':'<p class="rem-empty">אין תזכורות פתוחות — הכל סגור 🎉</p>')+
+    (past.length?'<details class="rem-past" id="remPast"'+(wasOpen?' open':'')+'><summary>✓ עבר זמנן · '+past.length+
+      (past.length===1?' תזכורת':' תזכורות')+'</summary><div class="rem-past-in">'+past.map(card).join('')+'</div></details>':'');
   /* סופרים מה שנראה עכשיו, לא את מצבות המחיקה — הן נשארות באחסון לצורך הסנכרון */
   var n=list.filter(function(r){return r.mine||r.edited}).length;
   var note=document.getElementById('remNote'), rst=document.getElementById('remReset');
@@ -3500,14 +3591,22 @@ function chkProgress(){
   if(bar)bar.style.width=(bs.length?100*done/bs.length:0)+'%';
   if(lbl)lbl.textContent=done+' / '+bs.length;
 }
+function legacyTick(k){ try{ return localStorage.getItem('hm_'+k)==='1' }catch(e){ return false } }
 function syncTicksToDom(){
+  var seeded=false;
   [].forEach.call(document.querySelectorAll('label.chk input'),function(b){
     var k=b.getAttribute('data-k'), t=data.ticks[k];
     if(t&&typeof t.on==='boolean'&&b.checked!==t.on){
       b.checked=t.on;
       try{localStorage.setItem('hm_'+k,t.on?'1':'0')}catch(e){}
+    }else if(!t&&k&&legacyTick(k)){
+      /* סימון ישן שנשמר רק במכשיר (hm_<k>) לפני שהיה סנכרון — מכניסים למאגר
+         עם ts עתיק, כך שכל סימון אמיתי מהמכשיר השני ינצח אותו. נקרא מ-localStorage
+         ולא מ-b.checked, כי הסקריפט הראשי מסמן את התיבות רק אחרי שהשכבה הזו רצה */
+      data.ticks[k]={on:true,ts:1}; b.checked=true; seeded=true;
     }
   });
+  if(seeded){ data.updated=Date.now(); jset(KEY,data); schedulePush(); }
 }
 document.addEventListener('change',function(e){
   var b=e.target;
@@ -3555,11 +3654,17 @@ function initPlaces(){
   onChange(renderPlaces);
   renderPlaces();
 }
+/* רינדור מחדש (גם ממשיכה כל 45 שניות) בנה את הכרטיסים בלי הסינון הפעיל —
+   מקומות שסוננו הופיעו שוב באמצע חיפוש. מפעילים שוב את החיפוש של הסקריפט הראשי. */
+function replayPlSearch(){
+  var box=document.getElementById('plSearch'), f=document.querySelector('.pl-f.on');
+  if(box&&(box.value||(f&&f.getAttribute('data-k')!=='all')))box.dispatchEvent(new Event('input'));
+}
 function renderPlaces(){
   var sec=document.getElementById('minePlaces');
   if(!sec)return;
   var ids=Object.keys(data.places).filter(function(k){return !data.places[k].del&&data.places[k].name});
-  if(!ids.length){sec.hidden=true;sec.innerHTML='';refreshPlCount();return}
+  if(!ids.length){sec.hidden=true;sec.innerHTML='';refreshPlCount();replayPlSearch();return}
   sec.hidden=false; sec.classList.remove('hide');
   sec.innerHTML='<h3><span class="pl-n">★</span><span class="pl-t">המקומות שלנו</span><small>'+ids.length+
     ' מקומות שהוספתם · אפשר לערוך ולמחוק</small></h3><div class="place-list">'+
@@ -3574,7 +3679,7 @@ function renderPlaces(){
         '<button type="button" class="iconbtn e2" data-pl="edit" data-id="'+esc(k)+'" title="עריכה" aria-label="עריכת המקום">✏️</button>'+
         '<button type="button" class="iconbtn danger" data-pl="del" data-id="'+esc(k)+'" title="מחיקה" aria-label="מחיקת המקום">🗑️</button></div>';
     }).join('')+'</div>';
-  refreshPlCount();
+  refreshPlCount(); replayPlSearch();
 }
 function refreshPlCount(){
   var box=document.getElementById('plSearch'), cnt=document.getElementById('plCount');
@@ -3794,6 +3899,8 @@ function initBackup(){
     rd.onload=function(){
       try{
         var inc=JSON.parse(rd.result);
+        if(inc&&inc.data&&!inc.rem)inc=inc.data;   /* תשובת שרת שנשמרה כקובץ */
+        if(!inc||typeof inc!=='object'||!SECTIONS.some(function(k){return inc[k]&&typeof inc[k]==='object'}))throw new Error('not a backup');
         mergeInto(data,inc);
         jset(KEY,data); fire(); schedulePush();
         openDlg({title:'הגיבוי נטען',message:'השינויים מהקובץ מוזגו עם מה שכבר היה כאן — הגרסה החדשה יותר של כל פריט ניצחה.',okText:'סגירה',fields:[]});
@@ -3894,10 +4001,13 @@ function renderCosts(){
     var v=costNum(r.ils); total+=v;
     var tag = r.mine ? ' <span class="rem-mine">\u05e9\u05dc\u05e0\u05d5</span>'
             : r.edited ? ' <span class="rem-mine">\u05e0\u05e2\u05e8\u05da</span>' : '';
+    /* בנייד הטבלה מתקפלת לשלוש עמודות: הספק וההערה יורדים לשורת משנה מתחת לשם,
+       והסכום המקומי מתחת לשקלים (.cost-sub מוצג רק ב-≤760px) */
+    var sub=[r.who,r.note].filter(Boolean).map(esc).join(' · ');
     return '<tr data-crid="'+esc(r.id)+'">'+
-      '<td>'+esc(r.name)+tag+'</td>'+
+      '<td>'+esc(r.name)+tag+(sub?'<small class="cost-sub">'+sub+'</small>':'')+'</td>'+
       '<td dir="ltr">'+esc(r.who)+'</td>'+
-      '<td dir="ltr"><b>'+(v?costMoney(v):'')+'</b></td>'+
+      '<td dir="ltr"><b>'+(v?costMoney(v):'')+'</b>'+(r.local?'<small class="cost-sub">'+esc(r.local)+'</small>':'')+'</td>'+
       '<td dir="ltr">'+esc(r.local)+'</td>'+
       '<td>'+esc(r.note)+'</td>'+
       '<td class="cost-ops">'+
@@ -3948,8 +4058,10 @@ document.addEventListener('click',function(e){
 /* ============================================================
    9. פאנל "היום", חיפוש ביומן ומזג אוויר
    ============================================================ */
-var DAY1=new Date('2026-09-02T00:00:00+08:00'), TRIP_DAYS=36;
-function tripDay(){ var d=Math.floor((Date.now()-DAY1)/86400000)+1; return (d>=1&&d<=TRIP_DAYS)?d:null }
+var TRIP_DAYS=36;
+/* לפי התאריך המקומי של המכשיר, כמו today10() — קודם היה מעוגן ל-+08:00, וביפן
+   (+09:00) בין חצות ל-01:00 הפאנל הראה את אתמול בעוד ההוצאות כבר על היום החדש */
+function tripDay(){ return tripDayOf(today10()) }
 
 /* איזה מלון פעיל ביום מסוים — לפי טווח הימים שכתוב בעצירות המפה */
 function stopForDay(n){
@@ -4049,12 +4161,18 @@ function paintTdWx(rec){
   var box=document.getElementById('tdWx');
   if(!box)return;
   if(!rec||!rec.daily){ box.innerHTML='<small>🌤️ מזג האוויר</small><b>—</b><small>אין נתונים אופליין</small>'; return }
-  var d=rec.daily, w=wxLabel(d.weather_code[0]);
-  var sun=sunLine(d,0);
-  box.innerHTML='<small>🌤️ מזג האוויר</small><b>'+w[0]+' '+Math.round(d.temperature_2m_max[0])+'° / '+
-    Math.round(d.temperature_2m_min[0])+'°</b><small>'+esc(w[1])+
-    (d.precipitation_probability_max&&d.precipitation_probability_max[0]!=null?
-      ' · סיכוי גשם '+d.precipitation_probability_max[0]+'%':'')+'</small>'+
+  var d=rec.daily;
+  /* רשומה מהמטמון מאתמול: daily[0] הוא של אתמול. אם יש בה את היום — מציגים אותו;
+     אחרת אומרים במפורש שהתחזית ישנה במקום להציג אותה כ"היום" */
+  var k=0, t=today10();
+  if(d.time&&d.time[0]!==t){ var kk=d.time.indexOf(t); if(kk>0)k=kk; }
+  var stale=!!(d.time&&d.time[k]!==t), w=wxLabel(d.weather_code[k]), sun=sunLine(d,k);
+  var dm=String(d.time&&d.time[k]||'');
+  box.innerHTML='<small>🌤️ מזג האוויר'+(stale?' · תחזית ישנה':'')+'</small><b>'+w[0]+' '+Math.round(d.temperature_2m_max[k])+'° / '+
+    Math.round(d.temperature_2m_min[k])+'°</b><small>'+esc(w[1])+
+    (d.precipitation_probability_max&&d.precipitation_probability_max[k]!=null?
+      ' · סיכוי גשם '+d.precipitation_probability_max[k]+'%':'')+
+    (stale&&dm.length===10?' · מ-'+esc(dm.slice(8,10).replace(/^0/,'')+'.'+dm.slice(5,7).replace(/^0/,'')):'')+'</small>'+
     (sun?'<small class="td-sun">'+esc(sun)+'</small>':'');
 }
 
@@ -4265,7 +4383,7 @@ function setPayFilter(v){
   if(det&&det.scrollIntoView)det.scrollIntoView({behavior:'smooth',block:'start'});
 }
 /* אמצעי התשלום בפועל של רישום: מה שנשמר, ואם אין — ניחוש. auto = לא אושר ידנית */
-function payOf(s){ return {pay:s.pay||guessPay(s.txt,s.cat), auto:!s.pay||!!s.payAuto} }
+function payOf(s){ var p=s.pay==='card'||s.pay==='cash'?s.pay:guessPay(s.txt,s.cat); return {pay:p, auto:!s.pay||!!s.payAuto} }
 var SPEND_FALLBACK={TWD:10.59,JPY:53.61,USD:0.335,ILS:1};
 
 function spendRates(){
@@ -4276,6 +4394,7 @@ function spendRates(){
 function toIls(amt,cur){
   if(cur==='ILS')return amt;
   var r=spendRates()[cur];
+  if(!(isFinite(r)&&r>0))r=SPEND_FALLBACK[cur];   /* שער חסר/NaN היה שומר ils:0 בשקט */
   return (r&&r>0)?amt/r:0;
 }
 function catLabel(k){
@@ -4364,7 +4483,7 @@ function cashState(d){
     if(s.cur===c.cur)spent+=(+s.amt||0); else other++;
   });
   var amt=+c.amt, left=amt-spent;
-  return {d:d,cur:c.cur,amt:amt,spent:spent,left:left,other:other,pct:Math.min(100,Math.round(spent/amt*100))};
+  return {d:d,cur:c.cur,amt:amt,spent:spent,left:left,other:other,pct:Math.max(0,Math.min(100,Math.round(spent/amt*100)))};
 }
 function openCashDlg(d){
   d=d||today10(); var c=cashOf(d);
@@ -4413,7 +4532,7 @@ function openSpendDlg(preset){
   var seed=preset.cat?{cat:preset.cat,pay:guessPay('',preset.cat)}:null;
   openDlg({title:'הוצאה חדשה'+(preset.cat?' · '+catLabel(preset.cat):''),okText:'הוספה',fields:spendFields(seed),onOk:function(v){
     var vals=spendVals(v,null);
-    if(!vals.amt)return;
+    if(!vals.amt){ toast('לא נשמר — חסר סכום'); return }
     if(!vals.txt)vals.txt=catLabel(vals.cat).replace(/^\S+\s/,'');
     put('spend','s'+Date.now().toString(36)+Math.random().toString(36).slice(2,5),vals);
     var d=document.getElementById('spendDetails'); if(d)d.open=true;
@@ -4596,7 +4715,7 @@ document.addEventListener('click',function(e){
   askWho().then(function(w){ if(!w)return;
     openDlg({title:'עריכת הוצאה',fields:spendFields(cur),onOk:function(v){
       var vals=spendVals(v,cur);
-      if(!vals.amt)return;
+      if(!vals.amt){ toast('לא נשמר — חסר סכום'); return }
       put('spend',id,vals);
       toast('עודכן: '+vals.txt+' · '+payLabel(vals.pay)+feeNote(vals));
     }});
@@ -4617,7 +4736,7 @@ syncTicksToDom();
 pull();
 setInterval(function(){ if(!document.hidden)pull() },SYNC.every);
 document.addEventListener('visibilitychange',function(){ if(!document.hidden)pull() });
-addEventListener('online',function(){ pull().then(pushNow) });
+addEventListener('online',function(){ pull().then(function(){ if(dirty)pushNow() }) });
 addEventListener('offline',function(){ setSync('off') });
 
 })();
@@ -4631,6 +4750,7 @@ const hmScroll={};
 function show(id,push){
   const cur=document.querySelector('section.pane.on');
   if(cur&&cur.id!==id)hmScroll[cur.id]=window.scrollY;   // לזכור איפה היינו
+  else if(cur&&cur.id===id&&push)hmScroll[id]=0;         // לחיצה על הטאב הפעיל = לראש הפאנל
   tabs.forEach(t=>{const on=t.dataset.pane===id;t.classList.toggle('on',on);
     if(on)t.setAttribute('aria-current','page');else t.removeAttribute('aria-current')});
   panes.forEach(p=>p.classList.toggle('on',p.id===id));
@@ -4649,8 +4769,9 @@ tabs.forEach(t=>t.addEventListener('click',()=>show(t.dataset.pane,true)));
 document.addEventListener('click',e=>{
   const b=e.target.closest&&e.target.closest('[data-gotab]');
   if(!b)return;
+  /* show() משחזר את מיקום הגלילה של הטאב בפריים הבא ודורס scrollTo — מאפסים לפני */
+  hmScroll[b.getAttribute('data-gotab')]=0;
   show(b.getAttribute('data-gotab'),true);
-  window.scrollTo({top:0});
 });
 // keep the active tab in view inside the scrolling tab bar (matters on phones)
 function centerTab(){
@@ -4680,12 +4801,16 @@ function pad(n){return String(n).padStart(2,'0')}
 function tickCd(){
   const el=document.getElementById('countdown');if(!el)return;
   const now=new Date();
+  /* מחלקת שלב על המונה ועל ה-body: לפני / באמצע / אחרי — ה-CSS של הנייד מקצר את
+     ההירו בזמן הטיול (תא אחד במקום רשת של ארבעה, בלי כותרת המשנה) */
+  const phase=now<DEP?'pre':(now<RET?'mid':'post');
+  if(!el.classList.contains(phase)){el.className='countdown '+phase;document.body.classList.toggle('mid-trip',phase==='mid')}
   if(now<DEP){
     let s=Math.floor((DEP-now)/1000);
     const d=Math.floor(s/86400);s-=d*86400;const hh=Math.floor(s/3600);s-=hh*3600;const mm=Math.floor(s/60);const ss=s-mm*60;
     el.innerHTML=`<div class="cd-cell"><b>${d}</b><small>ימים</small></div><div class="cd-cell"><b>${pad(hh)}</b><small>שעות</small></div><div class="cd-cell"><b>${pad(mm)}</b><small>דקות</small></div><div class="cd-cell"><b>${pad(ss)}</b><small>שניות</small></div><div class="cd-live">עד ההמראה מנתב"ג ✈️</div>`;
   }else if(now<RET){
-    const day=Math.min(36,Math.floor((now-new Date('2026-09-02T00:00:00+08:00'))/86400000)+1);
+    const day=Math.min(36,Math.floor((now-new Date(2026,8,2))/86400000)+1);
     el.innerHTML=`<div class="cd-cell"><b>${day}</b><small>מתוך 36</small></div><div class="cd-live">אתם באמצע ירח הדבש! 🥂 יום ${day} — תבדקו את היומן</div>`;
   }else{
     el.innerHTML='<div class="cd-live">חזרתם הביתה — היה חלום 🏠</div>';
@@ -4703,7 +4828,7 @@ if(daySel){
   document.getElementById('openToday').addEventListener('click',()=>{
     const now=new Date();
     if(now>=DEP&&now<=RET){
-      const day=Math.min(36,Math.max(1,Math.floor((now-new Date('2026-09-02T00:00:00+08:00'))/86400000)+1));
+      const day=Math.min(36,Math.max(1,Math.floor((now-new Date(2026,8,2))/86400000)+1));
       const el=document.getElementById('day'+day);
       if(el){el.open=true;el.scrollIntoView({behavior:'smooth'})}
     }else{const d1=document.getElementById('day1');if(d1){d1.open=true;d1.scrollIntoView({behavior:'smooth',block:'start'});}hmHint();}
@@ -4713,7 +4838,7 @@ if(daySel){
 }
 
 // ---- today's day: badge + inline hint (replaces a blocking alert) ----
-const HM_DAY1=new Date('2026-09-02T00:00:00+08:00');
+const HM_DAY1=new Date(2026,8,2);
 function hmDayNow(){const d=Math.floor((Date.now()-HM_DAY1)/86400000)+1;return (d>=1&&d<=36)?d:null}
 function hmHint(){
   const bar=document.querySelector('.jump-day'); if(!bar)return;
@@ -4734,7 +4859,7 @@ function hmHint(){
     head.appendChild(document.createTextNode(' '));head.appendChild(b);
   }
   const btn=document.getElementById('openToday');
-  if(btn)btn.textContent='📍 היום שלנו · יום '+d;
+  if(btn){btn.textContent='📍 היום שלנו · יום '+d;btn.classList.add('today-on')}
 })();
 
 // ---- offline: cache the whole app so it opens with no signal ----
@@ -4758,15 +4883,23 @@ if('serviceWorker' in navigator){
   navigator.serviceWorker.addEventListener('message',e=>{
     if(e.data&&e.data.type==='CONTENT_UPDATED')hmUpdateBanner(null);
   });
-  let hmReloading=false;
+  /* בביקור הראשון clients.claim() משנה controller מ-null ל-SW — זה לא עדכון,
+     ורענון כאן קטע את המשתמש באמצע גלילה או דיאלוג שנייה אחרי הטעינה */
+  const hmHadCtl=!!navigator.serviceWorker.controller;
   navigator.serviceWorker.addEventListener('controllerchange',()=>{
-    if(hmReloading)return; hmReloading=true; location.reload();
+    if(hmReloading)return;
+    if(!hmHadCtl&&!hmWantReload)return;
+    hmReloading=true; location.reload();
   });
 }
+let hmReloading=false, hmWantReload=false;
 /* באנר "יש גרסה חדשה" — מחליף את הצורך לרענן פעמיים */
 function hmUpdateBanner(worker){
-  if(document.getElementById('hmUpd'))return;
+  const old=document.getElementById('hmUpd');
+  /* CONTENT_UPDATED יכול להגיע לפני שה-SW החדש סיים להתקין — מצרפים אותו לבאנר הקיים */
+  if(old){ if(worker&&!old._worker)old._worker=worker; return; }
   const bar=document.createElement('div');
+  bar._worker=worker;
   bar.id='hmUpd'; bar.setAttribute('role','status');
   bar.innerHTML='<span>✨ יש גרסה חדשה של האתר</span>'+
     '<button type="button" id="hmUpdGo">רענון</button>'+
@@ -4776,8 +4909,9 @@ function hmUpdateBanner(worker){
   document.body.classList.add('has-upd');
   document.getElementById('hmUpdGo').addEventListener('click',()=>{
     document.getElementById('hmUpdGo').textContent='מרענן…';
-    if(worker){worker.postMessage({type:'SKIP_WAITING'}); setTimeout(()=>location.reload(),1200)}
-    else location.reload();
+    const go=w=>{ hmWantReload=true; w.postMessage({type:'SKIP_WAITING'}); setTimeout(()=>{ if(!hmReloading){hmReloading=true;location.reload()} },1500) };
+    if(bar._worker)go(bar._worker);
+    else navigator.serviceWorker.getRegistration().then(r=>{ if(r&&r.waiting)go(r.waiting); else location.reload() }).catch(()=>location.reload());
   });
   document.getElementById('hmUpdNo').addEventListener('click',()=>{
     bar.remove(); document.body.classList.remove('has-upd');
@@ -4976,7 +5110,7 @@ updProgress();
       let any=0;
       d.querySelectorAll('a.place').forEach(a=>{
         const okKind = kind==='all' || a.classList.contains('k-'+kind);
-        const okText = !q || a.textContent.toLowerCase().includes(q) || (d.dataset.day+'').includes(q);
+        const okText = !q || a.textContent.toLowerCase().includes(q) || (!!d.dataset.day && d.dataset.day===q);
         const ok=okKind&&okText;
         a.classList.toggle('hide',!ok);
         if(ok){any++;shown++}

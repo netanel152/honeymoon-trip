@@ -102,5 +102,17 @@ self.addEventListener('fetch', e => {
     return;
   }
 
-  // 4. כל השאר (למשל שערי מטבע) — רשת בלבד, הדף כבר יודע ליפול למטמון שלו
+  // 4. המניפסט והאייקונים — נשמרו בהתקנה, אז גם מגישים אותם משם (קודם רק נשמרו ולא הוגשו)
+  if (url.origin === location.origin && /\/(manifest\.webmanifest|icon-192\.png|icon-512\.png|apple-touch-icon\.png)$/.test(url.pathname)) {
+    e.respondWith((async () => {
+      const c = await caches.open(SHELL);
+      const hit = await c.match(req, {ignoreSearch: true});
+      if (hit) return hit;
+      try { const r = await fetch(req); if (r && r.ok) c.put(req, r.clone()); return r; }
+      catch (_) { return Response.error(); }
+    })());
+    return;
+  }
+
+  // 5. כל השאר (למשל שערי מטבע) — רשת בלבד, הדף כבר יודע ליפול למטמון שלו
 });
