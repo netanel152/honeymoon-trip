@@ -1400,12 +1400,9 @@ body.has-upd #toTop{bottom:calc(78px + env(safe-area-inset-bottom))}
   border:1px solid #F2D58A;border-radius:999px;padding:6px 12px;cursor:pointer;min-height:36px;line-height:1.3}
 .spend-guess:hover{filter:brightness(.97)}
 .spend-act{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:0 0 14px}
-.spend-quick{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
-/* בטלפון: כפתור ראשי ברוחב מלא ומתחתיו ארבעת הצ'יפים בשורה אחת — לא ארבע שורות שבורות */
+/* בטלפון: כפתור ראשי ברוחב מלא */
 @media(max-width:560px){
   .spend-act .btn.primary{flex:1 1 100%;justify-content:center}
-  .spend-quick{flex:1 1 100%;display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
-  .spend-quick .pl-f{padding:7px 4px;font-size:12.5px;text-align:center;white-space:nowrap}
 }
 .sp-conv{font:inherit;font-size:12px;font-weight:600;color:#0B7159;background:none;border:0;padding:0;cursor:pointer;min-height:0;
   text-decoration:none;white-space:nowrap}
@@ -2629,12 +2626,6 @@ body.has-upd .hm-toast{bottom:calc(82px + env(safe-area-inset-bottom))}
       <!-- הפעולה היומית קודם, המספרים אחריה — בטלפון לא צריך לגלול מעבר לסיכום כדי לרשום -->
       <div class="spend-act">
         <button type="button" class="btn primary" id="spendAdd">➕ הוצאה חדשה</button>
-        <div class="spend-quick" role="group" aria-label="הוספה מהירה לפי קטגוריה">
-          <button type="button" class="pl-f" data-quick="food">🍜 אוכל</button>
-          <button type="button" class="pl-f" data-quick="transport">🚉 תחבורה</button>
-          <button type="button" class="pl-f" data-quick="tickets">🎟️ כניסה</button>
-          <button type="button" class="pl-f" data-quick="shop">🛍️ קניות</button>
-        </div>
       </div>
       <!-- ארנק המזומן של היום: כמה לקחנו, כמה יצא במזומן, כמה נשאר -->
       <div class="cash-box" id="cashBox"></div>
