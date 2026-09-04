@@ -1384,6 +1384,8 @@ body.has-upd #toTop{bottom:calc(78px + env(safe-area-inset-bottom))}
 .spend-amt{white-space:nowrap;font-family:'IBM Plex Mono',monospace;font-size:13px}
 .spend-amt small{display:block;font-size:12px;color:var(--muted);margin-top:1px}
 .spend-amt small b{color:var(--ink2)}
+.spend-amt small.spend-fee{font-size:11px;color:#8A5A00;cursor:help}
+.spend-amt small.spend-fee b{color:#8A5A00;display:block}
 #spendDetails{margin-top:14px}
 .spend-pay{display:inline-block;margin-inline-start:6px;padding:0 7px;border-radius:999px;font-size:10.5px;font-weight:700;
   line-height:17px;vertical-align:1px;unicode-bidi:isolate;white-space:nowrap}
@@ -1407,6 +1409,7 @@ body.has-upd #toTop{bottom:calc(78px + env(safe-area-inset-bottom))}
 .sp-conv:hover{text-decoration:underline}
 .sp-fee span{white-space:nowrap}
 .sp-fee-note{color:var(--muted);font-weight:500}
+.sp-fee-tot{display:block;color:var(--ink2);font-weight:600}
 .spend-cnt{display:inline-block;min-width:22px;padding:0 7px;border-radius:999px;background:var(--tw-soft);color:#0B7159;
   font-size:12px;font-weight:700;line-height:20px;text-align:center;vertical-align:1px;unicode-bidi:isolate}
 .spend-cnt:empty{display:none}
@@ -1462,6 +1465,7 @@ body.has-upd .hm-toast{bottom:calc(82px + env(safe-area-inset-bottom))}
   .doc-tbl tr.spend-day td{background:#16283A}
   .spend-pay.cash{background:#13342C;color:#7FE3C4}
   .spend-pay.card{background:#1E2942;color:#B9C3DB}
+  .spend-amt small.spend-fee,.spend-amt small.spend-fee b{color:#E8C170}
   .spend-filt select{background:#121A2C;color:var(--ink);border-color:var(--line)}
   .sp-tile{background:#121A2C;border-color:#26314B}
   .spend-guess{background:#3A2E12;border-color:#6B5320;color:#F2D58A}
@@ -3038,16 +3042,28 @@ function fire(){listeners.forEach(function(f){try{f()}catch(e){}})}
 /* פעם נשמר גם מי ערך. זה בוטל: הזהות נבחרה פעם אחת לכל מכשיר, ולכן כל מה
    שנוסף מאותו טלפון יוחס לאותו אדם — מטעה יותר משהוא עוזר. */
 function stamp(obj){obj.ts=Date.now();return obj}
+/* ts הוא זמן העריכה האחרונה — המפתח של המיזוג בין המכשירים — ולכן הוא זז בכל
+   שמירה. זמן ההוספה המקורי נשמר בנפרד ב-created, נקבע פעם אחת ולא משתנה. */
 function put(section,id,obj){
   var prev=data[section][id]||{};
+  var isNew=!data[section][id];
   /* אחרי "שחזור למקורי" נשאר דגל cleared. בלי לנקות אותו כאן, העריכה או המחיקה
      הבאה נשמרות אבל לא נראות — cleared מנצח בעת הרינדור. */
   if(prev.cleared&&!('cleared' in obj))prev={};
   data[section][id]=stamp(Object.assign({},prev,obj));
+  if(isNew&&!obj.del&&data[section][id].created==null)data[section][id].created=Date.now();
   data.updated=Date.now();
   jset(KEY,data); fire(); schedulePush();
 }
 function drop(section,id){put(section,id,{del:true})}
+/* זמן ההוספה של רישום: created אם נשמר; לרישומים ישנים — מהמזהה, שמתחיל בחותמת
+   הזמן של Date.now() בבסיס 36 (8 תווים לכל השנים 2026–2059); ורק אז ts. */
+function idTime(id){
+  var m=/^[su]([0-9a-z]{8})/.exec(String(id||'')); if(!m)return 0;
+  var t=parseInt(m[1],36);
+  return (t>1.6e12&&t<2.8e12)?t:0;
+}
+function createdOf(s){ return s.created||idTime(s.id)||s.ts||0 }
 
 function mergeInto(base,incoming){
   base=norm(base); incoming=norm(incoming);
@@ -3838,9 +3854,10 @@ function costList(){
     if(o.del||!o.name)return;
     out.push(Object.assign({},o,{id:k,mine:true}));
   });
+  /* לפי קטגוריה; השורות שלנו בתוך הקטגוריה לפי זמן ההוספה, כדי שעריכה לא תזיז אותן */
   out.sort(function(a,b){
     var x=COST_ORDER[a.cat], y=COST_ORDER[b.cat];
-    return (x==null?4:x)-(y==null?4:y);
+    return ((x==null?4:x)-(y==null?4:y))||((a.mine?createdOf(a):0)-(b.mine?createdOf(b):0));
   });
   return out;
 }
@@ -4254,12 +4271,19 @@ function spendList(){
     if(!s||s.del||!(+s.amt))return;
     out.push(Object.assign({},s,{id:k}));
   });
+  /* בתוך יום: לפי זמן ההוספה, לא לפי זמן העריכה — עריכה לא מקפיצה רישום לראש הרשימה */
   out.sort(function(a,b){
     var d=String(b.d||'').localeCompare(String(a.d||''));
-    return d||((b.ts||0)-(a.ts||0));
+    return d||(createdOf(b)-createdOf(a));
   });
   return out;
 }
+/* עמלת ההמרה המוערכת על רישום בודד: רק אשראי במט"ח, לפי האחוז שנשמר במכשיר */
+function feeOf(s){
+  if(s.cur==='ILS'||payOf(s).pay!=='card')return 0;
+  return (+s.ils||0)*feePct()/100;
+}
+function feeNote(s){ var f=feeOf(s); return f?' · +'+money(f,f<100?1:0)+' ₪ עמלה':'' }
 function spendFields(s){
   s=s||{};
   return [
@@ -4306,7 +4330,7 @@ function openSpendDlg(preset){
     put('spend','s'+Date.now().toString(36)+Math.random().toString(36).slice(2,5),vals);
     var d=document.getElementById('spendDetails'); if(d)d.open=true;
     toast('נשמר: '+vals.txt+' · '+(CUR_SYM[vals.cur]||vals.cur)+' '+money(vals.amt,(vals.cur==='ILS'||vals.cur==='USD')?2:0)+
-      (vals.cur==='ILS'?'':' ≈ '+money(vals.ils)+' ₪')+' · '+payLabel(vals.pay));
+      (vals.cur==='ILS'?'':' ≈ '+money(vals.ils)+' ₪')+' · '+payLabel(vals.pay)+feeNote(vals));
   }});
   wirePayGuess();
   var amt=dlg.querySelector('#hf_amt');
@@ -4359,29 +4383,30 @@ function migrateSpendPay(){
 function renderSpend(){
   var host=document.getElementById('spendRows');
   if(!host)return;
-  var list=spendList(), total=0, byCur={}, byCat={}, byPay={cash:0,card:0}, nGuess=0, cardFx=0, days={};
+  var list=spendList(), total=0, byCur={}, byCat={}, byPay={cash:0,card:0}, nGuess=0, cardFx=0, fee=0, days={};
   list.forEach(function(s){
     total+=(+s.ils||0);
     byCur[s.cur]=(byCur[s.cur]||0)+(+s.amt||0);
     byCat[s.cat]=(byCat[s.cat]||0)+(+s.ils||0);
     if(s.d)days[s.d]=(days[s.d]||0)+(+s.ils||0);
     var p=payOf(s); byPay[p.pay]+=(+s.ils||0); if(p.auto)nGuess++;
-    /* עמלת המרה רק על אשראי במט"ח — עסקה בשקלים לא עולה עמלה */
-    if(p.pay==='card'&&s.cur!=='ILS')cardFx+=(+s.ils||0);
+    /* עמלת המרה רק על אשראי במט"ח — עסקה בשקלים לא עולה עמלה. אותו חישוב
+       (feeOf) משמש גם לשורה הבודדת, כדי שהסכום בסיכום יהיה בדיוק סכום השורות */
+    var f=feeOf(s); if(f){cardFx+=(+s.ils||0); fee+=f}
   });
-  var fee=cardFx*feePct()/100;
 
   /* הטבלה מכבדת את הסינון; הסיכומים שמעל מציגים תמיד את כל הטיול */
-  var shown=filterOn()?list.filter(passFilter):list, fdays={}, fsum={n:0,ils:0,cash:0,card:0};
+  var shown=filterOn()?list.filter(passFilter):list, fdays={}, fsum={n:0,ils:0,cash:0,card:0,fee:0};
   shown.forEach(function(s){
     if(s.d)fdays[s.d]=(fdays[s.d]||0)+(+s.ils||0);
-    fsum.n++; fsum.ils+=(+s.ils||0); fsum[payOf(s).pay]+=(+s.ils||0);
+    fsum.n++; fsum.ils+=(+s.ils||0); fsum[payOf(s).pay]+=(+s.ils||0); fsum.fee+=feeOf(s);
   });
   var fs=document.getElementById('spendFiltSum'), fc=document.getElementById('sfClear');
   if(fs){
     fs.hidden=!filterOn();
     fs.innerHTML=filterOn()?('<b>'+(fsum.n===1?'רישום אחד':fsum.n+' רישומים')+'</b> · <b dir="ltr">'+money(fsum.ils)+' ₪</b>'+
-      ' · '+esc(payLabel('cash'))+' <span dir="ltr">'+money(fsum.cash)+' ₪</span> · '+esc(payLabel('card'))+' <span dir="ltr">'+money(fsum.card)+' ₪</span>'):'';
+      ' · '+esc(payLabel('cash'))+' <span dir="ltr">'+money(fsum.cash)+' ₪</span> · '+esc(payLabel('card'))+' <span dir="ltr">'+money(fsum.card)+' ₪</span>'+
+      (fsum.fee?' · עמלה <span dir="ltr">≈ '+money(fsum.fee,fsum.fee<100?1:0)+' ₪</span>':'')):'';
   }
   if(fc)fc.hidden=!filterOn();
 
@@ -4401,7 +4426,11 @@ function renderSpend(){
       '<td><span class="spend-ic" title="'+esc(lbl)+'">'+esc(ic)+'</span>'+esc(s.txt)+
         '<small class="spend-by">'+esc(lbl.replace(/^\S+\s/,''))+payChip+'</small></td>'+
       '<td dir="ltr" class="spend-amt">'+esc(CUR_SYM[s.cur]||s.cur)+' '+money(s.amt,(s.cur==='ILS'||s.cur==='USD')?2:0)+
-        '<small><b>'+money(s.ils)+' ₪</b></small></td>'+
+        '<small><b>'+money(s.ils)+' ₪</b></small>'+
+        /* אשראי במט"ח: העמלה המוערכת והסכום הכולל, כדי שיהיה ברור כמה זה באמת עולה */
+        (function(){ var f=feeOf(s); return f?'<small class="spend-fee" title="עמלת המרה '+esc(String(feePct()))+'% על אשראי במט&quot;ח — לא כלולה בסה&quot;כ">+'+
+          money(f,f<100?1:0)+' ₪ עמלה<b>= '+money((+s.ils||0)+f)+' ₪</b></small>':'' })()+
+        '</td>'+
       '<td class="cost-ops">'+
         '<button type="button" class="iconbtn" data-sact="edit" title="עריכה" aria-label="עריכת ההוצאה">✏️</button>'+
         '<button type="button" class="iconbtn danger" data-sact="del" title="מחיקה" aria-label="מחיקת ההוצאה">🗑️</button>'+
@@ -4428,7 +4457,8 @@ function renderSpend(){
       '<div class="sp-tile card"><small>'+esc(payLabel('card'))+'</small><b dir="ltr">'+money(byPay.card)+' ₪</b></div>'+
     '</div>';
     if(cardFx)chips+='<p class="sp-fee"><span>עמלת המרה על האשראי <button type="button" class="fee-edit" id="feeEdit" title="שינוי אחוז העמלה">'+
-      esc(String(feePct()))+'%</button> <b dir="ltr">≈ '+money(fee,fee<100?1:0)+' ₪</b></span> <span class="sp-fee-note">לא כלולה בסה"כ</span></p>';
+      esc(String(feePct()))+'%</button> <b dir="ltr">≈ '+money(fee,fee<100?1:0)+' ₪</b></span> <span class="sp-fee-note">לא כלולה בסה"כ</span>'+
+      ' <span class="sp-fee-tot">סה"כ כולל עמלה <b dir="ltr">≈ '+money(total+fee)+' ₪</b></span></p>';
     if(nGuess)chips+='<button type="button" class="spend-guess" id="guessBtn" title="הצגת הרישומים שאמצעי התשלום שלהם נוחש לפי התיאור">❓ '+
       (nGuess===1?'רישום אחד':nGuess+' רישומים')+' עם אמצעי תשלום משוער · לבדיקה</button>';
     var cats=Object.keys(byCat).sort(function(a,b){return byCat[b]-byCat[a]});
@@ -4469,7 +4499,7 @@ document.addEventListener('click',function(e){
       var vals=spendVals(v,cur);
       if(!vals.amt)return;
       put('spend',id,vals);
-      toast('עודכן: '+vals.txt+' · '+payLabel(vals.pay));
+      toast('עודכן: '+vals.txt+' · '+payLabel(vals.pay)+feeNote(vals));
     }});
     /* רישום שאמצעי התשלום שלו רק נוחש ממשיך לעקוב אחרי התיאור; מאושר — לא */
     if(payOf(cur).auto)wirePayGuess();
