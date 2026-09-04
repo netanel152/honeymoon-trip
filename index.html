@@ -3993,7 +3993,7 @@ function renderToday(){
       '<div class="td-box" id="tdWx"><small>🌤️ מזג האוויר</small><b>—</b></div>'+
       /* מוצג תמיד בימי הטיול — גם ב-0 ₪, כי אז דווקא צריך את הכפתור לרישום */
       '<div class="td-box"><small>💸 הוצאות היום</small><b dir="ltr">'+
-         money(spendTodayIls())+' ₪</b>'+
+         ils(spendTodayIls())+' ₪</b>'+
          '<button type="button" class="td-go" data-gotab="pane-money">כל ההוצאות ↗</button>'+
          '<div class="td-quick"><small class="td-cap">הוספה מהירה:</small>'+SPEND_QUICK.map(function(c){ var l=catLabel(c);
             return '<button type="button" class="td-qb" data-quick="'+c+'" title="הוצאה חדשה · '+esc(l)+'" aria-label="הוצאה חדשה · '+esc(l)+'">'+esc(l.split(' ')[0])+'</button>';
@@ -4263,6 +4263,8 @@ function defCur(){
   return n<=18?'TWD':'JPY';
 }
 function money(n,dec){ return Number(n||0).toLocaleString('en-US',{minimumFractionDigits:dec||0,maximumFractionDigits:dec||0}) }
+/* שקלים תמיד עם אגורות, כמו באפליקציית בנק — גם בשורות וגם בסיכומים; ין ו-NT$ שלמים */
+function ils(n){ return money(n,2) }
 
 function spendList(){
   var out=[];
@@ -4283,7 +4285,7 @@ function feeOf(s){
   if(s.cur==='ILS'||payOf(s).pay!=='card')return 0;
   return (+s.ils||0)*feePct()/100;
 }
-function feeNote(s){ var f=feeOf(s); return f?' · +'+money(f,f<100?1:0)+' ₪ עמלה':'' }
+function feeNote(s){ var f=feeOf(s); return f?' · +'+ils(f)+' ₪ עמלה':'' }
 function spendFields(s){
   s=s||{};
   return [
@@ -4330,7 +4332,7 @@ function openSpendDlg(preset){
     put('spend','s'+Date.now().toString(36)+Math.random().toString(36).slice(2,5),vals);
     var d=document.getElementById('spendDetails'); if(d)d.open=true;
     toast('נשמר: '+vals.txt+' · '+(CUR_SYM[vals.cur]||vals.cur)+' '+money(vals.amt,(vals.cur==='ILS'||vals.cur==='USD')?2:0)+
-      (vals.cur==='ILS'?'':' ≈ '+money(vals.ils)+' ₪')+' · '+payLabel(vals.pay)+feeNote(vals));
+      (vals.cur==='ILS'?'':' ≈ '+ils(vals.ils)+' ₪')+' · '+payLabel(vals.pay)+feeNote(vals));
   }});
   wirePayGuess();
   var amt=dlg.querySelector('#hf_amt');
@@ -4404,9 +4406,9 @@ function renderSpend(){
   var fs=document.getElementById('spendFiltSum'), fc=document.getElementById('sfClear');
   if(fs){
     fs.hidden=!filterOn();
-    fs.innerHTML=filterOn()?('<b>'+(fsum.n===1?'רישום אחד':fsum.n+' רישומים')+'</b> · <b dir="ltr">'+money(fsum.ils)+' ₪</b>'+
-      ' · '+esc(payLabel('cash'))+' <span dir="ltr">'+money(fsum.cash)+' ₪</span> · '+esc(payLabel('card'))+' <span dir="ltr">'+money(fsum.card)+' ₪</span>'+
-      (fsum.fee?' · עמלה <span dir="ltr">≈ '+money(fsum.fee,fsum.fee<100?1:0)+' ₪</span>':'')):'';
+    fs.innerHTML=filterOn()?('<b>'+(fsum.n===1?'רישום אחד':fsum.n+' רישומים')+'</b> · <b dir="ltr">'+ils(fsum.ils)+' ₪</b>'+
+      ' · '+esc(payLabel('cash'))+' <span dir="ltr">'+ils(fsum.cash)+' ₪</span> · '+esc(payLabel('card'))+' <span dir="ltr">'+ils(fsum.card)+' ₪</span>'+
+      (fsum.fee?' · עמלה <span dir="ltr">≈ '+ils(fsum.fee)+' ₪</span>':'')):'';
   }
   if(fc)fc.hidden=!filterOn();
 
@@ -4415,7 +4417,7 @@ function renderSpend(){
     if(s.d!==lastDay){
       lastDay=s.d;
       rows+='<tr class="spend-day"><td colspan="2">'+esc(dayLabel(s.d))+
-        '</td><td dir="ltr">'+money(fdays[s.d])+' ₪</td></tr>';
+        '</td><td dir="ltr">'+ils(fdays[s.d])+' ₪</td></tr>';
     }
     var lbl=catLabel(s.cat), ic=lbl.split(' ')[0], p=payOf(s);
     var payChip='<span class="spend-pay '+p.pay+(p.auto?' auto':'')+'"'+
@@ -4426,10 +4428,10 @@ function renderSpend(){
       '<td><span class="spend-ic" title="'+esc(lbl)+'">'+esc(ic)+'</span>'+esc(s.txt)+
         '<small class="spend-by">'+esc(lbl.replace(/^\S+\s/,''))+payChip+'</small></td>'+
       '<td dir="ltr" class="spend-amt">'+esc(CUR_SYM[s.cur]||s.cur)+' '+money(s.amt,(s.cur==='ILS'||s.cur==='USD')?2:0)+
-        '<small><b>'+money(s.ils)+' ₪</b></small>'+
+        '<small><b>'+ils(s.ils)+' ₪</b></small>'+
         /* אשראי במט"ח: העמלה המוערכת והסכום הכולל, כדי שיהיה ברור כמה זה באמת עולה */
         (function(){ var f=feeOf(s); return f?'<small class="spend-fee" title="עמלת המרה '+esc(String(feePct()))+'% על אשראי במט&quot;ח — לא כלולה בסה&quot;כ">+'+
-          money(f,f<100?1:0)+' ₪ עמלה<b>= '+money((+s.ils||0)+f)+' ₪</b></small>':'' })()+
+          ils(f)+' ₪ עמלה<b>= '+ils((+s.ils||0)+f)+' ₪</b></small>':'' })()+
         '</td>'+
       '<td class="cost-ops">'+
         '<button type="button" class="iconbtn" data-sact="edit" title="עריכה" aria-label="עריכת ההוצאה">✏️</button>'+
@@ -4447,23 +4449,23 @@ function renderSpend(){
     var local=['TWD','JPY','USD'].filter(function(c){return byCur[c]}).map(function(c){
       return esc(CUR_SYM[c])+' '+money(byCur[c],c==='USD'?2:0);
     }).join(' · ');
-    var chips='<div class="sp-hero"><span class="sp-lbl">סה"כ הוצאנו בדרך</span><b class="sp-big" dir="ltr">'+money(total)+' ₪</b>'+
+    var chips='<div class="sp-hero"><span class="sp-lbl">סה"כ הוצאנו בדרך</span><b class="sp-big" dir="ltr">'+ils(total)+' ₪</b>'+
       (local?'<small class="sp-sub" dir="ltr">'+local+'</small>':'')+
       '<button type="button" class="sp-conv" data-gotab="pane-tools">💱 ממיר המטבעות ↗</button></div>';
     chips+='<div class="sp-grid">'+
-      '<div class="sp-tile"><small>היום</small><b dir="ltr">'+money(spendTodayIls())+' ₪</b></div>'+
-      '<div class="sp-tile"><small>ממוצע ליום'+(nDays>1?' · '+nDays+' ימים':'')+'</small><b dir="ltr">'+money(nDays?total/nDays:0)+' ₪</b></div>'+
-      '<div class="sp-tile cash"><small>'+esc(payLabel('cash'))+'</small><b dir="ltr">'+money(byPay.cash)+' ₪</b></div>'+
-      '<div class="sp-tile card"><small>'+esc(payLabel('card'))+'</small><b dir="ltr">'+money(byPay.card)+' ₪</b></div>'+
+      '<div class="sp-tile"><small>היום</small><b dir="ltr">'+ils(spendTodayIls())+' ₪</b></div>'+
+      '<div class="sp-tile"><small>ממוצע ליום'+(nDays>1?' · '+nDays+' ימים':'')+'</small><b dir="ltr">'+ils(nDays?total/nDays:0)+' ₪</b></div>'+
+      '<div class="sp-tile cash"><small>'+esc(payLabel('cash'))+'</small><b dir="ltr">'+ils(byPay.cash)+' ₪</b></div>'+
+      '<div class="sp-tile card"><small>'+esc(payLabel('card'))+'</small><b dir="ltr">'+ils(byPay.card)+' ₪</b></div>'+
     '</div>';
     if(cardFx)chips+='<p class="sp-fee"><span>עמלת המרה על האשראי <button type="button" class="fee-edit" id="feeEdit" title="שינוי אחוז העמלה">'+
-      esc(String(feePct()))+'%</button> <b dir="ltr">≈ '+money(fee,fee<100?1:0)+' ₪</b></span> <span class="sp-fee-note">לא כלולה בסה"כ</span>'+
-      ' <span class="sp-fee-tot">סה"כ כולל עמלה <b dir="ltr">≈ '+money(total+fee)+' ₪</b></span></p>';
+      esc(String(feePct()))+'%</button> <b dir="ltr">≈ '+ils(fee)+' ₪</b></span> <span class="sp-fee-note">לא כלולה בסה"כ</span>'+
+      ' <span class="sp-fee-tot">סה"כ כולל עמלה <b dir="ltr">≈ '+ils(total+fee)+' ₪</b></span></p>';
     if(nGuess)chips+='<button type="button" class="spend-guess" id="guessBtn" title="הצגת הרישומים שאמצעי התשלום שלהם נוחש לפי התיאור">❓ '+
       (nGuess===1?'רישום אחד':nGuess+' רישומים')+' עם אמצעי תשלום משוער · לבדיקה</button>';
     var cats=Object.keys(byCat).sort(function(a,b){return byCat[b]-byCat[a]});
     if(cats.length)chips+='<p class="spend-cats">'+cats.map(function(c){
-      return '<span>'+esc(catLabel(c))+' <b dir="ltr">'+money(byCat[c])+' ₪</b></span>';
+      return '<span>'+esc(catLabel(c))+' <b dir="ltr">'+ils(byCat[c])+' ₪</b></span>';
     }).join('')+'</p>';
     box.innerHTML=chips;
     var gb=document.getElementById('guessBtn');
@@ -4490,7 +4492,7 @@ document.addEventListener('click',function(e){
   var id=btn.closest('tr').getAttribute('data-sid'), cur=data.spend[id];
   if(!cur)return;
   if(btn.getAttribute('data-sact')==='del'){
-    confirmBox('למחוק את ההוצאה?',(cur.txt||'')+' · '+money(cur.ils)+' ₪','מחיקה')
+    confirmBox('למחוק את ההוצאה?',(cur.txt||'')+' · '+ils(cur.ils)+' ₪','מחיקה')
       .then(function(ok){ if(ok)askWho().then(function(){drop('spend',id); toast('ההוצאה נמחקה')}) });
     return;
   }
