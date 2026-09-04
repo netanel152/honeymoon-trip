@@ -15,9 +15,9 @@ Hebrew text as it appears in the app, with an English gloss.
 
 | Tab | What's in it |
 |---|---|
-| 🧭 **סקירה** (Overview) | The "today" panel — tonight's hotel, tomorrow's move, the next reminder, the weather and today's spending. Countdown and general info below it. |
+| 🧭 **סקירה** (Overview) | The "today" panel — tonight's hotel, tomorrow's move, the next reminder, the weather, today's spending and the cash left for the day. Countdown and general info below it. |
 | 🗓️ **היומן · 36 ימים** (Itinerary) | A card per day with an hour-by-hour schedule, free-text search, and personal notes. |
-| 💸 **הוצאות** (Expenses) | Day-to-day spending on the road, with the prepaid budget underneath. |
+| 💸 **הוצאות** (Expenses) | Day-to-day spending on the road — each entry converted to ₪ at the rate of the moment, card purchases in foreign currency with their estimated conversion fee — a daily cash wallet (how much cash you took, how much is left), and the prepaid budget underneath. |
 | 🍜 **איפה אוכלים** (Where to eat) | 82 recommendations; each card opens straight in Google Maps. |
 | 📍 **כל המקומות** (All places) | 475 saved places, grouped by day and by saved list. |
 | 🗺️ **מפת המסלול** (Route map) | The whole route on one map. |
@@ -39,6 +39,8 @@ what you close out before departure comes after, and tools last.
 | What | Where in the app |
 |---|---|
 | Log an expense on the road | **💸 הוצאות** tab, "new expense" button (or from the Overview, in the "today's spending" box) |
+| How much cash you took for the day | **💸 הוצאות** tab, the "cash for the day" card (or the button in the Overview's "today's spending" box). Every cash expense you log that day comes off the balance. |
+| The conversion fee your card charges | **💸 הוצאות** tab, the percentage next to "conversion fee" in the summary (per device, default 1%) |
 | Add, edit or delete a budget line | **💸 הוצאות** tab, inside "the full breakdown" |
 | Add, edit or delete a reminder | **⏰ תזכורות** tab |
 | A personal note on a given day | At the bottom of each day card in the itinerary |
