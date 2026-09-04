@@ -1431,6 +1431,17 @@ body.has-upd #toTop{bottom:calc(78px + env(safe-area-inset-bottom))}
 .cash-ops{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
 .cash-day{display:block;font-size:11.5px;font-weight:500;color:#1F5C3A;margin-top:2px}
 .cash-day.over{color:#AD2919}
+.cash-hist{margin-top:10px;border-top:1px solid var(--line);padding-top:8px}
+.cash-hist summary{cursor:pointer;font-size:12.5px;font-weight:700;color:var(--ink2)}
+.cash-hist .tbl-wrap{margin:6px 0 0}
+.cash-tbl{font-size:12.5px}
+.cash-tbl td,.cash-tbl th{padding:6px 6px;white-space:nowrap}
+.cash-tbl td:first-child{white-space:normal;min-width:96px}
+.cash-tbl td i{font-style:normal;font-size:11px;color:var(--muted);unicode-bidi:isolate}
+.cash-tbl td small{display:block;font-size:11px;color:var(--muted);font-weight:500}
+.cash-tbl td small.over,.cash-tbl td.over{color:#AD2919}
+.cash-tbl td[dir=ltr]{font-family:'IBM Plex Mono',monospace;text-align:left}
+.cash-tbl tr.cur td{background:var(--tw-soft)}
 .td-cash b{font-family:'IBM Plex Mono',monospace;font-size:12.5px;unicode-bidi:isolate}
 .td-cash.over{border-color:rgba(255,138,122,.5);color:#FFB3A7}
 .spend-cnt:empty{display:none}
@@ -1529,6 +1540,8 @@ body.has-upd .hm-toast{bottom:calc(82px + env(safe-area-inset-bottom))}
   .spend-pay.card{background:#1E2942;color:#B9C3DB}
   .spend-amt small.spend-fee,.spend-amt small.spend-fee b{color:#E8C170}
   .cash-big b,.cash-day{color:#7FE3C4}
+  .cash-tbl td small.over,.cash-tbl td.over{color:#FF8A7A}
+  .cash-tbl tr.cur td{background:rgba(127,227,196,.12)}
   .cash-box.over .cash-big b,.cash-day.over{color:#FF8A7A}
   .cash-box.warn .cash-bar i{background:#E8A93A}
   .spend-filt select{background:#121A2C;color:var(--ink);border-color:var(--line)}
@@ -4553,7 +4566,28 @@ function renderCash(){
     (st.others.length?'<p class="cash-note">בארנק גם '+st.others.map(function(o){ return '<b dir="ltr">'+esc(fmtCur(o.left,o.cur))+'</b>' }).join(' · ')+' מימים קודמים.</p>':'')+
     (st.other?'<p class="cash-note">'+(st.other===1?'הוצאה אחת במזומן במטבע אחר לא נספרת כאן.':st.other+' הוצאות במזומן במטבע אחר לא נספרות כאן.')+'</p>':'')+
     '<div class="cash-ops"><button type="button" class="btn ghost" data-cashdlg="'+esc(d)+'">'+(st.amt>0?'✏️ עדכון · יום אחר':'\ud83d\udcb5 לקחנו עוד מזומן'+(isT?' היום':'')+'?')+'</button>'+
-      (cashOf(d)?'<button type="button" class="btn ghost" data-cashdel="'+esc(d)+'">🗑️ הסרה</button>':'')+'</div>';
+      (cashOf(d)?'<button type="button" class="btn ghost" data-cashdel="'+esc(d)+'">🗑️ הסרה</button>':'')+'</div>'+
+    cashHistHtml(d);
+}
+/* "לפי ימים": שורה לכל יום פעיל בארנק (ולכל מטבע בו) — לקחנו / יצא / נשאר, והגרירה
+   מהיום הקודם בשורת משנה. זו התשובה ל"כמה לקחנו בכל יום" בלי לחפש בטבלת ההוצאות. */
+function cashHistHtml(cur){
+  var L=cashLedger(), det=document.getElementById('cashHist'), open=det?det.open:false, rows='';
+  L.days.slice().reverse().forEach(function(d){
+    Object.keys(L.at[d]).forEach(function(c){
+      var e=L.at[d][c]; if(!(e.carry>0||e.amt>0||e.spent>0||e.dropped>0))return;
+      /* המטבע פעם אחת בעמודת היום; המספרים חשופים — אחרת עמודת "נשאר" יוצאת מהמסך ב-390px */
+      var dec=(c==='ILS'||c==='USD')?2:0, num=function(n){ return money(n,dec) };
+      rows+='<tr'+(d===cur?' class="cur"':'')+'><td>'+esc(dayLabel(d).replace(/ · [^·]*$/,''))+' <i dir="ltr">'+esc(CUR_SYM[c]||c)+'</i>'+
+        (e.carry>0?'<small>+ '+num(e.carry)+' מאתמול</small>':'')+
+        (e.dropped>0?'<small class="over">חריגה של '+num(e.dropped)+' מהיום הקודם לא נגררה</small>':'')+'</td>'+
+        '<td dir="ltr">'+num(e.amt)+'</td><td dir="ltr">'+num(e.spent)+'</td>'+
+        '<td dir="ltr"'+(e.left<0?' class="over"':'')+'>'+num(e.left)+'</td></tr>';
+    });
+  });
+  if(!rows)return '';
+  return '<details class="cash-hist" id="cashHist"'+(open?' open':'')+'><summary>📒 לפי ימים</summary>'+
+    '<div class="tbl-wrap"><table class="doc-tbl cash-tbl"><thead><tr><th>יום</th><th>לקחנו</th><th>יצא</th><th>נשאר</th></tr></thead><tbody>'+rows+'</tbody></table></div></details>';
 }
 /* דיאלוג הוספה. preset.cat = הוספה מהירה: הקטגוריה כבר נבחרה והפוקוס על הסכום */
 function openSpendDlg(preset){
