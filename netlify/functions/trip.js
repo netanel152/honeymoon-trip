@@ -11,7 +11,7 @@ import { getStore } from '@netlify/blobs';
 const TRIP_KEY = 'adi-netanel-2026';
 const STORE = 'honeymoon';
 const DOC = 'trip';
-const SECTIONS = ['rem', 'notes', 'places', 'items', 'ticks', 'costs', 'spend'];
+const SECTIONS = ['rem', 'notes', 'places', 'items', 'ticks', 'costs', 'spend', 'cash'];
 const MAX_BYTES = 512 * 1024;
 
 const reply = (status, body) => ({

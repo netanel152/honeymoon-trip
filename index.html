@@ -1412,6 +1412,27 @@ body.has-upd #toTop{bottom:calc(78px + env(safe-area-inset-bottom))}
 .sp-fee-tot{display:block;color:var(--ink2);font-weight:600}
 .spend-cnt{display:inline-block;min-width:22px;padding:0 7px;border-radius:999px;background:var(--tw-soft);color:#0B7159;
   font-size:12px;font-weight:700;line-height:20px;text-align:center;vertical-align:1px;unicode-bidi:isolate}
+/* ארנק המזומן של היום */
+.cash-box{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:12px 14px;margin:0 0 14px}
+.cash-head{display:flex;align-items:baseline;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.cash-when{font-size:12px;color:var(--muted)}
+.cash-row{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin-top:8px;flex-wrap:wrap}
+.cash-big small{display:block;font-size:11.5px;font-weight:600;color:var(--muted)}
+.cash-big b{font-family:'IBM Plex Mono',monospace;font-size:26px;line-height:1.15;color:#1F5C3A;unicode-bidi:isolate}
+.cash-box.over .cash-big b{color:#AD2919}
+.cash-meta{display:flex;flex-direction:column;gap:3px;font-size:12.5px;color:var(--muted);text-align:left}
+.cash-meta b{font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--ink2);unicode-bidi:isolate}
+.cash-bar{height:8px;border-radius:999px;background:var(--line);overflow:hidden;margin-top:10px}
+.cash-bar i{display:block;height:100%;background:#0E8A6D;border-radius:999px;transition:width .3s}
+.cash-box.warn .cash-bar i{background:#D98A00}
+.cash-box.over .cash-bar i{background:#AD2919}
+.cash-note{font-size:12px;color:var(--muted);margin-top:7px;line-height:1.5}
+.cash-empty{font-size:13px;color:var(--muted);margin:6px 0 4px;line-height:1.5}
+.cash-ops{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.cash-day{display:block;font-size:11.5px;font-weight:500;color:#1F5C3A;margin-top:2px}
+.cash-day.over{color:#AD2919}
+.td-cash b{font-family:'IBM Plex Mono',monospace;font-size:12.5px;unicode-bidi:isolate}
+.td-cash.over{border-color:rgba(255,138,122,.5);color:#FFB3A7}
 .spend-cnt:empty{display:none}
 .td-cap{flex:1 1 100%;font-size:11px;color:#B9C3DB;margin-bottom:-2px}
 .hm-toast{position:fixed;left:50%;bottom:calc(22px + env(safe-area-inset-bottom));transform:translate(-50%,12px);z-index:60;
@@ -1466,6 +1487,9 @@ body.has-upd .hm-toast{bottom:calc(82px + env(safe-area-inset-bottom))}
   .spend-pay.cash{background:#13342C;color:#7FE3C4}
   .spend-pay.card{background:#1E2942;color:#B9C3DB}
   .spend-amt small.spend-fee,.spend-amt small.spend-fee b{color:#E8C170}
+  .cash-big b,.cash-day{color:#7FE3C4}
+  .cash-box.over .cash-big b,.cash-day.over{color:#FF8A7A}
+  .cash-box.warn .cash-bar i{background:#E8A93A}
   .spend-filt select{background:#121A2C;color:var(--ink);border-color:var(--line)}
   .sp-tile{background:#121A2C;border-color:#26314B}
   .spend-guess{background:#3A2E12;border-color:#6B5320;color:#F2D58A}
@@ -2568,6 +2592,8 @@ body.has-upd .hm-toast{bottom:calc(82px + env(safe-area-inset-bottom))}
           <button type="button" class="pl-f" data-quick="shop">🛍️ קניות</button>
         </div>
       </div>
+      <!-- ארנק המזומן של היום: כמה לקחנו, כמה יצא במזומן, כמה נשאר -->
+      <div class="cash-box" id="cashBox"></div>
       <div id="spendSum"></div>
       <details class="sub-info" id="spendDetails"><summary>🧾 כל ההוצאות <span class="spend-cnt" id="spendNote"></span> <span class="chev">▾</span></summary><div class="body">
         <div class="spend-filt" role="group" aria-label="סינון ההוצאות">
@@ -3027,7 +3053,7 @@ var SYNC={
   key:'adi-netanel-2026',
   every:45000
 };
-var SECTIONS=['rem','notes','places','items','ticks','costs','spend'];
+var SECTIONS=['rem','notes','places','items','ticks','costs','spend','cash'];
 
 function jget(k,d){try{var v=JSON.parse(localStorage.getItem(k));return v==null?d:v}catch(e){return d}}
 function jset(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
@@ -3994,6 +4020,9 @@ function renderToday(){
       /* מוצג תמיד בימי הטיול — גם ב-0 ₪, כי אז דווקא צריך את הכפתור לרישום */
       '<div class="td-box"><small>💸 הוצאות היום</small><b dir="ltr">'+
          ils(spendTodayIls())+' ₪</b>'+
+         (function(){ var cs=cashState(today10());
+            return '<button type="button" class="td-go td-cash'+(cs&&cs.left<0?' over':'')+'" data-cashdlg="'+today10()+'">'+
+              (cs?('\ud83d\udcb5 '+(cs.left<0?'חריגה במזומן ':'נשאר במזומן ')+'<b dir="ltr">'+esc(fmtCur(Math.abs(cs.left),cs.cur))+'</b>'):'\ud83d\udcb5 כמה מזומן לקחנו היום?')+'</button>' })()+
          '<button type="button" class="td-go" data-gotab="pane-money">כל ההוצאות ↗</button>'+
          '<div class="td-quick"><small class="td-cap">הוספה מהירה:</small>'+SPEND_QUICK.map(function(c){ var l=catLabel(c);
             return '<button type="button" class="td-qb" data-quick="'+c+'" title="הוצאה חדשה · '+esc(l)+'" aria-label="הוצאה חדשה · '+esc(l)+'">'+esc(l.split(' ')[0])+'</button>';
@@ -4321,6 +4350,63 @@ function spendTodayIls(){
   spendList().forEach(function(s){ if(s.d===t)sum+=(+s.ils||0) });
   return sum;
 }
+/* ---------- ארנק מזומן ליום ----------
+   רשומה אחת לכל תאריך (המפתח הוא התאריך): כמה מזומן לקחנו ובאיזה מטבע. היתרה
+   מחושבת מהוצאות המזומן של אותו יום באותו מטבע — לא נשמרת, אז היא תמיד עקבית. */
+function fmtCur(n,cur){ return (CUR_SYM[cur]||cur)+' '+money(n,(cur==='ILS'||cur==='USD')?2:0) }
+function defCurFor(d){ var n=tripDayOf(d); return !n?'ILS':(n<=18?'TWD':'JPY') }
+function cashOf(d){ var c=data.cash&&data.cash[d]; return (c&&!c.del&&+c.amt>0)?c:null }
+function cashState(d){
+  var c=cashOf(d); if(!c)return null;
+  var spent=0, other=0;
+  spendList().forEach(function(s){
+    if(s.d!==d||payOf(s).pay!=='cash')return;
+    if(s.cur===c.cur)spent+=(+s.amt||0); else other++;
+  });
+  var amt=+c.amt, left=amt-spent;
+  return {d:d,cur:c.cur,amt:amt,spent:spent,left:left,other:other,pct:Math.min(100,Math.round(spent/amt*100))};
+}
+function openCashDlg(d){
+  d=d||today10(); var c=cashOf(d);
+  openDlg({title:'\ud83d\udcb5 מזומן ליום',okText:'שמירה',
+    message:'כמה מזומן לקחתם איתכם ליום הזה? היתרה תחושב לפי הוצאות המזומן שתרשמו באותו יום ובאותו מטבע. סכום ריק מסיר את הרישום.',
+    fields:[{k:'d',label:'תאריך',type:'date',value:d},
+            {k:'amt',label:'כמה לקחנו',type:'number',value:c?c.amt:'',placeholder:'למשל 3000'},
+            {k:'cur',label:'מטבע',type:'select',value:c?c.cur:defCurFor(d),options:SPEND_CUR}],
+    onOk:function(v){
+      var dd=v.d||d, amt=parseFloat(String(v.amt).replace(/[^0-9.]/g,''));
+      if(!isFinite(amt)||amt<=0){ if(cashOf(dd)){drop('cash',dd); toast('המזומן של '+(fmtWhen(dd)||dd)+' הוסר')} return }
+      put('cash',dd,{d:dd,amt:amt,cur:v.cur||'ILS',del:false});
+      var st=cashState(dd);
+      toast('מזומן ל-'+(fmtWhen(dd)||dd)+': '+fmtCur(amt,st.cur)+' · נשאר '+fmtCur(st.left,st.cur));
+    }});
+  /* שינוי התאריך בדיאלוג מביא את הרישום של אותו יום, אם יש */
+  var di=dlg.querySelector('#hf_d'), ai=dlg.querySelector('#hf_amt'), ci=dlg.querySelector('#hf_cur');
+  if(di&&ai&&ci)di.addEventListener('change',function(){ var e=cashOf(di.value); ai.value=e?e.amt:''; ci.value=e?e.cur:defCurFor(di.value) });
+  if(ai){ ai.setAttribute('inputmode','decimal'); setTimeout(function(){ai.focus()},90) }
+}
+function renderCash(){
+  var box=document.getElementById('cashBox'); if(!box)return;
+  var t=today10(), d=tripDay()?t:null;
+  /* מחוץ לטיול: היום האחרון שיש לו רישום, כדי שהכרטיס לא יהיה ריק */
+  if(!d){ var ks=Object.keys(data.cash||{}).filter(cashOf).sort(); d=ks.length?ks[ks.length-1]:t }
+  var st=cashState(d), when=(d===t?'היום · ':'')+dayLabel(d);
+  box.className='cash-box'+(st?(st.left<0?' over':(st.pct>=80?' warn':'')):' none');
+  var head='<div class="cash-head"><span class="sp-lbl">\ud83d\udcb5 מזומן ליום</span><span class="cash-when">'+esc(when)+'</span></div>';
+  if(!st){
+    box.innerHTML=head+'<p class="cash-empty">עוד לא רשמתם כמה מזומן לקחתם. רשמו, וכל הוצאה במזומן תוריד מהיתרה.</p>'+
+      '<div class="cash-ops"><button type="button" class="btn ghost" data-cashdlg="'+esc(d)+'">\ud83d\udcb5 כמה מזומן לקחנו?</button></div>';
+    return;
+  }
+  box.innerHTML=head+
+    '<div class="cash-row"><div class="cash-big"><small>'+(st.left<0?'חריגה':'נשאר')+'</small><b dir="ltr">'+esc(fmtCur(Math.abs(st.left),st.cur))+'</b></div>'+
+      '<div class="cash-meta"><span>לקחנו <b dir="ltr">'+esc(fmtCur(st.amt,st.cur))+'</b></span><span>יצא במזומן <b dir="ltr">'+esc(fmtCur(st.spent,st.cur))+'</b></span></div></div>'+
+    '<div class="cash-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="'+st.pct+'"><i style="width:'+st.pct+'%"></i></div>'+
+    (st.left<0?'<p class="cash-note">יצא במזומן יותר ממה שרשמתם שלקחתם — אולי משכתם עוד? עדכנו את הסכום.</p>':'')+
+    (st.other?'<p class="cash-note">'+(st.other===1?'הוצאה אחת במזומן במטבע אחר לא נספרת כאן.':st.other+' הוצאות במזומן במטבע אחר לא נספרות כאן.')+'</p>':'')+
+    '<div class="cash-ops"><button type="button" class="btn ghost" data-cashdlg="'+esc(d)+'">✏️ עדכון · יום אחר</button>'+
+      '<button type="button" class="btn ghost" data-cashdel="'+esc(d)+'">🗑️ הסרה</button></div>';
+}
 /* דיאלוג הוספה. preset.cat = הוספה מהירה: הקטגוריה כבר נבחרה והפוקוס על הסכום */
 function openSpendDlg(preset){
   preset=preset||{};
@@ -4363,6 +4449,14 @@ function initSpend(){
     spendFilter={country:'all',pay:'all',cat:'all'};
     ['sfCountry','sfPay','sfCat'].forEach(function(id){ var el=document.getElementById(id); if(el)el.value='all' });
     renderSpend();
+  });
+  /* ארנק המזומן — הכפתורים בכרטיס ההוצאות ובפאנל היום */
+  document.addEventListener('click',function(e){
+    var b=e.target.closest?e.target.closest('[data-cashdlg]'):null;
+    if(b){ askWho().then(function(w){ if(w)openCashDlg(b.getAttribute('data-cashdlg')||today10()) }); return }
+    var x=e.target.closest?e.target.closest('[data-cashdel]'):null;
+    if(x){ var d=x.getAttribute('data-cashdel');
+      confirmBox('להסיר את רישום המזומן?',dayLabel(d),'הסרה').then(function(ok){ if(ok){drop('cash',d); toast('רישום המזומן הוסר')} }) }
   });
   onChange(renderSpend);
   renderSpend();
@@ -4416,7 +4510,9 @@ function renderSpend(){
   shown.forEach(function(s){
     if(s.d!==lastDay){
       lastDay=s.d;
+      var cs=cashState(s.d);
       rows+='<tr class="spend-day"><td colspan="2">'+esc(dayLabel(s.d))+
+        (cs?'<small class="cash-day'+(cs.left<0?' over':'')+'">\ud83d\udcb5 '+(cs.left<0?'חריגה של ':'נשאר במזומן ')+esc(fmtCur(Math.abs(cs.left),cs.cur))+' מתוך '+esc(fmtCur(cs.amt,cs.cur))+'</small>':'')+
         '</td><td dir="ltr">'+ils(fdays[s.d])+' ₪</td></tr>';
     }
     var lbl=catLabel(s.cat), ic=lbl.split(' ')[0], p=payOf(s);
@@ -4485,6 +4581,7 @@ function renderSpend(){
   if(det&&!det._auto&&list.length){ det._auto=1; det.open=true }
   var note=document.getElementById('spendNote');
   if(note)note.textContent=list.length?String(list.length):'';
+  renderCash();
 }
 document.addEventListener('click',function(e){
   var btn=e.target.closest?e.target.closest('[data-sact]'):null;
