@@ -23,7 +23,7 @@ Hebrew text as it appears in the app, with an English gloss.
 | 🗺️ **מפת המסלול** (Route map) | The whole route on one map. |
 | 🏨 **מלונות** (Hotels) | All 13 hotels with addresses, dates and costs. |
 | ✈️ **טיסות ורכב** (Flights & car) | Boarding passes for all five flights, plus the car rental details. |
-| ⏰ **תזכורות** (Reminders) | What still needs booking or doing, ordered by urgency. |
+| ⏰ **תזכורות** (Reminders) | What still needs booking or doing, ordered by urgency. Past-due ones fold away into a collapsed section at the bottom so they stop filling the screen mid-trip. |
 | ✅ **צ׳קליסט** (Checklist) | Packing and gear list. |
 | 🧰 **כלים** (Tools) | Clocks, a currency converter on live rates, weather, emergency and insurance numbers, backup and restore. |
 
