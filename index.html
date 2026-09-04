@@ -1442,8 +1442,9 @@ body.has-upd #toTop{bottom:calc(78px + env(safe-area-inset-bottom))}
 .cash-tbl td small.over,.cash-tbl td.over{color:#AD2919}
 .cash-tbl td[dir=ltr]{font-family:'IBM Plex Mono',monospace;text-align:left}
 .cash-tbl tr.cur td{background:var(--tw-soft)}
-.td-cash b{font-family:'IBM Plex Mono',monospace;font-size:12.5px;unicode-bidi:isolate}
-.td-cash.over{border-color:rgba(255,138,122,.5);color:#FFB3A7}
+span.td-cash{font-size:12.5px;font-weight:600;color:#D6E4F5;margin-top:3px}
+.td-cash b{font-family:'IBM Plex Mono',monospace;font-size:12.5px;unicode-bidi:isolate;color:#8FE7C8}
+span.td-cash.over,span.td-cash.over b{color:#FFB3A7}
 .spend-cnt:empty{display:none}
 .td-cap{flex:1 1 100%;font-size:11px;color:#B9C3DB;margin-bottom:-2px}
 .hm-toast{position:fixed;left:50%;bottom:calc(22px + env(safe-area-inset-bottom));transform:translate(-50%,12px);z-index:60;
@@ -4136,9 +4137,10 @@ function renderToday(){
       /* מוצג תמיד בימי הטיול — גם ב-0 ₪, כי אז דווקא צריך את הכפתור לרישום */
       '<div class="td-box"><small>💸 הוצאות היום</small><b dir="ltr">'+
          ils(spendTodayIls())+' ₪</b>'+
+         /* היתרה במזומן היא טקסט, לא כפתור (לבקשת הבעלים); כפתור רק כשאין עדיין רישום */
          (function(){ var cs=cashState(today10());
-            return '<button type="button" class="td-go td-cash'+(cs&&cs.left<0?' over':'')+'" data-cashdlg="'+today10()+'">'+
-              (cs?('\ud83d\udcb5 '+(cs.left<0?'חריגה במזומן ':'נשאר במזומן ')+'<b dir="ltr">'+esc(fmtCur(Math.abs(cs.left),cs.cur))+'</b>'):'\ud83d\udcb5 כמה מזומן לקחנו היום?')+'</button>' })()+
+            return cs?('<span class="td-cash'+(cs.left<0?' over':'')+'">\ud83d\udcb5 '+(cs.left<0?'חריגה במזומן ':'נשאר במזומן ')+'<b dir="ltr">'+esc(fmtCur(Math.abs(cs.left),cs.cur))+'</b></span>')
+                     :('<button type="button" class="td-go td-cash" data-cashdlg="'+today10()+'">\ud83d\udcb5 כמה מזומן לקחנו היום?</button>') })()+
          '<button type="button" class="td-go" data-gotab="pane-money">כל ההוצאות ↗</button>'+
          '<div class="td-quick"><small class="td-cap">הוספה מהירה:</small>'+SPEND_QUICK.map(function(c){ var l=catLabel(c);
             return '<button type="button" class="td-qb" data-quick="'+c+'" title="הוצאה חדשה · '+esc(l)+'" aria-label="הוצאה חדשה · '+esc(l)+'">'+esc(l.split(' ')[0])+'</button>';
