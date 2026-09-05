@@ -4527,7 +4527,7 @@ function cashState(d){
   return {d:d,cur:cur,has:e.has,add:e.add,carry:e.carry,amt:e.amt,total:e.total,spent:e.spent,left:e.left,dropped:e.dropped,other:other,others:others,
           pct:e.total>0?Math.max(0,Math.min(100,Math.round(e.spent/e.total*100))):100};
 }
-var CASH_MODE=[['add','➕ הוספנו לארנק — נוסף למה שנשאר מאתמול'],['set','💵 זה כל מה שיש בארנק עכשיו']];
+var CASH_MODE=[['add','➕ הוספנו לארנק'],['set','💵 זה כל מה שיש בארנק']];
 function openCashDlg(d){
   d=d||today10(); var c=cashOf(d), st=cashState(d);
   /* היתרה מאתמול לפני הרישום של היום (גם כשיש רישום, כדי שההודעה תהיה נכונה בעריכה) */
