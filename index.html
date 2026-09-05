@@ -4476,27 +4476,30 @@ function spendTodayIls(){
   return sum;
 }
 /* ---------- ארנק מזומן ליום ----------
-   רשומה אחת לכל תאריך (המפתח הוא התאריך): כמה מזומן *הוספנו* באותו יום ובאיזה מטבע.
-   מה שנשאר בסוף יום עובר אוטומטית ליום הבא (לכל מטבע בנפרד). היתרה לא נשמרת אלא
-   מחושבת: נשאר מאתמול + הוספנו היום − הוצאות המזומן של היום באותו מטבע. */
+   רשומה אחת לכל תאריך (המפתח הוא התאריך): *כמה מזומן יש בארנק* באותו יום ובאיזה
+   מטבע — תמונת מצב, לא תוספת. יום בלי רישום מתחיל ממה שנשאר אתמול. רישום ליום
+   מחליף את היתרה (לא מתווסף אליה) — ככה "עדכון אחרי שהוספנו כסף" הוא פשוט הסכום
+   הכולל שיש עכשיו. היתרה לא נשמרת: בארנק − הוצאות המזומן של היום באותו מטבע. */
 function fmtCur(n,cur){ return (CUR_SYM[cur]||cur)+' '+money(n,(cur==='ILS'||cur==='USD')?2:0) }
 function defCurFor(d){ var n=tripDayOf(d); return !n?'ILS':(n<=18?'TWD':'JPY') }
 function cashOf(d){ var c=data.cash&&data.cash[d]; return (c&&!c.del&&+c.amt>0)?c:null }
-/* הארנק הרץ: כל הימים שיש בהם רישום או הוצאה במזומן, לפי הסדר, עם יתרה לכל מטבע.
-   יתרה שלילית (יצא יותר ממה שנרשם) היא רישום חסר ולא חוב — לא נגררת, אלא מדווחת
-   ב-dropped כדי שאפשר יהיה לתקן את הסכום של אותו יום. */
+/* הלדג'ר: כל הימים שיש בהם רישום או הוצאה במזומן, לפי הסדר, עם יתרה לכל מטבע.
+   ליום עם רישום: בארנק = הרישום. בלי רישום: בארנק = מה שנשאר מהיום הפעיל הקודם.
+   יתרה שלילית (יצא יותר ממה שנרשם) היא רישום חסר ולא חוב — היום הבא מתחיל מ-0
+   ומקבל dropped כדי שאפשר יהיה לתקן. */
 function cashLedger(){
   var ev={};
-  function slot(d,c){ var x=ev[d]||(ev[d]={}); return x[c]||(x[c]={amt:0,spent:0}) }
-  Object.keys(data.cash||{}).forEach(function(k){ var c=cashOf(k); if(c)slot(k,c.cur||'ILS').amt+=+c.amt });
+  function slot(d,c){ var x=ev[d]||(ev[d]={}); return x[c]||(x[c]={amt:0,has:false,spent:0}) }
+  Object.keys(data.cash||{}).forEach(function(k){ var c=cashOf(k); if(c){ var e=slot(k,c.cur||'ILS'); e.amt=+c.amt; e.has=true } });
   spendList().forEach(function(s){ if(s.d&&payOf(s).pay==='cash')slot(s.d,s.cur||'ILS').spent+=(+s.amt||0) });
   var days=Object.keys(ev).sort(), bal={}, at={};
   days.forEach(function(d){
     var row={}, curs=Object.keys(ev[d]);
     Object.keys(bal).forEach(function(c){ if(bal[c]>0&&curs.indexOf(c)<0)curs.push(c) });
     curs.forEach(function(c){
-      var e=ev[d][c]||{amt:0,spent:0}, prev=bal[c]||0, carry=Math.max(0,prev);
-      row[c]={cur:c,carry:carry,amt:e.amt,spent:e.spent,left:carry+e.amt-e.spent,dropped:prev<0?-prev:0};
+      var e=ev[d][c]||{amt:0,has:false,spent:0}, prev=bal[c]||0;
+      var carry=e.has?0:Math.max(0,prev), total=e.has?e.amt:carry;
+      row[c]={cur:c,has:e.has,carry:carry,amt:e.amt,total:total,spent:e.spent,left:total-e.spent,dropped:(!e.has&&prev<0)?-prev:0};
       bal[c]=row[c].left;
     });
     at[d]=row;
@@ -4504,31 +4507,34 @@ function cashLedger(){
   return {days:days,at:at};
 }
 /* מצב הארנק ביום d במטבע אחד: המטבע של הרישום אם יש, אחרת המטבע של היום (TWD/JPY)
-   אם נגררה אליו יתרה, אחרת כל מטבע עם יתרה. null = אין ארנק פעיל ביום הזה. */
+   אם נשארה בו יתרה, אחרת כל מטבע עם יתרה. null = אין ארנק פעיל ביום הזה. */
 function cashState(d){
   var L=cashLedger(), row=L.at[d];
   if(!row){
-    /* יום בלי רישום ובלי הוצאות מזומן: מה שנגרר מהיום הפעיל האחרון שלפניו */
+    /* יום בלי רישום ובלי הוצאות מזומן: מה שנשאר מהיום הפעיל האחרון שלפניו */
     var prev=null; L.days.forEach(function(x){ if(x<d)prev=x });
     row={};
-    if(prev)Object.keys(L.at[prev]).forEach(function(c){ var e=L.at[prev][c]; if(e.left)row[c]={cur:c,carry:Math.max(0,e.left),amt:0,spent:0,left:Math.max(0,e.left),dropped:e.left<0?-e.left:0} });
+    if(prev)Object.keys(L.at[prev]).forEach(function(c){ var e=L.at[prev][c]; if(e.left){ var k=Math.max(0,e.left);
+      row[c]={cur:c,has:false,carry:k,amt:0,total:k,spent:0,left:k,dropped:e.left<0?-e.left:0} } });
   }
-  var c=cashOf(d), live=function(x){ return !!x&&(x.carry>0||x.amt>0||x.dropped>0) }, cur=c?c.cur:(live(row[defCurFor(d)])?defCurFor(d):null);
+  var c=cashOf(d), live=function(x){ return !!x&&(x.total>0||x.dropped>0) }, cur=c?c.cur:(live(row[defCurFor(d)])?defCurFor(d):null);
   if(!cur)Object.keys(row).forEach(function(k){ if(!cur&&live(row[k]))cur=k });
   if(!cur||!row[cur])return null;
-  var e=row[cur], total=e.carry+e.amt, other=0, others=[];
+  var e=row[cur], other=0, others=[];
   spendList().forEach(function(s){ if(s.d===d&&payOf(s).pay==='cash'&&(s.cur||'ILS')!==cur)other++ });
   Object.keys(row).forEach(function(k){ if(k!==cur&&row[k].left>0)others.push({cur:k,left:row[k].left}) });
-  return {d:d,cur:cur,carry:e.carry,amt:e.amt,total:total,spent:e.spent,left:e.left,dropped:e.dropped,other:other,others:others,
-          pct:total>0?Math.max(0,Math.min(100,Math.round(e.spent/total*100))):100};
+  return {d:d,cur:cur,has:e.has,carry:e.carry,amt:e.amt,total:e.total,spent:e.spent,left:e.left,dropped:e.dropped,other:other,others:others,
+          pct:e.total>0?Math.max(0,Math.min(100,Math.round(e.spent/e.total*100))):100};
 }
 function openCashDlg(d){
-  d=d||today10(); var c=cashOf(d), st=cashState(d), carry=st&&!c?st.carry:(st?st.carry:0), ccur=st?st.cur:defCurFor(d);
+  d=d||today10(); var c=cashOf(d), st=cashState(d);
+  var carry=(st&&!st.has)?st.carry:0, ccur=st?st.cur:defCurFor(d);
   openDlg({title:'💵 מזומן ליום',okText:'שמירה',
-    message:(carry>0?'נשאר מאתמול '+fmtCur(carry,ccur)+' — זה כבר בארנק של היום. ':'')+
-      'רשמו רק מה שהוספתם לארנק ביום הזה (משיכה או המרה). היתרה מחושבת לפי הוצאות המזומן שתרשמו. סכום ריק מסיר את הרישום.',
+    message:carry>0
+      ?'נשאר מאתמול '+fmtCur(carry,ccur)+' — זה מה שבארנק עכשיו. הוספתם מזומן? רשמו את הסכום הכולל שיש לכם עכשיו. סכום ריק מסיר את הרישום.'
+      :'כמה מזומן יש לכם בארנק ליום הזה? היתרה מחושבת לפי הוצאות המזומן שתרשמו, ומה שנשאר בסוף היום עובר ליום הבא. סכום ריק מסיר את הרישום.',
     fields:[{k:'d',label:'תאריך',type:'date',value:d},
-            {k:'amt',label:'הוספנו לארנק',type:'number',value:c?c.amt:'',placeholder:'רק מה שהוספנו, למשל 3000'},
+            {k:'amt',label:'בארנק (סה"כ)',type:'number',value:c?c.amt:(carry>0?carry:''),placeholder:'למשל 3500'},
             {k:'cur',label:'מטבע',type:'select',value:c?c.cur:ccur,options:SPEND_CUR}],
     onOk:function(v){
       var dd=v.d||d, amt=parseFloat(String(v.amt).replace(/[^0-9.]/g,''));
@@ -4537,9 +4543,12 @@ function openCashDlg(d){
       var s2=cashState(dd);
       toast('מזומן ל-'+(fmtWhen(dd)||dd)+': בארנק '+fmtCur(s2.total,s2.cur)+' · נשאר '+fmtCur(s2.left,s2.cur));
     }});
-  /* שינוי התאריך בדיאלוג מביא את הרישום של אותו יום, אם יש */
+  /* שינוי התאריך בדיאלוג מביא את הרישום של אותו יום, ואם אין — את היתרה שנשארה לו מאתמול */
   var di=dlg.querySelector('#hf_d'), ai=dlg.querySelector('#hf_amt'), ci=dlg.querySelector('#hf_cur');
-  if(di&&ai&&ci)di.addEventListener('change',function(){ var e=cashOf(di.value); ai.value=e?e.amt:''; ci.value=e?e.cur:defCurFor(di.value) });
+  if(di&&ai&&ci)di.addEventListener('change',function(){
+    var e=cashOf(di.value), x=e?null:cashState(di.value);
+    ai.value=e?e.amt:((x&&x.carry>0)?x.carry:''); ci.value=e?e.cur:(x?x.cur:defCurFor(di.value));
+  });
   if(ai){ ai.setAttribute('inputmode','decimal'); setTimeout(function(){ai.focus()},90) }
 }
 function renderCash(){
@@ -4551,42 +4560,41 @@ function renderCash(){
   box.className='cash-box'+(st?(st.left<0?' over':(st.pct>=80?' warn':'')):' none');
   var head='<div class="cash-head"><span class="sp-lbl">💵 מזומן ליום</span><span class="cash-when">'+esc(when)+'</span></div>';
   if(!st){
-    box.innerHTML=head+'<p class="cash-empty">עוד לא רשמתם כמה מזומן לקחתם. רשמו, וכל הוצאה במזומן תרד מהיתרה — ומה שנשאר בסוף היום עובר לבד ליום הבא.</p>'+
-      '<div class="cash-ops"><button type="button" class="btn ghost" data-cashdlg="'+esc(d)+'">💵 כמה מזומן לקחנו'+(isT?' היום':'')+'?</button></div>'+
+    box.innerHTML=head+'<p class="cash-empty">עוד לא רשמתם כמה מזומן יש בארנק. רשמו, וכל הוצאה במזומן תרד מהיתרה — ומה שנשאר בסוף היום יוצג מחר.</p>'+
+      '<div class="cash-ops"><button type="button" class="btn ghost" data-cashdlg="'+esc(d)+'">💵 כמה מזומן יש בארנק'+(isT?' היום':'')+'?</button></div>'+
       cashHistHtml(d);
     return;
   }
-  /* תצוגה פשוטה: נשאר (גדול) → בארנק · יצא. הגרירה מאתמול היא שורת משנה אחת. */
+  var fromY=!st.has&&st.carry>0;
   box.innerHTML=head+
     '<div class="cash-row">'+
       '<div class="cash-big"><small>'+(st.left<0?'חריגה':'נשאר')+'</small><b dir="ltr">'+esc(fmtCur(Math.abs(st.left),st.cur))+'</b></div>'+
       '<div class="cash-meta">'+
-        '<span>בארנק '+(isT?'היום':'')+' <b dir="ltr">'+esc(fmtCur(st.total,st.cur))+'</b></span>'+
+        '<span>'+(fromY?'נשאר מאתמול':'בארנק'+(isT?' היום':''))+' <b dir="ltr">'+esc(fmtCur(st.total,st.cur))+'</b></span>'+
         '<span>יצא במזומן <b dir="ltr">'+esc(fmtCur(st.spent,st.cur))+'</b></span>'+
       '</div></div>'+
     '<div class="cash-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="'+st.pct+'"><i style="width:'+st.pct+'%"></i></div>'+
-    (st.carry>0?'<p class="cash-note">מתוכם <b dir="ltr">'+esc(fmtCur(st.carry,st.cur))+'</b> שנשארו מאתמול'+(st.amt>0?', ו-<b dir="ltr">'+esc(fmtCur(st.amt,st.cur))+'</b> שהוספתם '+(isT?'היום':'באותו יום'):'')+'.</p>':'')+
-    (st.left<0?'<p class="cash-note">יצא במזומן יותר ממה שיש בארנק — אולי משכתם עוד? הוסיפו את הסכום ל'+(isT?'היום':'אותו יום')+'.</p>':'')+
-    (st.dropped>0?'<p class="cash-note">ביום הקודם יצא <b dir="ltr">'+esc(fmtCur(st.dropped,st.cur))+'</b> יותר ממה שנרשם — אם משכתם עוד באותו יום, הוסיפו שם את הסכום.</p>':'')+
+    (fromY?'<p class="cash-note">היתרה מאתמול עברה ל'+(isT?'היום':'יום הזה')+'. הוספתם מזומן? עדכנו את הסכום שבארנק.</p>':'')+
+    (st.left<0?'<p class="cash-note">יצא במזומן יותר ממה שיש בארנק — אולי משכתם עוד? עדכנו את הסכום של '+(isT?'היום':'אותו יום')+'.</p>':'')+
+    (st.dropped>0?'<p class="cash-note">ביום הקודם יצא <b dir="ltr">'+esc(fmtCur(st.dropped,st.cur))+'</b> יותר ממה שנרשם. אם משכתם עוד באותו יום, עדכנו שם את הסכום.</p>':'')+
     (st.others.length?'<p class="cash-note">בארנק גם '+st.others.map(function(o){ return '<b dir="ltr">'+esc(fmtCur(o.left,o.cur))+'</b>' }).join(' · ')+' מימים קודמים.</p>':'')+
     (st.other?'<p class="cash-note">'+(st.other===1?'הוצאה אחת במזומן במטבע אחר לא נספרת כאן.':st.other+' הוצאות במזומן במטבע אחר לא נספרות כאן.')+'</p>':'')+
-    '<div class="cash-ops"><button type="button" class="btn ghost" data-cashdlg="'+esc(d)+'">'+(st.amt>0?'✏️ עדכון · יום אחר':'➕ הוספנו מזומן'+(isT?' היום':'')+'?')+'</button>'+
+    '<div class="cash-ops"><button type="button" class="btn ghost" data-cashdlg="'+esc(d)+'">'+(st.has?'✏️ עדכון · יום אחר':'✏️ עדכון הסכום שבארנק')+'</button>'+
       (cashOf(d)?'<button type="button" class="btn ghost" data-cashdel="'+esc(d)+'">🗑️ הסרה</button>':'')+'</div>'+
     cashHistHtml(d);
 }
-/* "לפי ימים": שורה לכל יום פעיל בארנק (ולכל מטבע בו) — בארנק / יצא / נשאר.
-   "בארנק" הוא מה שנשאר מאתמול + מה שהוספנו; הפירוט בשורת משנה קטנה. */
+/* "לפי ימים": שורה לכל יום פעיל בארנק (ולכל מטבע בו) — בארנק / יצא / נשאר. */
 function cashHistHtml(cur){
   var L=cashLedger(), det=document.getElementById('cashHist'), open=det?det.open:false, rows='';
   L.days.slice().reverse().forEach(function(d){
     Object.keys(L.at[d]).forEach(function(c){
-      var e=L.at[d][c]; if(!(e.carry>0||e.amt>0||e.spent>0||e.dropped>0))return;
+      var e=L.at[d][c]; if(!(e.total>0||e.spent>0||e.dropped>0))return;
       /* המטבע פעם אחת בעמודת היום; המספרים חשופים — אחרת עמודת "נשאר" יוצאת מהמסך ב-390px */
       var dec=(c==='ILS'||c==='USD')?2:0, num=function(n){ return money(n,dec) };
       rows+='<tr'+(d===cur?' class="cur"':'')+'><td>'+esc(dayLabel(d).replace(/ · [^·]*$/,''))+' <i dir="ltr">'+esc(CUR_SYM[c]||c)+'</i>'+
-        (e.carry>0&&e.amt>0?'<small>'+num(e.carry)+' מאתמול + '+num(e.amt)+'</small>':e.carry>0?'<small>הכל מאתמול</small>':'')+
+        (!e.has&&e.carry>0?'<small>נשאר מאתמול</small>':'')+
         (e.dropped>0?'<small class="over">חריגה של '+num(e.dropped)+' אתמול לא נגררה</small>':'')+'</td>'+
-        '<td dir="ltr">'+num(e.carry+e.amt)+'</td><td dir="ltr">'+num(e.spent)+'</td>'+
+        '<td dir="ltr">'+num(e.total)+'</td><td dir="ltr">'+num(e.spent)+'</td>'+
         '<td dir="ltr"'+(e.left<0?' class="over"':'')+'>'+num(e.left)+'</td></tr>';
     });
   });
