@@ -727,6 +727,12 @@ h1.title em{font-style:normal;background:linear-gradient(90deg,#F0B35B,#E86A50);
 .rs-stop i{width:11px;height:11px;border-radius:50%;background:var(--gold);border:2px solid #fff2;box-shadow:0 0 0 3px rgba(192,138,45,.25)}
 .rs-stop.tw i{background:#2FBF97}
 .rs-stop.jp i{background:#F0705E}
+.route-strip.mid .rs-stop.past{opacity:.45}
+.route-strip.mid .rs-stop.cur{color:#fff;font-weight:700}
+.route-strip.mid .rs-stop.cur i{width:15px;height:15px;box-shadow:0 0 0 4px rgba(240,179,91,.45),0 0 18px rgba(240,179,91,.55);border-color:#fff}
+.route-strip.mid .rs-stop.cur span::after{content:"אנחנו כאן";display:block;font-size:10px;font-weight:600;color:#F0B35B;line-height:1.2;margin-top:1px}
+.route-strip.mid .rs-stop.cur{transform:translateY(-3px)}
+.rs-stop{transition:opacity .2s}
 .rs-seg{height:2px;min-width:26px;flex:1;background-image:linear-gradient(90deg,#5A6C95 55%,transparent 0);background-size:9px 2px;margin-bottom:26px}
 
 /* hidden חייב לנצח כל display של מחלקה (.btn הוא inline-flex) — אחרת כפתורי
@@ -752,13 +758,15 @@ main{padding:30px 0 70px}
 section.pane{display:none}
 section.pane.on{display:block;animation:fade .25s ease}
 @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
-.pane-head{margin:6px 0 20px}
-.pane-head h2{font-family:'Rubik',sans-serif;font-size:27px}
+.pane-head{margin:6px 0 22px}
+.pane-head h2{font-family:'Rubik',sans-serif;font-size:27px;line-height:1.25;letter-spacing:-.01em}
+.pane-head h2::after{content:"";display:block;width:38px;height:4px;border-radius:4px;margin-top:8px;
+  background:linear-gradient(90deg,#F0B35B,var(--gold))}
 /* form controls: never wider than the screen; 16px stops iOS auto-zoom on focus */
 select,input,button,textarea{font-family:inherit;max-width:100%}
 select,input{font-size:16px}
 select{width:100%;min-width:0;text-overflow:ellipsis}
-.pane-head p{color:var(--muted);font-size:14.5px}
+.pane-head p{color:var(--muted);font-size:14.5px;margin-top:8px;max-width:64ch}
 
 /* overview cards */
 .ov-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(230px,100%),1fr));gap:14px;margin-bottom:22px}
@@ -787,12 +795,22 @@ details.day.jp .day-num{background:linear-gradient(160deg,#C93425,#E45A48)}
 .day-head h3{font-size:16.5px;font-weight:700;line-height:1.35}
 .day-meta{display:flex;gap:10px;font-size:12px;color:var(--muted);flex-wrap:wrap}
 .d-date{font-family:'IBM Plex Mono',monospace;font-weight:600;color:var(--ink2)}
-.chev{color:var(--muted);transition:transform .2s;font-size:15px}
+.chev{color:var(--muted);transition:transform .2s,background .15s;font-size:12px;width:30px;height:30px;border-radius:50%;
+  background:var(--paper);display:grid;place-items:center;flex:0 0 auto}
+details.day[open]>summary .chev{background:var(--tw-soft);color:#0B7159}
+details.day.jp[open]>summary .chev{background:var(--jp-soft);color:#AD2919}
 details[open]>summary .chev{transform:rotate(180deg)}
 .day-body{padding:4px 20px 20px;border-top:1px dashed var(--line)}
-.day-body p{margin:9px 0;color:#2A3550}
+.day-body p{margin:9px 0;color:#2A3550;max-width:78ch}
 .day-body p.tline{margin-top:16px}
-.tchip{display:inline-block;font-family:'IBM Plex Mono',monospace;font-size:12.5px;font-weight:600;background:var(--ink);color:#fff;border-radius:7px;padding:2px 9px;margin-inline-end:6px}
+.tchip{display:inline-block;font-family:'IBM Plex Mono',monospace;font-size:12.5px;font-weight:600;background:var(--ink);color:#fff;border-radius:7px;padding:2px 9px;margin-inline-end:6px;vertical-align:1px}
+.day-body p.tline{padding:10px 12px;background:var(--paper);border-radius:12px;border:1px solid var(--line)}
+.day-body p.tline>strong{display:inline}
+.day-body p.tline{max-width:none}
+/* שורת הסה"כ בתקציב: מודגשת ומופרדת, במקום מקפים */
+#costSum .clock.cost-tot{border-top:2px solid var(--line);border-bottom:0;margin-top:4px;padding-top:12px}
+#costSum .clock.cost-tot>span{font-weight:700;color:var(--ink)}
+#costSum .clock.cost-tot b{color:#0B7159}
 details.day.tw .tchip{background:var(--tw)}
 details.day.jp .tchip{background:var(--jp)}
 .pack-flag{margin:14px 0 4px;background:#FFF4E2;border:1px dashed #E4C98E;color:#7A5A16;border-radius:10px;padding:9px 13px;font-weight:600;font-size:14px}
@@ -810,8 +828,9 @@ details.day.is-today{box-shadow:0 0 0 2px var(--gold,#c9922b) inset}
 .today-hint{font-size:12.5px;color:var(--muted);align-self:center}
 .off-badge{font-size:12px;color:#9a6b00;border:1px solid currentColor;border-radius:20px;padding:2px 9px;align-self:center}
 .jump-day{margin-bottom:16px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-.jump-day select,.jump-day button{font-family:inherit;font-size:14px;border:1px solid var(--line);background:#fff;border-radius:10px;padding:8px 12px;cursor:pointer;color:var(--ink)}
-.jump-day button:hover{background:#F5F7F6}
+.jump-day select,.jump-day button{font-family:inherit;font-size:14px;font-weight:600;border:1px solid var(--line);background:var(--card);border-radius:12px;padding:8px 14px;min-height:42px;cursor:pointer;color:var(--ink);box-shadow:0 1px 2px rgba(20,31,56,.04);transition:border-color .16s,box-shadow .16s,transform .1s}
+.jump-day button:hover{border-color:var(--tw);box-shadow:0 4px 14px -8px rgba(20,31,56,.4)}
+.jump-day button:active{transform:scale(.975)}
 
 /* flights */
 .fl-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(310px,100%),1fr));gap:16px}
@@ -869,7 +888,10 @@ details.day.is-today{box-shadow:0 0 0 2px var(--gold,#c9922b) inset}
 .hotel-total{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;background:var(--ink);color:#fff;border-radius:14px;padding:16px 18px;margin-top:14px}
 .hotel-total b{font-size:22px;font-family:'IBM Plex Mono',monospace;color:#F0B35B}
 .hotel-total small{color:#B9C3DB}
-@media(max-width:720px){.hotel-row{grid-template-columns:1fr;gap:8px}.h-price{text-align:start}}
+@media(max-width:720px){
+  .hotel-row{grid-template-columns:1fr auto;grid-template-areas:"main price" "notes notes";gap:8px 12px;align-items:start}
+  .h-main{grid-area:main;min-width:0}.h-price{grid-area:price;text-align:left;padding-top:2px}
+  .h-notes{grid-area:notes;border-top:1px dashed var(--line);padding-top:8px;margin-top:2px}}
 
 /* map */
 #map{height:520px;border-radius:var(--r);border:1px solid var(--line);box-shadow:var(--shadow);z-index:1}
@@ -917,7 +939,9 @@ label.chk input:focus-visible+.box{outline:2px solid var(--gold);outline-offset:
 .tool h3{font-size:16px;margin-bottom:12px}
 .clock{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:9px 0;border-bottom:1px dashed #EEF1EE}
 .clock>span:first-child{white-space:normal;min-width:0;overflow-wrap:anywhere}
-@media(max-width:430px){.clock{flex-wrap:wrap;gap:2px 10px}.clock>span:first-child{white-space:normal;flex:1 1 100%}.clock .c-val{align-items:flex-start}}
+/* בנייד רק כרטיס החירום (תוויות ארוכות + מספר טלפון) נשבר לשתי שורות; בשאר התווית והערך נשארים בשורה אחת */
+@media(max-width:430px){#sosCard .clock{flex-wrap:wrap;gap:2px 10px}#sosCard .clock>span:first-child{white-space:normal;flex:1 1 100%}#sosCard .clock .c-val{align-items:flex-start}
+  .clock>span:first-child{flex:1 1 auto}.clock>span:last-child,.clock>b{flex:0 0 auto}}
 .clock:last-child{border-bottom:0}
 .clock b{font-family:'IBM Plex Mono',monospace;font-size:21px}
 .clock small{font-size:12px}
@@ -974,6 +998,7 @@ a.place.k-sight{border-inline-start:3px solid var(--tw)}
 .pl-tools{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:14px;
   margin-bottom:18px;box-shadow:var(--shadow);position:sticky;top:60px;z-index:60}
 #plSearch{width:100%;padding:12px 14px;border:1px solid var(--line);border-radius:11px;background:var(--paper);min-height:48px}
+#plSearch:focus{outline:2px solid var(--tw);border-color:transparent}
 .pl-filters{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
 .pl-f{border:1px solid var(--line);background:var(--paper);border-radius:20px;padding:7px 13px;
   font-size:13px;cursor:pointer;color:var(--ink2);min-height:38px}
@@ -994,9 +1019,10 @@ a.place.k-sight{border-inline-start:3px solid var(--tw)}
 .pl-day.ml h3 .pl-t{font-weight:700}
 /* doc tables */
 .tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:10px 0}
-.doc-tbl{width:100%;border-collapse:collapse;font-size:14px;background:var(--card)}
-.doc-tbl th{background:var(--tw-soft);color:var(--ink);font-weight:700;padding:9px 10px;text-align:right;border:1px solid var(--line)}
-.doc-tbl td{padding:9px 10px;border:1px solid var(--line);vertical-align:top}
+.doc-tbl{width:100%;border-collapse:collapse;font-size:14px;background:var(--card);border-radius:12px;overflow:hidden;border:1px solid var(--line)}
+.doc-tbl th{background:var(--paper);color:var(--ink2);font-weight:700;font-size:12.5px;padding:9px 10px;text-align:right;border:0;border-bottom:1px solid var(--line);white-space:nowrap}
+.doc-tbl td{padding:9px 10px;border:0;border-bottom:1px solid var(--line);vertical-align:top}
+.doc-tbl tbody tr:last-child td{border-bottom:0}
 /* reminders */
 .rem{display:grid;grid-template-columns:170px 1fr;gap:14px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin-bottom:10px;box-shadow:var(--shadow);border-inline-start:4px solid var(--line)}
 .rem.hot{border-inline-start-color:var(--jp)}
@@ -1258,7 +1284,7 @@ a.food-item:hover .f-go{color:var(--tw)}
   .car-req.warn{background:#331E1C;color:#F3C9C2}
   .jump-day select,.jump-day button{background:var(--card);color:var(--ink);border-color:var(--line)}
   .jump-day button:hover{background:#1E2942}
-  .cur-row input,#plSearch,.pl-f,.rate-edit input{background:#121A2C;color:var(--ink);border-color:var(--line)}
+  .cur-row input,#plSearch,.pl-f,.rate-edit input{background-color:#121A2C;color:var(--ink);border-color:var(--line)}
   .cur-btn{background:var(--card);color:var(--muted)}
   .pl-f.on{background:var(--ink);color:var(--paper);border-color:var(--ink)}
   /* משטחים הפוכים: רקע כהה בבהיר -> חייב טקסט כהה בכהה */
@@ -1513,6 +1539,41 @@ body.has-upd .hm-toast{bottom:calc(82px + env(safe-area-inset-bottom))}
   .cost-tbl td.cost-ops{padding:5px 4px}
 }
 
+/* ===== מתיחת פנים UI (7.9.2026): שדות חיפוש, בוררים, טאבים קצרים בנייד, הירו קומפקטי ===== */
+#daySearch,#plSearch,#fdSearch{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238A94A8' stroke-width='2.2' stroke-linecap='round'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='m20 20-3.6-3.6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 13px center;background-size:18px 18px;
+  padding-inline-start:40px}
+#daySearch{padding:11px 40px 11px 40px}
+#daySearch::placeholder,#plSearch::placeholder,#fdSearch::placeholder{color:var(--muted);opacity:.9}
+/* בוררים: חץ אחיד במקום המראה של הדפדפן */
+#daySel,#wxCity,.spend-filt select,.hm-f select{-webkit-appearance:none;appearance:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238A94A8' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:left 12px center;background-size:16px 16px;
+  padding-inline-end:36px}
+/* טאבים: תווית מלאה בדסקטופ, קצרה בנייד */
+.tab .t-short{display:none}
+@media(max-width:760px){
+  .tab .t-full{display:none}.tab .t-short{display:inline}
+  .tab{padding:8px 11px;min-height:40px;font-size:13.5px;gap:6px}
+  .tabs-in{gap:3px;padding-block:7px}
+  /* הירו: הדגלים בשורת הכותרת העליונה במקום בשורה משלהם — חוסך ~50px */
+  .hero-top{position:relative;flex-wrap:nowrap}
+  .hero-flags{position:absolute;top:-4px;left:0;font-size:21px;letter-spacing:2px}
+  .hero-eyebrow{padding-inline-end:70px}
+  /* רצועת המסלול: קצוות רכים במקום נקודה חתוכה */
+  .route-strip{-webkit-mask:linear-gradient(90deg,transparent,#000 22px,#000 calc(100% - 22px),transparent);
+    mask:linear-gradient(90deg,transparent,#000 22px,#000 calc(100% - 22px),transparent);scrollbar-width:none}
+  .route-strip::-webkit-scrollbar{display:none}
+  body.mid-trip .route-strip{margin-top:12px;padding-bottom:10px}
+  /* פאנל היום: שתי עמודות, תיבת ההוצאות ברוחב מלא */
+  .td-grid{grid-template-columns:1fr 1fr;gap:8px}
+  .td-box:nth-child(4){grid-column:1/-1}
+  .td-box{padding:9px 10px}
+  .td-box b{font-size:13.5px}
+  .td-link{font-size:13.5px}
+  #todayPanel{padding:15px 14px 14px}
+  .td-title{font-size:19px;margin:8px 0 10px}
+  .day-body p.tline{padding:9px 10px}
+}
+
 /* ===== מצב כהה עבור רכיבי העריכה החדשים ===== */
 @media (prefers-color-scheme: dark){
   .iconbtn{background:#121A2C;color:var(--ink2)}
@@ -1521,7 +1582,7 @@ body.has-upd .hm-toast{bottom:calc(82px + env(safe-area-inset-bottom))}
   .btn.ghost{background:transparent}
   .btn.danger{border-color:#5A3330;color:#F3A79C}
   .btn.danger:hover{background:#331E1C;border-color:#8A3A2E}
-  .hm-f input,.hm-f textarea,.hm-f select,#fdSearch{background:#121A2C;color:var(--ink);border-color:var(--line)}
+  .hm-f input,.hm-f textarea,.hm-f select,#fdSearch{background-color:#121A2C;color:var(--ink);border-color:var(--line)}
   .hm-dlg{background:#161F33}
   .hm-dlg::backdrop{background:rgba(4,8,18,.72)}
   .mynote .nb{background:#13342C;border-color:#1E5044}
@@ -1543,7 +1604,7 @@ body.has-upd .hm-toast{bottom:calc(82px + env(safe-area-inset-bottom))}
   .spend-pay.cash{background:#13342C;color:#7FE3C4}
   .spend-pay.card{background:#1E2942;color:#B9C3DB}
   .spend-amt small.spend-fee,.spend-amt small.spend-fee b{color:#E8C170}
-  .cash-big b,.cash-day{color:#7FE3C4}
+  .cash-big b,.cash-day,#costSum .clock.cost-tot b{color:#7FE3C4}
   .cash-tbl td small.over,.cash-tbl td.over{color:#FF8A7A}
   .cash-tbl tr.cur td{background:rgba(127,227,196,.12)}
   .cash-box.over .cash-big b,.cash-day.over{color:#FF8A7A}
@@ -1557,7 +1618,15 @@ body.has-upd .hm-toast{bottom:calc(82px + env(safe-area-inset-bottom))}
   .sp-tile.cash b{color:#7FE3C4}
   .sp-tile.card b{color:#B9C3DB}
   .fee-edit{background:#13342C;color:#7FE3C4}
-  #daySearch,#wxCity{background:#121A2C;color:var(--ink);border-color:var(--line)}
+  #daySearch,#wxCity{background-color:#121A2C;color:var(--ink);border-color:var(--line)}
+  #plSearch,#fdSearch{background-color:#121A2C}
+  .day-body p.tline{background:#121A2C;border-color:#26314B}
+  .chev{background:#1E2942}
+  details.day[open]>summary .chev{background:#13342C;color:#7FE3C4}
+  details.day.jp[open]>summary .chev{background:#3A1F1C;color:#F6A99C}
+  .doc-tbl th{background:#121A2C;color:var(--ink2)}
+  .jump-day select,.jump-day button{box-shadow:none}
+  .h-notes{border-color:#2A3550}
   .wx-day{background:#121A2C;border-color:#26314B}
   #todayPanel{box-shadow:0 1px 2px rgba(0,0,0,.5),0 12px 34px -14px rgba(0,0,0,.7)}
 }
@@ -1576,22 +1645,22 @@ body.has-upd .hm-toast{bottom:calc(82px + env(safe-area-inset-bottom))}
       <div class="hero-flags">🇹🇼 🇯🇵</div>
     </div>
     <div class="countdown" id="countdown"></div>
-    <div class="route-strip"><div class="rs-stop tw"><i></i><span>טאיפיי</span></div><div class="rs-seg"></div><div class="rs-stop tw"><i></i><span>וואיאאו</span></div><div class="rs-seg"></div><div class="rs-stop tw"><i></i><span>טאיטונג</span></div><div class="rs-seg"></div><div class="rs-stop tw"><i></i><span>קנטינג</span></div><div class="rs-seg"></div><div class="rs-stop tw"><i></i><span>אלישאן</span></div><div class="rs-seg"></div><div class="rs-stop tw"><i></i><span>סאן מון לייק</span></div><div class="rs-seg"></div><div class="rs-stop tw"><i></i><span>טאיפיי</span></div><div class="rs-seg"></div><div class="rs-stop jp"><i></i><span>אוסקה</span></div><div class="rs-seg"></div><div class="rs-stop jp"><i></i><span>קיוטו</span></div><div class="rs-seg"></div><div class="rs-stop jp"><i></i><span>טאקיאמה</span></div><div class="rs-seg"></div><div class="rs-stop jp"><i></i><span>מאצומוטו</span></div><div class="rs-seg"></div><div class="rs-stop jp"><i></i><span>טוקיו</span></div></div>
+    <div class="route-strip"><div class="rs-stop tw" data-days="1-4"><i></i><span>טאיפיי</span></div><div class="rs-seg"></div><div class="rs-stop tw" data-days="5-6"><i></i><span>וואיאאו</span></div><div class="rs-seg"></div><div class="rs-stop tw" data-days="7-9"><i></i><span>טאיטונג</span></div><div class="rs-seg"></div><div class="rs-stop tw" data-days="10-12"><i></i><span>קנטינג</span></div><div class="rs-seg"></div><div class="rs-stop tw" data-days="13-15"><i></i><span>אלישאן</span></div><div class="rs-seg"></div><div class="rs-stop tw" data-days="16-17"><i></i><span>סאן מון לייק</span></div><div class="rs-seg"></div><div class="rs-stop tw" data-days="18-18"><i></i><span>טאיפיי</span></div><div class="rs-seg"></div><div class="rs-stop jp" data-days="19-20"><i></i><span>אוסקה</span></div><div class="rs-seg"></div><div class="rs-stop jp" data-days="21-24"><i></i><span>קיוטו</span></div><div class="rs-seg"></div><div class="rs-stop jp" data-days="25-27"><i></i><span>טאקיאמה</span></div><div class="rs-seg"></div><div class="rs-stop jp" data-days="28-28"><i></i><span>מאצומוטו</span></div><div class="rs-seg"></div><div class="rs-stop jp" data-days="29-36"><i></i><span>טוקיו</span></div></div>
   </div>
 </header>
 
   <nav class="tabs" aria-label="ניווט ראשי"><div class="wrap tabs-in">
-    <button class="tab" data-pane="pane-overview"><span class="t-ic" aria-hidden="true">🧭</span>סקירה</button>
-    <button class="tab" data-pane="pane-days"><span class="t-ic" aria-hidden="true">🗓️</span>היומן · 36 ימים</button>
-    <button class="tab" data-pane="pane-money"><span class="t-ic" aria-hidden="true">💸</span>הוצאות</button>
-    <button class="tab" data-pane="pane-food"><span class="t-ic" aria-hidden="true">🍜</span>איפה אוכלים</button>
-    <button class="tab" data-pane="pane-places"><span class="t-ic" aria-hidden="true">📍</span>כל המקומות</button>
-    <button class="tab" data-pane="pane-map"><span class="t-ic" aria-hidden="true">🗺️</span>מפת המסלול</button>
-    <button class="tab" data-pane="pane-hotels"><span class="t-ic" aria-hidden="true">🏨</span>מלונות</button>
-    <button class="tab" data-pane="pane-flights"><span class="t-ic" aria-hidden="true">✈️</span>טיסות ורכב</button>
-    <button class="tab" data-pane="pane-rem"><span class="t-ic" aria-hidden="true">⏰</span>תזכורות</button>
-    <button class="tab" data-pane="pane-check"><span class="t-ic" aria-hidden="true">✅</span>צ׳קליסט</button>
-    <button class="tab" data-pane="pane-tools"><span class="t-ic" aria-hidden="true">🧰</span>כלים</button>
+    <button class="tab" data-pane="pane-overview"><span class="t-ic" aria-hidden="true">🧭</span><span class="t-full">סקירה</span><span class="t-short">סקירה</span></button>
+    <button class="tab" data-pane="pane-days"><span class="t-ic" aria-hidden="true">🗓️</span><span class="t-full">היומן · 36 ימים</span><span class="t-short">היומן</span></button>
+    <button class="tab" data-pane="pane-money"><span class="t-ic" aria-hidden="true">💸</span><span class="t-full">הוצאות</span><span class="t-short">הוצאות</span></button>
+    <button class="tab" data-pane="pane-food"><span class="t-ic" aria-hidden="true">🍜</span><span class="t-full">איפה אוכלים</span><span class="t-short">אוכל</span></button>
+    <button class="tab" data-pane="pane-places"><span class="t-ic" aria-hidden="true">📍</span><span class="t-full">כל המקומות</span><span class="t-short">מקומות</span></button>
+    <button class="tab" data-pane="pane-map"><span class="t-ic" aria-hidden="true">🗺️</span><span class="t-full">מפת המסלול</span><span class="t-short">מפה</span></button>
+    <button class="tab" data-pane="pane-hotels"><span class="t-ic" aria-hidden="true">🏨</span><span class="t-full">מלונות</span><span class="t-short">מלונות</span></button>
+    <button class="tab" data-pane="pane-flights"><span class="t-ic" aria-hidden="true">✈️</span><span class="t-full">טיסות ורכב</span><span class="t-short">טיסות</span></button>
+    <button class="tab" data-pane="pane-rem"><span class="t-ic" aria-hidden="true">⏰</span><span class="t-full">תזכורות</span><span class="t-short">תזכורות</span></button>
+    <button class="tab" data-pane="pane-check"><span class="t-ic" aria-hidden="true">✅</span><span class="t-full">צ׳קליסט</span><span class="t-short">צ׳קליסט</span></button>
+    <button class="tab" data-pane="pane-tools"><span class="t-ic" aria-hidden="true">🧰</span><span class="t-full">כלים</span><span class="t-short">כלים</span></button>
   </div></nav>
 
 <main class="wrap">
@@ -3056,7 +3125,7 @@ body.has-upd .hm-toast{bottom:calc(82px + env(safe-area-inset-bottom))}
       <p class="tool-note" id="wxNote">טוען…</p>
     </div>
 
-    <div class="tool"><h3>🆘 חירום ומספרים חשובים</h3>
+    <div class="tool" id="sosCard"><h3>🆘 חירום ומספרים חשובים</h3>
       <div class="clock"><span>משטרה · טאיוואן ויפן</span><b style="font-size:16px"><a class="tel-link" href="tel:110">110</a></b></div>
       <div class="clock"><span>אמבולנס ומכבי אש · שתיהן</span><b style="font-size:16px"><a class="tel-link" href="tel:119">119</a></b></div>
       <div class="clock"><span>קו סיוע לתיירים · טאיוואן <small class="c-off">(חינם בטאיוואן)</small></span><b style="font-size:15px"><a class="tel-link" href="tel:0800011765">0800-011-765</a></b></div>
@@ -4036,7 +4105,7 @@ function renderCosts(){
       if(!x||!x.n)return '';
       return '<div class="clock"><span>'+c[1]+' \u00b7 '+x.n+'</span><b style="font-size:16px">'+costMoney(x.sum)+' \u20aa</b></div>';
     }).join('')+
-    '<div class="clock"><span class="muted">\u2014 \u05e1\u05d4"\u05db \u05e9\u05d5\u05dc\u05dd \u05de\u05e8\u05d0\u05e9 \u2014</span><b style="font-size:17px">'+costMoney(total)+' \u20aa</b></div>';
+    '<div class="clock cost-tot"><span>\u05e1\u05d4"\u05db \u05e9\u05d5\u05dc\u05dd \u05de\u05e8\u05d0\u05e9</span><b style="font-size:19px">'+costMoney(total)+' \u20aa</b></div>';
   }
 
   /* \u05e1\u05d5\u05e4\u05e8\u05d9\u05dd \u05de\u05d4 \u05e9\u05e0\u05e8\u05d0\u05d4 \u05e2\u05db\u05e9\u05d9\u05d5, \u05dc\u05d0 \u05d0\u05ea \u05de\u05e6\u05d1\u05d5\u05ea \u05d4\u05de\u05d7\u05d9\u05e7\u05d4 \u2014 \u05d0\u05d7\u05e8\u05d9 \u05e9\u05d7\u05d6\u05d5\u05e8 \u05dc\u05de\u05e7\u05d5\u05e8 \u05d4\u05de\u05d5\u05e0\u05d4 \u05e6\u05e8\u05d9\u05da \u05dc\u05d4\u05ea\u05d0\u05e4\u05e1 */
@@ -4942,6 +5011,29 @@ function tickCd(){
   }
 }
 tickCd();setInterval(tickCd,1000);
+/* רצועת המסלול בהירו: העצירה הנוכחית מודגשת, מה שעבר מעומעם, ובנייד הרצועה
+   נגללת אל העצירה הנוכחית — כדי לענות על "איפה אנחנו" במבט אחד */
+(function(){
+  var last=null;
+  function mark(){
+    var now=new Date(), day=(now>=DEP&&now<=RET)?Math.min(36,Math.max(1,Math.floor((now-new Date(2026,8,2))/86400000)+1)):0;
+    if(day===last)return; last=day;
+    var strip=document.querySelector('.route-strip'); if(!strip)return;
+    var cur=null;
+    strip.querySelectorAll('.rs-stop').forEach(function(st){
+      var r=(st.getAttribute('data-days')||'').split('-'), a=+r[0], b=+r[1]||a;
+      var on=day>=a&&day<=b, past=day>b;
+      st.classList.toggle('cur',on); st.classList.toggle('past',past);
+      if(on)cur=st;
+    });
+    strip.classList.toggle('mid',day>0);
+    if(cur){
+      var x=cur.offsetLeft-(strip.clientWidth-cur.offsetWidth)/2;
+      try{strip.scrollTo({left:x})}catch(e){strip.scrollLeft=x}
+    }
+  }
+  mark(); setInterval(mark,60000);
+})();
 
 // ---- jump to today's day / selector ----
 const daySel=document.getElementById('daySel');
