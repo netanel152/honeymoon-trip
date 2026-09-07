@@ -730,8 +730,10 @@ h1.title em{font-style:normal;background:linear-gradient(90deg,#F0B35B,#E86A50);
 .route-strip.mid .rs-stop.past{opacity:.45}
 .route-strip.mid .rs-stop.cur{color:#fff;font-weight:700}
 .route-strip.mid .rs-stop.cur i{width:15px;height:15px;box-shadow:0 0 0 4px rgba(240,179,91,.45),0 0 18px rgba(240,179,91,.55);border-color:#fff}
-.route-strip.mid .rs-stop.cur span::after{content:"אנחנו כאן";display:block;font-size:10px;font-weight:600;color:#F0B35B;line-height:1.2;margin-top:1px}
-.route-strip.mid .rs-stop.cur{transform:translateY(-3px)}
+.rs-stop span{position:relative}
+.route-strip.mid .rs-stop.cur span::after{content:"אנחנו כאן";position:absolute;top:100%;left:50%;transform:translateX(-50%);
+  white-space:nowrap;font-size:10.5px;font-weight:700;color:#F0B35B;line-height:1.2;margin-top:2px}
+.route-strip.mid{padding-bottom:32px}
 .rs-stop{transition:opacity .2s}
 .rs-seg{height:2px;min-width:26px;flex:1;background-image:linear-gradient(90deg,#5A6C95 55%,transparent 0);background-size:9px 2px;margin-bottom:26px}
 
@@ -1176,6 +1178,11 @@ nav.tabs.over::before,nav.tabs.over::after{opacity:1}
 .hm-f input,.hm-f textarea,.hm-f select{width:100%;border:1px solid var(--line);border-radius:12px;padding:10px 12px;
   background:var(--paper);color:var(--ink);font-size:16px;font-family:inherit;line-height:1.6}
 .hm-f textarea{min-height:82px;resize:vertical}
+/* iOS מרכז input[type=date] ומצמצם את גובהו — מיישרים כמו שאר השדות */
+.hm-f input[type=date],.hm-f input[type=time],.hm-f input[type=number],.hm-f input[type=text]{-webkit-appearance:none;appearance:none;
+  display:block;width:100%;min-height:46px;text-align:start;box-sizing:border-box}
+.hm-f input::-webkit-date-and-time-value{text-align:start;direction:rtl;margin:0}
+.hm-f input::-webkit-datetime-edit{padding:0;display:inline-block}
 .hm-f input:focus,.hm-f textarea:focus,.hm-f select:focus{outline:2px solid var(--tw);outline-offset:1px;border-color:var(--tw)}
 .hm-msg{font-size:14.5px;color:var(--ink2);line-height:1.75}
 /* רמז חי מתחת לשדה בדיאלוג (ארנק המזומן: מה המשמעות של הבחירה + כמה יישאר) */
@@ -1559,10 +1566,10 @@ body.has-upd .hm-toast{bottom:calc(82px + env(safe-area-inset-bottom))}
   .hero-flags{position:absolute;top:-4px;left:0;font-size:21px;letter-spacing:2px}
   .hero-eyebrow{padding-inline-end:70px}
   /* רצועת המסלול: קצוות רכים במקום נקודה חתוכה */
-  .route-strip{-webkit-mask:linear-gradient(90deg,transparent,#000 22px,#000 calc(100% - 22px),transparent);
-    mask:linear-gradient(90deg,transparent,#000 22px,#000 calc(100% - 22px),transparent);scrollbar-width:none}
+  .route-strip{-webkit-mask:linear-gradient(90deg,transparent,#000 12px,#000 calc(100% - 12px),transparent);
+    mask:linear-gradient(90deg,transparent,#000 12px,#000 calc(100% - 12px),transparent);scrollbar-width:none}
   .route-strip::-webkit-scrollbar{display:none}
-  body.mid-trip .route-strip{margin-top:12px;padding-bottom:10px}
+  body.mid-trip .route-strip{margin-top:12px;padding-bottom:28px}
   /* פאנל היום: שתי עמודות, תיבת ההוצאות ברוחב מלא */
   .td-grid{grid-template-columns:1fr 1fr;gap:8px}
   .td-box:nth-child(4){grid-column:1/-1}
@@ -1572,6 +1579,31 @@ body.has-upd .hm-toast{bottom:calc(82px + env(safe-area-inset-bottom))}
   #todayPanel{padding:15px 14px 14px}
   .td-title{font-size:19px;margin:8px 0 10px}
   .day-body p.tline{padding:9px 10px}
+}
+
+/* סקירה: בזמן הטיול הסדר הוא היום → תזכורות → איפה אנחנו במסלול → פרטי הטיול */
+#pane-overview.on{display:flex;flex-direction:column}
+#todayPanel{order:0}
+body.mid-trip #ovRem{order:1}
+body.mid-trip #ovStruct{order:2}
+body.mid-trip #ovFacts{order:3}
+body.mid-trip #ovStruct .pane-head{margin-top:0}
+body.mid-trip #ovFacts .pane-head{margin-top:26px}
+body.mid-trip .ov-pre{display:none}
+body:not(.mid-trip) .ov-mid{display:none}
+.ov-struct .ov-card{position:relative;transition:opacity .2s}
+.ov-struct .ov-card.past{opacity:.55}
+.ov-struct .ov-card.cur{border-color:var(--gold);box-shadow:0 0 0 2px var(--gold) inset,var(--shadow)}
+.ov-struct .ov-card.cur::after{content:"📍 אנחנו כאן";position:absolute;top:12px;inset-inline-end:12px;background:var(--gold);color:#221A05;
+  font-size:11px;font-weight:800;border-radius:999px;padding:2px 9px;line-height:1.5}
+.ov-struct .ov-card.cur small{padding-inline-end:96px}
+@media(max-width:760px){
+  .ov-struct{grid-template-columns:1fr 1fr;gap:8px}
+  .ov-struct .ov-card{padding:12px 12px 11px}
+  .ov-struct .ov-card b{font-size:16.5px}
+  .ov-struct .ov-card p{font-size:12.5px;line-height:1.5}
+  .ov-struct .ov-card.cur::after{top:10px;inset-inline-end:8px;font-size:10px;padding:1px 7px}
+  .ov-struct .ov-card.cur small{padding-inline-end:0;padding-bottom:20px}
 }
 
 /* ===== מצב כהה עבור רכיבי העריכה החדשים ===== */
@@ -1667,29 +1699,35 @@ body.has-upd .hm-toast{bottom:calc(82px + env(safe-area-inset-bottom))}
 
 <section class="pane" id="pane-overview">
   <div id="todayPanel" hidden></div>
-  <div class="pane-head"><h2>שלום עדי ונתנאל 👋</h2><p>הכל מעודכן לפי אישור הטיסות של אמירייטס מ-23.8, מסמך המסלול ואישור השכרת הרכב.</p></div>
+  <div class="ov-sec" id="ovFacts">
+  <div class="pane-head"><h2><span class="ov-pre">שלום עדי ונתנאל 👋</span><span class="ov-mid">✈️ פרטי הטיול</span></h2><p class="ov-pre">הכל מעודכן לפי אישור הטיסות של אמירייטס מ-23.8, מסמך המסלול ואישור השכרת הרכב.</p></div>
   <div class="ov-grid">
-<div class="ov-card next-up"><small>✈️ הטיסה הראשונה</small><b>EK 2346 · 1.9 · 20:45</b><p>נתב"ג → דובאי (נחיתה 01:30) · המשך ב-EK366 ב-<strong>06:30</strong> (נדחתה מ-04:05) · נחיתה בטאיפיי <strong>19:00</strong></p></div>
-<div class="ov-card"><small>📅 משך הטיול</small><b>36 ימים · 35 לילות</b><p>1.9 → 8.10.2026 · טאיוואן (18 ימים) + יפן (18 ימים)</p></div>
+<div class="ov-card next-up" id="ovFlight"><small>✈️ הטיסה הראשונה</small><b>EK 2346 · 1.9 · 20:45</b><p>נתב"ג → דובאי (נחיתה 01:30) · המשך ב-EK366 ב-<strong>06:30</strong> (נדחתה מ-04:05) · נחיתה בטאיפיי <strong>19:00</strong></p></div>
+<div class="ov-card" id="ovDur"><small>📅 משך הטיול</small><b>36 ימים · 35 לילות</b><p>1.9 → 8.10.2026 · טאיוואן (18 ימים) + יפן (18 ימים)</p></div>
 <div class="ov-card"><small>🏨 לינות</small><b>13 מלונות</b><p>מטאיפיי ועד שינג׳וקו · כל הלינות סגורות ✓</p></div>
 <div class="ov-card"><small>🚙 רכב בטאיוואן</small><b>Nissan Kicks · 14 ימים</b><p>איסוף 6.9 09:00 · החזרה 19.9 עד 17:00 · סניף Yuanshan</p></div>
 </div>
+  </div>
+  <div class="ov-sec" id="ovRem">
   <div class="pane-head"><h2 style="font-size:21px">תזכורות דחופות</h2></div>
   <div class="rem info" data-due="2026-09-20"><div class="rem-when">✅ הוזמן · לאיסוף בהגעה ליפן<span class="rem-badge" hidden></span></div><div class="rem-body"><b>קיוטו→טאקיאמה 26.9 — הכרטיסים כבר קנויים (505.02 ₪ לשניכם)</b><p>Nozomi 2 · קיוטו 08:45 ← נאגויה 09:19 (קרון 4, מושבים 11A-B) · החלפה 20 דק׳ · Hida 5 · נאגויה 09:39 ← טאקיאמה 12:14 (קרון 6, מושבים 11A-B) · לאסוף כרטיסים פיזיים במכונה הירוקה של JR עם ה-QR מהאפליקציה</p></div></div>
 <div class="rem warn" data-due="2026-09-26"><div class="rem-when">בערב של 26.9, בטאקיאמה<span class="rem-badge" hidden></span></div><div class="rem-body"><b>לקנות במקום כרטיס אוטובוס לשירקאווה-גו — ל-27.9</b><p>אין הזמנה אונליין לקו הרגיל · Takayama Nohi Bus Center (פתוח 06:15–19:00, דקה מהמלון) · מבקשים "Round-trip ticket to Shirakawa-go for tomorrow (Non-reserved)" · מזומן או אשראי · היעד: אוטובוס 08:50 מגיע 09:40, חזור 15:15</p></div></div>
 <div class="rem info" data-due="2026-09-20"><div class="rem-when">✅ הוזמן · לאיסוף בהגעה ליפן<span class="rem-badge" hidden></span></div><div class="rem-body"><b>מאצומוטו→שינג׳וקו 30.9 — הכרטיסים כבר קנויים (281.71 ₪ לשניכם)</b><p>JR Limited Express Azusa 30 · מאצומוטו 13:10 ← שינג׳וקו 15:43 (2:33, ישיר) · קרון 7, מושבים 1A-B · מספר הזמנה Klook: QHY636100 · לסרוק את ה-QR מהאפליקציה במכונה הירוקה של JR</p></div></div>
+  </div>
+  <div class="ov-sec" id="ovStruct">
   <div class="pane-head" style="margin-top:26px"><h2 style="font-size:21px">מבנה הטיול</h2></div>
-  <div class="ov-grid">
-    <div class="ov-card"><small>🇹🇼 ימים 1–4</small><b>טאיפיי</b><p>שימנדינג · שיפן וגיופן · יאנגמינגשאן · שווקי לילה</p></div>
-    <div class="ov-card"><small>🇹🇼 ימים 5–6</small><b>וואיאאו</b><p>החוף השחור · גלישה · ג׳יאוקסי</p></div>
-    <div class="ov-card"><small>🇹🇼 ימים 7–9</small><b>טאיטונג ודולאן</b><p>כביש 11 · גלישה · מעיינות ז׳יבן</p></div>
-    <div class="ov-card"><small>🇹🇼 ימים 10–12</small><b>קנטינג</b><p>חופים · שנורקלינג · מפלי ציקונג · הנקודה הדרומית</p></div>
-    <div class="ov-card"><small>🇹🇼 ימים 13–15</small><b>אלישאן</b><p>זריחה מעל ים העננים · יערות עתיקים · שדות תה</p></div>
-    <div class="ov-card"><small>🇹🇼 ימים 16–18</small><b>אגם השמש והירח → טאיפיי</b><p>רכבל · הקפת האגם באופניים · סגירת טאיוואן</p></div>
-    <div class="ov-card"><small>🇯🇵 ימים 19–20</small><b>אוסקה</b><p>דוטונבורי · הטירה · אומדה סקיי</p></div>
-    <div class="ov-card"><small>🇯🇵 ימים 21–24</small><b>קיוטו ונארה</b><p>גיון · קיומיזו-דרה · האיילים · אראשיימה · סוכות</p></div>
-    <div class="ov-card"><small>🇯🇵 ימים 25–28</small><b>האלפים היפניים</b><p>טאקיאמה · שירקאווה-גו · קאמיקוצ׳י · מאצומוטו</p></div>
-    <div class="ov-card"><small>🇯🇵 ימים 29–36</small><b>טוקיו</b><p>שיבויה · אקיהברה · אסאקוסה · teamLab · קמקורה · שינג׳וקו</p></div>
+  <div class="ov-grid ov-struct">
+    <div class="ov-card" data-days="1-4"><small>🇹🇼 ימים 1–4</small><b>טאיפיי</b><p>שימנדינג · שיפן וגיופן · יאנגמינגשאן · שווקי לילה</p></div>
+    <div class="ov-card" data-days="5-6"><small>🇹🇼 ימים 5–6</small><b>וואיאאו</b><p>החוף השחור · גלישה · ג׳יאוקסי</p></div>
+    <div class="ov-card" data-days="7-9"><small>🇹🇼 ימים 7–9</small><b>טאיטונג ודולאן</b><p>כביש 11 · גלישה · מעיינות ז׳יבן</p></div>
+    <div class="ov-card" data-days="10-12"><small>🇹🇼 ימים 10–12</small><b>קנטינג</b><p>חופים · שנורקלינג · מפלי ציקונג · הנקודה הדרומית</p></div>
+    <div class="ov-card" data-days="13-15"><small>🇹🇼 ימים 13–15</small><b>אלישאן</b><p>זריחה מעל ים העננים · יערות עתיקים · שדות תה</p></div>
+    <div class="ov-card" data-days="16-18"><small>🇹🇼 ימים 16–18</small><b>אגם השמש והירח → טאיפיי</b><p>רכבל · הקפת האגם באופניים · סגירת טאיוואן</p></div>
+    <div class="ov-card" data-days="19-20"><small>🇯🇵 ימים 19–20</small><b>אוסקה</b><p>דוטונבורי · הטירה · אומדה סקיי</p></div>
+    <div class="ov-card" data-days="21-24"><small>🇯🇵 ימים 21–24</small><b>קיוטו ונארה</b><p>גיון · קיומיזו-דרה · האיילים · אראשיימה · סוכות</p></div>
+    <div class="ov-card" data-days="25-28"><small>🇯🇵 ימים 25–28</small><b>האלפים היפניים</b><p>טאקיאמה · שירקאווה-גו · קאמיקוצ׳י · מאצומוטו</p></div>
+    <div class="ov-card" data-days="29-36"><small>🇯🇵 ימים 29–36</small><b>טוקיו</b><p>שיבויה · אקיהברה · אסאקוסה · teamLab · קמקורה · שינג׳וקו</p></div>
+  </div>
   </div>
 </section>
 
@@ -5027,6 +5065,33 @@ tickCd();setInterval(tickCd,1000);
       if(on)cur=st;
     });
     strip.classList.toggle('mid',day>0);
+    /* "מבנה הטיול" בסקירה: אותו סימון */
+    document.querySelectorAll('#ovStruct .ov-card[data-days]').forEach(function(c){
+      var r=c.getAttribute('data-days').split('-'), a=+r[0], b=+r[1]||a;
+      c.classList.toggle('cur',day>=a&&day<=b); c.classList.toggle('past',day>b);
+    });
+    if(day>0){
+      var dur=document.getElementById('ovDur');
+      if(dur)dur.innerHTML='<small>📅 איפה אנחנו בטיול</small><b>יום '+day+' מתוך 36</b><p>נשארו '+(36-day)+' ימים · טסים הביתה ב-8.10 · '+(day<=18?'טאיוואן (עד 20.9)':'יפן')+'</p>';
+      var fl=document.getElementById('ovFlight');
+      if(fl){
+        var t0=new Date(now.getFullYear(),now.getMonth(),now.getDate()), best=null;
+        document.querySelectorAll('article.bpass').forEach(function(bp){
+          var dm=((bp.querySelector('.bp-date')||{}).textContent||'').trim().match(/(\d+)\.(\d+)\.(\d+)/); if(!dm)return;
+          var dt=new Date(+dm[3],+dm[2]-1,+dm[1]); if(dt<t0||(best&&dt>=best.dt))return;
+          var ap=bp.querySelectorAll('.bp-ap'); if(ap.length<2)return;
+          var g=function(el,sel){var e=el.querySelector(sel);return e?e.textContent.trim():''};
+          best={dt:dt,code:g(bp,'.bp-airline b'),d:dm[1]+'.'+dm[2],
+                from:g(ap[0],'b'),fromC:g(ap[0],'small'),dep:g(ap[0],'.bp-time'),
+                to:g(ap[1],'b'),toC:g(ap[1],'small'),arr:g(ap[1],'.bp-time')};
+        });
+        if(best){
+          var left=Math.round((best.dt-t0)/86400000), when=left===0?'היום!':left===1?'מחר':'בעוד '+left+' ימים';
+          fl.innerHTML='<small>✈️ הטיסה הבאה · '+when+'</small><b>'+best.code+' · '+best.d+' · '+best.dep+'</b>'+
+            '<p><span dir="ltr">'+best.from+' → '+best.to+'</span> · '+best.fromC+' → '+best.toC+' · נחיתה '+best.arr+'</p>';
+        }
+      }
+    }
     if(cur){
       var x=cur.offsetLeft-(strip.clientWidth-cur.offsetWidth)/2;
       try{strip.scrollTo({left:x})}catch(e){strip.scrollLeft=x}
