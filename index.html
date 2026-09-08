@@ -4941,9 +4941,19 @@ function initSpend(){
     if(xd){ var xid=xd.getAttribute('data-xchgdel'), xx=xchgOf(xid);
       confirmBox('למחוק את רישום ההמרה?',xx?fmtCur(xx.amt,xx.cur||'ILS')+' · '+(fmtWhen(xx.d)||''):'','מחיקה').then(function(ok){ if(ok){drop('xchg',xid); toast('רישום ההמרה נמחק')} }) }
   });
+  seedLandingXchg();
   onChange(renderSpend);
   renderSpend();
   onFirstPull(migrateSpendPay);
+}
+/* ההמרה הראשונה — 31,300 NT$ בנחיתה ב-2.9 (מהבעלים, 8.9) — מובנית בקוד כדי שהמספר יופיע
+   בלי להקליד. נזרעת עם ts:1 כמו הסימונים הישנים בצ'קליסט: כל עריכה או מחיקה אמיתית
+   (גם מהמכשיר השני) מנצחת אותה במיזוג, ומצבת מחיקה שכבר קיימת מונעת זריעה חוזרת. */
+var LANDING_XCHG={id:'x-landing',d:'2026-09-02',amt:31300,cur:'TWD',paid:0,pcur:'USD',note:'המרה בנחיתה בטאיוואן'};
+function seedLandingXchg(){
+  if(data.xchg[LANDING_XCHG.id])return;
+  var x=Object.assign({},LANDING_XCHG,{ts:1,created:new Date(2026,8,2).getTime()}); delete x.id;
+  data.xchg[LANDING_XCHG.id]=x; data.updated=Date.now(); jset(KEY,data); schedulePush();
 }
 /* רישומים שנשמרו לפני שהיה שדה אמצעי תשלום מקבלים אותו לפי התיאור, פעם אחת,
    ומסומנים payAuto כדי שיהיה ברור שזה ניחוש עד שעורכים. רץ רק אחרי משיכה
