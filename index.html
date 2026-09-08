@@ -1452,19 +1452,29 @@ body.has-upd #toTop{bottom:calc(78px + env(safe-area-inset-bottom))}
 .cash-box{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:12px 14px;margin:0 0 14px}
 .cash-head{display:flex;align-items:baseline;justify-content:space-between;gap:8px;flex-wrap:wrap}
 .cash-when{font-size:12px;color:var(--muted)}
-.cash-row{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin-top:8px;flex-wrap:wrap}
-.cash-big small{display:block;font-size:11.5px;font-weight:600;color:var(--muted)}
-.cash-big b{font-family:'IBM Plex Mono',monospace;font-size:26px;line-height:1.15;color:#1F5C3A;unicode-bidi:isolate}
-.cash-box.over .cash-big b{color:#AD2919}
-.cash-meta{display:flex;flex-direction:column;gap:3px;font-size:12.5px;color:var(--muted);text-align:left}
-.cash-meta b{font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--ink2);unicode-bidi:isolate}
-.cash-bar{height:8px;border-radius:999px;background:var(--line);overflow:hidden;margin-top:10px}
+/* שני אריחים זה לצד זה: בארנק היום · נשאר בסה"כ (מכל ההמרות, ומזה בצד). מספר גדול אחד לכל אריח,
+   לא שני מספרים גדולים אחד מתחת לשני — זה מה שעשה בלגן במסך */
+.cash-tiles{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.cash-tile{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 12px;min-width:0;display:flex;flex-direction:column;gap:2px}
+.cash-tile .cash-bar{margin-top:auto;padding-top:0}
+.cash-tile .cash-bar{margin-top:8px}
+.cash-tile small{font-size:11.5px;font-weight:600;color:var(--muted)}
+.cash-tile b{font-family:'IBM Plex Mono',monospace;font-size:clamp(16px,4.6vw,22px);line-height:1.2;color:#1F5C3A;unicode-bidi:isolate;white-space:nowrap;text-align:right;letter-spacing:-.01em}
+.cash-tile span i{white-space:nowrap}
+.cash-tile.over b{color:#AD2919}
+.cash-tile.none b{color:var(--muted)}
+.cash-tile span{font-size:12px;color:var(--muted);line-height:1.5}
+.cash-tile span i{font-style:normal;font-family:'IBM Plex Mono',monospace;color:var(--ink2);unicode-bidi:isolate}
+.cash-tile .btn{margin-top:6px;align-self:flex-start}
+.cash-bar{height:8px;border-radius:999px;background:var(--line);overflow:hidden;margin-top:8px}
 .cash-bar i{display:block;height:100%;background:#0E8A6D;border-radius:999px;transition:width .3s}
 .cash-box.warn .cash-bar i{background:#D98A00}
 .cash-box.over .cash-bar i{background:#AD2919}
 .cash-note{font-size:12px;color:var(--muted);margin-top:7px;line-height:1.5}
 .cash-empty{font-size:13px;color:var(--muted);margin:6px 0 4px;line-height:1.5}
 .cash-ops{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+/* הכפתורים ממלאים את השורה — שלושה כפתורים בנייד לא נשארים עם אחד תלוש בצד */
+.cash-ops .btn{flex:1 1 auto;justify-content:center}
 .cash-day{display:block;font-size:11.5px;font-weight:500;color:#1F5C3A;margin-top:2px}
 .cash-day.over{color:#AD2919}
 .cash-hist{margin-top:10px;border-top:1px solid var(--line);padding-top:8px}
@@ -1478,24 +1488,9 @@ body.has-upd #toTop{bottom:calc(78px + env(safe-area-inset-bottom))}
 .cash-tbl td small.over,.cash-tbl td.over{color:#AD2919}
 .cash-tbl td[dir=ltr]{font-family:'IBM Plex Mono',monospace;text-align:left}
 .cash-tbl tr.cur td{background:var(--tw-soft)}
-/* המזומן בסה"כ: כל מה שהמרנו פחות כל מה שיצא במזומן — מזה מה שבארנק היום ומה שנשאר בצד */
-.cash-pool{padding:0 0 10px;margin:0 0 12px;border-bottom:1px dashed var(--line)}
-.cash-pool .cash-row{margin-top:6px}
-.cash-pool .cash-big b{font-size:28px}
-.cash-pool.over .cash-big b{color:#AD2919}
-.cash-split{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:12.5px;color:var(--muted);margin-top:8px;line-height:1.6}
-.cash-split span{white-space:nowrap}
-.cash-split b{font-family:'IBM Plex Mono',monospace;color:var(--ink2);unicode-bidi:isolate}
-.cash-split b.side{color:#1F5C3A;font-size:14px}
-.cash-pool-empty{font-size:13px;color:var(--muted);margin:6px 0 0;line-height:1.5}
 .xchg-tbl td:first-child{white-space:normal;min-width:110px}
-/* שורת "נשאר במזומן" ליד הסה"כ בסיכום ההוצאות */
-.sp-cash{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 10px;margin-top:10px;padding:8px 12px;border-radius:12px;
-  background:var(--tw-soft);font-size:13px;font-weight:600;color:var(--ink2)}
-.sp-cash b{font-family:'IBM Plex Mono',monospace;font-size:17px;color:#1F5C3A;unicode-bidi:isolate}
-.sp-cash small{font-size:12px;font-weight:500;color:var(--muted);unicode-bidi:isolate}
-.sp-cash small b{font-size:12px;color:var(--ink2)}
-.sp-cash .sp-cash-go{margin-inline-start:auto}
+.cash-hist summary small{display:block;font-weight:500;color:var(--muted);font-size:11.5px;margin-top:2px}
+.cash-hist summary small i{font-style:normal;font-family:'IBM Plex Mono',monospace;unicode-bidi:isolate}
 .td-cash .td-pool{display:block;color:#B9C3DB;font-weight:500;font-size:12px;margin-top:1px}
 .td-cash .td-pool b{color:#D6E4F5}
 span.td-cash{font-size:12.5px;font-weight:600;color:#D6E4F5;margin-top:3px}
@@ -1656,12 +1651,12 @@ body:not(.mid-trip) .ov-mid{display:none}
   .spend-pay.cash{background:#13342C;color:#7FE3C4}
   .spend-pay.card{background:#1E2942;color:#B9C3DB}
   .spend-amt small.spend-fee,.spend-amt small.spend-fee b{color:#E8C170}
-  .cash-big b,.cash-day,#costSum .clock.cost-tot b{color:#7FE3C4}
+  .cash-tile b,.cash-day,#costSum .clock.cost-tot b{color:#7FE3C4}
+  .cash-tile{background:#161F33;border-color:#26314B}
+  .cash-tile.none b{color:var(--muted)}
   .cash-tbl td small.over,.cash-tbl td.over{color:#FF8A7A}
   .cash-tbl tr.cur td{background:rgba(127,227,196,.12)}
-  .cash-box.over .cash-big b,.cash-day.over{color:#FF8A7A}
-  .cash-split b.side,.sp-cash b{color:#7FE3C4}
-  .cash-pool.over .cash-big b{color:#FF8A7A}
+  .cash-tile.over b,.cash-day.over{color:#FF8A7A}
   .cash-box.warn .cash-bar i{background:#E8A93A}
   .spend-filt select{background:#121A2C;color:var(--ink);border-color:var(--line)}
   .sp-tile{background:#121A2C;border-color:#26314B}
@@ -4733,36 +4728,49 @@ function renderCash(){
   /* מחוץ לטיול: היום האחרון שיש לו פעילות, כדי שהכרטיס לא יהיה ריק */
   if(!d){ var L=cashLedger(); d=L.days.length?L.days[L.days.length-1]:t }
   var st=cashState(d), isT=(d===t), when=(isT?'היום · ':'')+dayLabel(d);
+  /* המאגר הכולל באותו מטבע כמו הארנק; בלי ארנק — המטבע של היום, ואם אין כזה — הראשון */
+  var pools=cashPool(), pool=null;
+  if(pools.length){ var want=st?st.cur:defCurFor(d); pools.forEach(function(p){ if(!pool&&p.cur===want)pool=p }); if(!pool)pool=pools[0] }
   box.className='cash-box'+(st?(st.left<0?' over':(st.pct>=80?' warn':'')):' none');
-  var head='<div class="cash-head"><span class="sp-lbl">💵 מזומן ליום</span><span class="cash-when">'+esc(when)+'</span></div>';
-  var pool=cashPoolHtml();
-  if(!st){
-    box.innerHTML=pool+head+'<p class="cash-empty">עוד לא רשמתם כמה מזומן יש בארנק. רשמו, וכל הוצאה במזומן תרד מהיתרה — ומה שנשאר בסוף היום יוצג מחר.</p>'+
-      '<div class="cash-ops"><button type="button" class="btn ghost" data-cashdlg="'+esc(d)+'">💵 כמה מזומן יש בארנק'+(isT?' היום':'')+'?</button></div>'+
-      cashHistHtml(d);
-    return;
+  var head='<div class="cash-head"><span class="sp-lbl">💵 מזומן</span><span class="cash-when">'+esc(when)+'</span></div>';
+  /* אריח 1 — הארנק של היום: מספר אחד (נשאר), שורת משנה (יצא מתוך), פס */
+  var w=st?
+    '<div class="cash-tile'+(st.left<0?' over':'')+'"><small>'+(st.left<0?'חריגה בארנק':'בארנק'+(isT?' היום':''))+'</small>'+
+      '<b dir="ltr">'+esc(fmtCur(Math.abs(st.left),st.cur))+'</b>'+
+      '<span>'+(st.end?'🌙 ספירת ערב · יצא <i dir="ltr">'+esc(fmtCur(st.spent,st.cur))+'</i>':
+        'יצא <i dir="ltr">'+esc(fmtCur(st.spent,st.cur))+'</i> מתוך <i dir="ltr">'+esc(fmtCur(st.total,st.cur))+'</i>')+'</span>'+
+      '<div class="cash-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="'+st.pct+'"><i style="width:'+st.pct+'%"></i></div></div>':
+    '<div class="cash-tile none"><small>בארנק'+(isT?' היום':'')+'</small><b>—</b><span>עוד לא רשמתם</span>'+
+      '<button type="button" class="btn ghost sm" data-cashdlg="'+esc(d)+'">💵 כמה יש בארנק?</button></div>';
+  /* אריח 2 — נשאר בסה"כ מכל ההמרות, ומזה כמה בצד (מחוץ לארנק) */
+  var pl;
+  if(pool){
+    var others=pools.filter(function(p){ return p!==pool&&p.left>0 });
+    pl='<div class="cash-tile'+(pool.left<0?' over':'')+'"><small>'+(pool.left<0?'יצא יותר ממה שהמרנו':'נשאר בסה"כ')+'</small>'+
+      '<b dir="ltr">'+esc(fmtCur(Math.abs(pool.left),pool.cur))+'</b>'+
+      '<span>'+(pool.side!=null?'מזה בצד <i dir="ltr">'+esc(fmtCur(pool.side,pool.cur))+'</i>':'מכל ההמרות')+
+      (others.length?' · גם '+others.map(function(o){ return '<i dir="ltr">'+esc(fmtCur(o.left,o.cur))+'</i>' }).join(', '):'')+'</span></div>';
+  }else{
+    pl='<div class="cash-tile none"><small>נשאר בסה"כ</small><b>—</b><span>עוד לא רשמתם המרה</span>'+
+      '<button type="button" class="btn ghost sm" data-xchgdlg="">💱 המרנו כסף</button></div>';
   }
-  var fromY=!st.has&&st.carry>0, added=st.has&&st.add&&st.carry>0;
-  box.innerHTML=pool+head+
-    '<div class="cash-row">'+
-      '<div class="cash-big"><small>'+(st.left<0?'חריגה':'נשאר')+'</small><b dir="ltr">'+esc(fmtCur(Math.abs(st.left),st.cur))+'</b></div>'+
-      '<div class="cash-meta">'+
-        '<span>'+(fromY?'נשאר מאתמול':st.end?'היה בארנק':'בארנק'+(isT?' היום':''))+' <b dir="ltr">'+esc(fmtCur(st.total,st.cur))+'</b></span>'+
-        '<span>יצא במזומן <b dir="ltr">'+esc(fmtCur(st.spent,st.cur))+'</b></span>'+
-      '</div></div>'+
-    '<div class="cash-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="'+st.pct+'"><i style="width:'+st.pct+'%"></i></div>'+
-    (fromY?'<p class="cash-note">היתרה מאתמול עברה ל'+(isT?'היום':'יום הזה')+'. הוספתם מזומן? עדכנו את הסכום.</p>':'')+
-    (added?'<p class="cash-note"><b dir="ltr">'+esc(fmtCur(st.carry,st.cur))+'</b> שנשארו מאתמול + <b dir="ltr">'+esc(fmtCur(st.amt,st.cur))+'</b> שהוספתם.</p>':'')+
-    (st.end?'<p class="cash-note">🌙 ספרתם בערב: <b dir="ltr">'+esc(fmtCur(st.amt,st.cur))+'</b> אחרי ההוצאות. '+(isT?'מחר':'היום שאחרי')+' מתחיל מכאן.</p>':'')+
-    (st.left<0?'<p class="cash-note">יצא במזומן יותר ממה שיש בארנק — אולי משכתם עוד? עדכנו את הסכום של '+(isT?'היום':'אותו יום')+'.</p>':'')+
-    (st.dropped>0?'<p class="cash-note">ביום הקודם יצא <b dir="ltr">'+esc(fmtCur(st.dropped,st.cur))+'</b> יותר ממה שנרשם. אם משכתם עוד באותו יום, עדכנו שם את הסכום.</p>':'')+
-    (st.others.length?'<p class="cash-note">בארנק גם '+st.others.map(function(o){ return '<b dir="ltr">'+esc(fmtCur(o.left,o.cur))+'</b>' }).join(' · ')+' מימים קודמים.</p>':'')+
-    (st.other?'<p class="cash-note">'+(st.other===1?'הוצאה אחת במזומן במטבע אחר לא נספרת כאן.':st.other+' הוצאות במזומן במטבע אחר לא נספרות כאן.')+'</p>':'')+
-    /* ספירת ערב היא הפעולה היומית — כפתור משלה, בלי לעבור דרך הבורר */
-    '<div class="cash-ops">'+(isT&&!st.end?'<button type="button" class="btn ghost" data-cashdlg="'+esc(d)+'" data-cashmode="end">🌙 ספירת ערב</button>':'')+
-      '<button type="button" class="btn ghost" data-cashdlg="'+esc(d)+'">'+(st.has?(st.end?'✏️ עדכון':'✏️ עדכון · יום אחר'):'➕ הוספנו מזומן'+(isT?' היום':'')+'?')+'</button>'+
-      (cashOf(d)?'<button type="button" class="btn ghost" data-cashdel="'+esc(d)+'">🗑️ הסרה</button>':'')+'</div>'+
-    cashHistHtml(d);
+  /* הערות — רק כשיש משהו לא תקין; הסברים כלליים לא מוצגים יותר */
+  var notes='';
+  if(!st&&!pool)notes+='<p class="cash-empty">רשמו כמה מזומן יש בארנק וכמה המרתם — כל הוצאה במזומן תרד מהיתרה, ומה שנשאר בסוף היום עובר למחר.</p>';
+  if(st){
+    if(st.left<0)notes+='<p class="cash-note">יצא במזומן יותר ממה שיש בארנק — אולי משכתם עוד? עדכנו את הסכום של '+(isT?'היום':'אותו יום')+'.</p>';
+    if(st.dropped>0)notes+='<p class="cash-note">ביום הקודם יצא <b dir="ltr">'+esc(fmtCur(st.dropped,st.cur))+'</b> יותר ממה שנרשם. אם משכתם עוד באותו יום, עדכנו שם את הסכום.</p>';
+    if(st.others.length)notes+='<p class="cash-note">בארנק גם '+st.others.map(function(o){ return '<b dir="ltr">'+esc(fmtCur(o.left,o.cur))+'</b>' }).join(' · ')+' מימים קודמים.</p>';
+    if(st.other)notes+='<p class="cash-note">'+(st.other===1?'הוצאה אחת במזומן במטבע אחר לא נספרת בארנק.':st.other+' הוצאות במזומן במטבע אחר לא נספרות בארנק.')+'</p>';
+  }
+  if(pool&&pool.walletOver)notes+='<p class="cash-note">בארנק יש יותר ממה שנשאר מכל ההמרות — אולי המרתם או משכתם עוד ולא רשמתם?</p>';
+  if(pool&&pool.left<0)notes+='<p class="cash-note">נרשמו הוצאות במזומן מעבר למה שהמרתם. רשמו את ההמרה או המשיכה החסרה.</p>';
+  /* שורת פעולות אחת: ספירת ערב (הפעולה היומית) · עדכון הארנק · המרה. מחיקת רישום — סכום ריק בדיאלוג */
+  var ops='<div class="cash-ops">'+
+    (st&&isT&&!st.end?'<button type="button" class="btn ghost" data-cashdlg="'+esc(d)+'" data-cashmode="end">🌙 ספירת ערב</button>':'')+
+    (st?'<button type="button" class="btn ghost" data-cashdlg="'+esc(d)+'">'+(st.has?'✏️ עדכון הארנק':'➕ הוספנו מזומן')+'</button>':'')+
+    (pool?'<button type="button" class="btn ghost" data-xchgdlg="">💱 המרנו כסף</button>':'')+'</div>';
+  box.innerHTML=head+'<div class="cash-tiles">'+w+pl+'</div>'+notes+ops+cashHistHtml(d)+xchgHistHtml(pools);
 }
 /* "לפי ימים": שורה לכל יום פעיל בארנק (ולכל מטבע בו) — בארנק / יצא / נשאר. */
 function cashHistHtml(cur){
@@ -4808,7 +4816,7 @@ function cashPool(){
   var t=today10(), st=cashState(t), pref=defCurFor(t);
   order.sort(function(a,b){ return (a===pref?0:1)-(b===pref?0:1) });
   return order.map(function(c){
-    var p=by[c]; p.left=p.got-p.spent; p.ils=toIls(Math.max(0,p.left),c);
+    var p=by[c]; p.left=p.got-p.spent;
     /* הארנק היומי באותו מטבע: כמה מהיתרה הכוללת נמצא בכיס עכשיו */
     p.wallet=(st&&st.cur===c&&st.left>0)?st.left:null;
     p.side=(p.wallet!=null&&p.left>0)?Math.max(0,p.left-p.wallet):null;
@@ -4816,35 +4824,11 @@ function cashPool(){
     return p;
   });
 }
-function cashPoolHtml(){
-  var pools=cashPool(), t=today10();
-  var ops='<div class="cash-ops"><button type="button" class="btn ghost" data-xchgdlg="">💱 '+(pools.length?'המרנו עוד כסף':'המרנו כסף — כמה קיבלנו?')+'</button></div>';
-  if(!pools.length)return '<div class="cash-pool none"><div class="cash-head"><span class="sp-lbl">💵 מזומן בסה"כ</span></div>'+
-    '<p class="cash-pool-empty">רשמו כמה מזומן קיבלתם בהמרה (או במשיכה), וכאן יוצג כל הזמן כמה נשאר מזה — מה שבארנק ומה שבצד.</p>'+ops+'</div>';
-  var html='';
-  pools.forEach(function(p,i){
-    var paid=Object.keys(p.paid).map(function(pc){ return fmtCur(p.paid[pc],pc) }).join(' + ');
-    html+='<div class="cash-pool'+(p.left<0?' over':'')+'">'+
-      (i===0?'<div class="cash-head"><span class="sp-lbl">💵 מזומן בסה"כ</span><span class="cash-when">מכל ההמרות · עד '+esc(dayLabel(t).replace(/ · [^·]*$/,''))+'</span></div>':'')+
-      '<div class="cash-row">'+
-        '<div class="cash-big"><small>'+(p.left<0?'יצא יותר ממה שהמרנו':'נשאר במזומן')+'</small><b dir="ltr">'+esc(fmtCur(Math.abs(p.left),p.cur))+'</b></div>'+
-        '<div class="cash-meta">'+
-          '<span>המרנו <b dir="ltr">'+esc(fmtCur(p.got,p.cur))+'</b>'+(paid?' מ-<b dir="ltr">'+esc(paid)+'</b>':'')+'</span>'+
-          '<span>יצא במזומן <b dir="ltr">'+esc(fmtCur(p.spent,p.cur))+'</b></span>'+
-          (p.left>0?'<span>בשקלים <b dir="ltr">≈ '+ils(p.ils)+' ₪</b></span>':'')+
-        '</div></div>'+
-      (p.side!=null?'<div class="cash-split"><span>בארנק היום <b dir="ltr">'+esc(fmtCur(p.wallet,p.cur))+'</b></span>'+
-        '<span>נשאר בצד <b class="side" dir="ltr">'+esc(fmtCur(p.side,p.cur))+'</b></span></div>':'')+
-      (p.walletOver?'<p class="cash-note">הארנק היומי מראה יותר ממה שנשאר מכל ההמרות — אולי המרתם או משכתם עוד ולא רשמתם?</p>':'')+
-      (p.left<0?'<p class="cash-note">נרשמו הוצאות במזומן מעבר למה שהמרתם. רשמו את ההמרה או המשיכה החסרה.</p>':'')+
-    '</div>';
-  });
-  return html.replace(/<\/div>$/,ops+xchgHistHtml()+'</div>');
-}
 /* "ההמרות שלנו": שורה לכל המרה — יום, קיבלנו, שילמנו + שער, הערה, עריכה/מחיקה */
-function xchgHistHtml(){
+function xchgHistHtml(pools){
   var list=xchgList(), det=document.getElementById('xchgHist'), open=det?det.open:false;
   if(!list.length)return '';
+  var tot=(pools||[]).filter(function(p){ return p.got>0 }).map(function(p){ return 'המרנו <i dir="ltr">'+esc(fmtCur(p.got,p.cur))+'</i> · יצא <i dir="ltr">'+esc(fmtCur(p.spent,p.cur))+'</i>' }).join(' · ');
   var rows=list.map(function(x){
     var rate=(+x.paid>0)?(x.amt/x.paid):0;
     return '<tr><td>'+esc(fmtWhen(x.d)||x.d||'')+(x.note?'<small>'+esc(x.note)+'</small>':'')+'</td>'+
@@ -4853,10 +4837,10 @@ function xchgHistHtml(){
       '<td class="cost-ops"><button type="button" class="iconbtn" data-xchgdlg="'+esc(x.id)+'" title="עריכה" aria-label="עריכת ההמרה">✏️</button>'+
         '<button type="button" class="iconbtn danger" data-xchgdel="'+esc(x.id)+'" title="מחיקה" aria-label="מחיקת ההמרה">🗑️</button></td></tr>';
   }).join('');
-  return '<details class="cash-hist" id="xchgHist"'+(open?' open':'')+'><summary>💱 ההמרות שלנו <span class="spend-cnt">'+list.length+'</span></summary>'+
+  return '<details class="cash-hist" id="xchgHist"'+(open?' open':'')+'><summary>💱 ההמרות שלנו <span class="spend-cnt">'+list.length+'</span>'+(tot?'<small>'+tot+'</small>':'')+'</summary>'+
     '<div class="tbl-wrap"><table class="doc-tbl cash-tbl xchg-tbl"><thead><tr><th>יום</th><th>קיבלנו</th><th></th></tr></thead><tbody>'+rows+'</tbody></table></div></details>';
 }
-/* שורה קצרה ל"נשאר במזומן" — לסיכום ההוצאות ולפאנל היום */
+/* שורה קצרה ל"נשאר במזומן" — לפאנל היום */
 function cashPoolLine(){
   var pools=cashPool().filter(function(p){ return p.got>0 });
   if(!pools.length)return null;
@@ -5041,12 +5025,6 @@ function renderSpend(){
     var chips='<div class="sp-hero"><span class="sp-lbl">סה"כ הוצאנו בדרך</span><b class="sp-big" dir="ltr">'+ils(total)+' ₪</b>'+
       (local?'<small class="sp-sub" dir="ltr">'+local+'</small>':'')+
       '<button type="button" class="sp-conv" data-gotab="pane-tools">💱 ממיר המטבעות ↗</button></div>';
-    /* ליד הסה"כ: כמה מזומן נשאר מכל ההמרות — בארנק ובצד — כדי שלא צריך לחפש את זה בכרטיס */
-    (function(){ var pl=cashPoolLine(); if(!pl)return; var p=pl.main;
-      chips+='<div class="sp-cash"><span>💵 נשאר במזומן</span><b dir="ltr">'+esc(pl.text)+'</b>'+
-        '<small><b dir="ltr">≈ '+ils(pl.all.reduce(function(a,q){return a+q.ils},0))+' ₪</b>'+
-        (p.side!=null?' · בארנק <b dir="ltr">'+esc(fmtCur(p.wallet,p.cur))+'</b> · בצד <b dir="ltr">'+esc(fmtCur(p.side,p.cur))+'</b>':'')+'</small></div>';
-    })();
     chips+='<div class="sp-grid">'+
       '<div class="sp-tile"><small>היום</small><b dir="ltr">'+ils(spendTodayIls())+' ₪</b></div>'+
       '<div class="sp-tile"><small>ממוצע ליום'+(nDays>1?' · '+nDays+' ימים':'')+'</small><b dir="ltr">'+ils(nDays?total/nDays:0)+' ₪</b></div>'+
