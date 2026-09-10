@@ -1414,8 +1414,15 @@ body.has-upd #toTop{bottom:calc(78px + env(safe-area-inset-bottom))}
 .sp-tile b{font-family:'IBM Plex Mono',monospace;font-size:17px;unicode-bidi:isolate;overflow-wrap:anywhere;text-align:right}
 .sp-tile.cash b{color:#1F5C3A}
 .sp-tile.card b{color:#33477A}
-.sp-fee{font-size:12.5px;color:var(--muted);line-height:1.8;margin-top:10px}
-.sp-fee b{color:var(--ink2);font-family:'IBM Plex Mono',monospace;unicode-bidi:isolate}
+/* עמלת ההמרה: קופסה עם שתי שורות — כמה העמלה, וכמה הסה"כ איתה. קודם זו הייתה פסקה
+   אחת עם גלולה ירוקה של האחוז באמצע המשפט, ו-"לא כלולה בסה"כ" תלוי בסוף — לא היה ברור. */
+.sp-feebox{margin-top:12px;border:1px solid var(--line);border-radius:12px;background:var(--paper);padding:0 12px}
+.sp-feerow{display:flex;align-items:baseline;justify-content:space-between;gap:10px;padding:10px 0}
+.sp-feerow+.sp-feerow{border-top:1px solid var(--line)}
+.sp-feelbl{font-size:13px;font-weight:600;color:var(--ink2);min-width:0}
+.sp-feelbl small{display:block;font-size:11.5px;font-weight:500;color:var(--muted);margin-top:3px;line-height:1.6}
+.sp-feerow>b{font-family:'IBM Plex Mono',monospace;font-size:14px;color:var(--ink2);unicode-bidi:isolate;white-space:nowrap}
+.sp-feerow.tot>b{font-size:16.5px;font-weight:700}
 .doc-tbl tr.spend-day td{background:var(--tw-soft);font-weight:700;font-size:13px}
 .spend-empty{color:var(--muted);text-align:center;padding:18px 0}
 .spend-by{display:block;font-size:11px;color:var(--muted);font-weight:500;margin-top:1px}
@@ -1443,9 +1450,6 @@ body.has-upd #toTop{bottom:calc(78px + env(safe-area-inset-bottom))}
 .sp-conv{font:inherit;font-size:12px;font-weight:600;color:#0B7159;background:none;border:0;padding:0;cursor:pointer;min-height:0;
   text-decoration:none;white-space:nowrap}
 .sp-conv:hover{text-decoration:underline}
-.sp-fee span{white-space:nowrap}
-.sp-fee-note{color:var(--muted);font-weight:500}
-.sp-fee-tot{display:block;color:var(--ink2);font-weight:600}
 .spend-cnt{display:inline-block;min-width:22px;padding:0 7px;border-radius:999px;background:var(--tw-soft);color:#0B7159;
   font-size:12px;font-weight:700;line-height:20px;text-align:center;vertical-align:1px;unicode-bidi:isolate}
 .spend-cnt:empty{display:none}
@@ -1463,9 +1467,9 @@ body.has-upd .hm-toast{bottom:calc(82px + env(safe-area-inset-bottom))}
 .spend-filt .btn{min-height:40px;padding:6px 12px;font-size:13px}
 .spend-filt-sum{font-size:13px;color:var(--muted);margin:0 0 10px;line-height:1.7}
 .spend-filt-sum b{color:var(--ink2);unicode-bidi:isolate}
-.fee-edit{font:inherit;font-weight:700;color:#0B7159;background:var(--tw-soft,#E6F4EC);border:0;border-radius:999px;
-  padding:1px 8px;cursor:pointer;min-height:0;line-height:1.5;unicode-bidi:isolate}
-.fee-edit:hover{filter:brightness(.95)}
+.fee-edit{font:inherit;font-size:11.5px;font-weight:700;color:#0B7159;background:none;border:0;padding:2px 0;
+  cursor:pointer;min-height:0;text-decoration:underline;text-underline-offset:2px}
+.fee-edit:hover{filter:brightness(.9)}
 .fee-note{display:block;font-size:11px;color:var(--muted);font-weight:500}
 .td-quick{display:flex;flex-wrap:wrap;gap:6px;margin-top:7px}
 .td-qb{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);border-radius:10px;min-width:40px;min-height:36px;
@@ -1605,14 +1609,15 @@ body:not(.mid-trip) .ov-mid{display:none}
   .spend-amt small.spend-fee,.spend-amt small.spend-fee b{color:#E8C170}
   #costSum .clock.cost-tot b{color:#7FE3C4}
   .spend-filt select{background:#121A2C;color:var(--ink);border-color:var(--line)}
-  .sp-tile{background:#121A2C;border-color:#26314B}
+  .sp-tile,.sp-feebox{background:#121A2C;border-color:#26314B}
+  .sp-feerow+.sp-feerow{border-top-color:#26314B}
   .spend-guess{background:#3A2E12;border-color:#6B5320;color:#F2D58A}
   .spend-cnt{background:#13342C;color:#7FE3C4}
   .sp-conv{color:#3FD0A6}
   .hm-toast{background:#E4EAF7;color:#0F1830;border-color:transparent}
   .sp-tile.cash b{color:#7FE3C4}
   .sp-tile.card b{color:#B9C3DB}
-  .fee-edit{background:#13342C;color:#7FE3C4}
+  .fee-edit{color:#3FD0A6}
   #daySearch,#wxCity{background-color:#121A2C;color:var(--ink);border-color:var(--line)}
   #plSearch,#fdSearch{background-color:#121A2C}
   .day-body p.tline{background:#121A2C;border-color:#26314B}
@@ -4679,9 +4684,15 @@ function renderSpend(){
       '<div class="sp-tile cash"><small>'+esc(payLabel('cash'))+'</small><b dir="ltr">'+ils(byPay.cash)+' ₪</b></div>'+
       '<div class="sp-tile card"><small>'+esc(payLabel('card'))+'</small><b dir="ltr">'+ils(byPay.card)+' ₪</b></div>'+
     '</div>';
-    if(cardFx)chips+='<p class="sp-fee"><span>עמלת המרה על האשראי <button type="button" class="fee-edit" id="feeEdit" title="שינוי אחוז העמלה">'+
-      esc(String(feePct()))+'%</button> <b dir="ltr">≈ '+ils(fee)+' ₪</b></span> <span class="sp-fee-note">לא כלולה בסה"כ</span>'+
-      ' <span class="sp-fee-tot">סה"כ כולל עמלה <b dir="ltr">≈ '+ils(total+fee)+' ₪</b></span></p>';
+    /* שתי שורות: מה העמלה (עם הסבר קטן מאיפה היא), ומה הסה"כ כשהיא בפנים */
+    if(cardFx)chips+='<div class="sp-feebox">'+
+      '<div class="sp-feerow"><span class="sp-feelbl">\ud83d\udcb3 עמלת המרה על האשראי'+
+        /* קצר מספיק כדי להיכנס לשורה אחת ב-390px — "שינוי האחוז" נשבר והשאיר "·" תלוי */
+        '<small>'+esc(String(feePct()))+'% על עסקאות במט"ח · '+
+        '<button type="button" class="fee-edit" id="feeEdit">שינוי</button></small></span>'+
+        '<b dir="ltr">≈ '+ils(fee)+' ₪</b></div>'+
+      '<div class="sp-feerow tot"><span class="sp-feelbl">סה"כ כולל העמלה</span>'+
+        '<b dir="ltr">≈ '+ils(total+fee)+' ₪</b></div></div>';
     if(nGuess)chips+='<button type="button" class="spend-guess" id="guessBtn" title="הצגת הרישומים שאמצעי התשלום שלהם נוחש לפי התיאור">❓ '+
       (nGuess===1?'רישום אחד':nGuess+' רישומים')+' עם אמצעי תשלום משוער · לבדיקה</button>';
     var cats=Object.keys(byCat).sort(function(a,b){return byCat[b]-byCat[a]});
