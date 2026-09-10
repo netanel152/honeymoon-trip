@@ -4661,10 +4661,24 @@ function cashState(d){
           pct:e.total>0?Math.max(0,Math.min(100,Math.round(e.spent/e.total*100))):100};
 }
 var CASH_MODE=[['add','➕ הוספנו לארנק'],['set','💵 זה מה שיש עכשיו'],['end','🌙 ספרנו בסוף היום']];
+/* ליום שכבר יש לו רישום: "plus" מוסיף לסכום הרשום במקום להחליף אותו. בלי זה, משיכה
+   שנייה באותו יום מחקה את הראשונה — רשמו 2,000, הוסיפו 1,000, והארנק הראה 1,000. */
+var CASH_MODE_HAS=[['plus','➕ הוספנו עוד מזומן'],['set','✏️ תיקון · זה כל מה שיש בארנק'],
+                   ['add','✏️ תיקון · כמה הוספנו היום'],['end','🌙 ספרנו בסוף היום']];
 var CASH_HINT={add:'משיכה או המרה — מצטרף למה שנשאר מאתמול.',
+               plus:'משיכה או המרה — מצטרף לסכום שכבר רשום להיום.',
                set:'כל מה שיש בארנק עכשיו, לפני הוצאות היום.',
                end:'ספירה בערב, אחרי ההוצאות. זה מה שנשאר — ומחר מתחיל ממנו.'};
 function cashMode(c){ return c&&(c.mode==='add'||c.mode==='end')?c.mode:'set' }
+/* מה באמת נשמר: plus שומר על סוג הרישום הקיים ומגדיל את הסכום */
+function cashApply(mode,amt,c){
+  return (mode==='plus'&&c)?{mode:cashMode(c),amt:(+c.amt||0)+amt}:{mode:cashMode({mode:mode}),amt:amt};
+}
+/* תצוגה מקדימה של יום לפי רישום {mode,amt} — אותם כללים בדיוק כמו ב-cashLedger */
+function cashPreview(rec,prev,spent){
+  var carry=(rec.mode==='add')?Math.max(0,prev):0, total=(rec.mode==='end')?rec.amt+spent:carry+rec.amt;
+  return {carry:carry,total:total,left:(rec.mode==='end')?rec.amt:total-spent};
+}
 /* ברירת המחדל של "מה רושמים?" היא איך שרשמתם בפעם הקודמת — הרגל אישי, לא ניחוש
    מהיתרה. ספירת ערב (end) לא נגררת כברירת מחדל: בבוקר היא הייתה מתפרשת כיתרת סגירה.
    רישום ישן בלי mode נחשב "זה מה שיש", וזה גם הבסיס כשאין רישומים. */
@@ -4672,29 +4686,36 @@ function lastCashMode(){
   var ks=Object.keys(data.cash||{}).filter(cashOf).sort(), c=ks.length?data.cash[ks[ks.length-1]]:null;
   return (c&&c.mode==='add')?'add':'set';
 }
+function amtLabel(m){ return m==='plus'?'כמה הוספנו':(m==='end'?'כמה נשאר עכשיו':'סכום') }
+function amtPh(m){ return m==='plus'?'למשל 1000':(m==='end'?'מה שספרתם עכשיו':'למשל 3000') }
 /* preset='end' — הכפתור "ספירת ערב": הדיאלוג נפתח כבר על ספירת סוף יום עם סכום ריק */
 function openCashDlg(d,preset){
   d=d||today10(); var c=cashOf(d), st=cashState(d);
   /* היתרה מאתמול לפני הרישום של היום (גם כשיש רישום, כדי שההודעה תהיה נכונה בעריכה) */
   var prevLeft=0; if(st){ prevLeft=st.has?(st.add?st.carry:(function(){ var L=cashLedger(), pv=null; L.days.forEach(function(x){ if(x<d)pv=x }); var e=pv&&L.at[pv][st.cur]; return e?Math.max(0,e.left):0 })()):st.carry }
-  var ccur=st?st.cur:defCurFor(d), mode=preset==='end'?'end':c?cashMode(c):lastCashMode();
-  var isEnd=preset==='end';
+  var ccur=st?st.cur:defCurFor(d), isEnd=preset==='end';
+  /* יום שכבר יש לו רישום נפתח על "הוספנו עוד" — זו הפעולה השכיחה, ותיקון הוא אופציה בבורר */
+  var mode=isEnd?'end':(c?'plus':lastCashMode());
   openDlg({title:isEnd?'🌙 ספירת ערב':'💵 מזומן ליום',okText:'שמירה',
     message:isEnd?'ספרו כמה מזומן יש בארנק עכשיו — זה מה שנשאר אחרי הוצאות היום.':
       (prevLeft>0?'נשאר מאתמול '+fmtCur(prevLeft,ccur)+'. ':'')+'סכום ריק מסיר את הרישום.',
     fields:[{k:'d',label:'תאריך',type:'date',value:d},
-            {k:'mode',label:'מה רושמים?',type:'select',value:mode,options:CASH_MODE},
-            {k:'amt',label:'סכום',type:'number',value:(c&&!isEnd)?c.amt:'',placeholder:isEnd?'מה שספרתם עכשיו':'למשל 3000'},
+            {k:'mode',label:'מה רושמים?',type:'select',value:mode,options:c?CASH_MODE_HAS:CASH_MODE},
+            {k:'amt',label:amtLabel(mode),type:'number',value:(c&&mode!=='plus'&&!isEnd)?c.amt:'',placeholder:amtPh(mode)},
             {k:'cur',label:'מטבע',type:'select',value:c?c.cur:ccur,options:SPEND_CUR}],
     onOk:function(v){
       var dd=v.d||d, amt=parseFloat(String(v.amt).replace(/[^0-9.]/g,''));
       if(!isFinite(amt)||amt<=0){ if(cashOf(dd)){drop('cash',dd); toast('הרישום של '+(fmtWhen(dd)||dd)+' הוסר')} return }
-      put('cash',dd,{d:dd,amt:amt,cur:v.cur||'ILS',mode:cashMode({mode:v.mode}),del:false});
-      var s2=cashState(dd);
-      toast(s2.end?'ספירת ערב נשמרה · נשאר '+fmtCur(s2.left,s2.cur)+' · מחר מתחיל מזה'
-                  :'מזומן ל-'+(fmtWhen(dd)||dd)+': בארנק '+fmtCur(s2.total,s2.cur)+' · נשאר '+fmtCur(s2.left,s2.cur));
+      /* "הוספנו עוד" מצטרף לסכום של אותו יום — נקרא כאן ולא מהסגירה, כי אולי שינו תאריך */
+      var rec=cashApply(v.mode,amt,cashOf(dd));
+      put('cash',dd,{d:dd,amt:rec.amt,cur:v.cur||'ILS',mode:rec.mode,del:false});
+      var s2=cashState(dd), plus=(v.mode==='plus'&&rec.amt>amt);
+      toast(s2.end?(plus?'הוספנו '+fmtCur(amt,s2.cur)+' · ':'ספירת ערב נשמרה · ')+'נשאר '+fmtCur(s2.left,s2.cur)+(plus?'':' · מחר מתחיל מזה')
+                  :(plus?'הוספנו '+fmtCur(amt,s2.cur):'מזומן ל-'+(fmtWhen(dd)||dd))+
+                   ': בארנק '+fmtCur(s2.total,s2.cur)+' · נשאר '+fmtCur(s2.left,s2.cur));
     }});
   var di=dlg.querySelector('#hf_d'), ai=dlg.querySelector('#hf_amt'), ci=dlg.querySelector('#hf_cur'), mi=dlg.querySelector('#hf_mode');
+  var lab=dlg.querySelector('label[for="hf_amt"]');
   /* רמז חי מתחת לבורר: מה הבחירה אומרת, וכמה יישאר לפי הסכום שהוקלד */
   var hint=document.createElement('p'); hint.className='hm-hint'; hint.id='cashHint';
   if(mi)mi.parentNode.appendChild(hint);
@@ -4704,21 +4725,34 @@ function openCashDlg(d,preset){
     var L=cashLedger(), pv=null; L.days.forEach(function(x){ if(x<dd)pv=x });
     var pe=pv&&L.at[pv][cur], prev=pe?Math.max(0,pe.left):0, spent=0;
     spendList().forEach(function(s){ if(s.d===dd&&payOf(s).pay==='cash'&&(s.cur||'ILS')===cur)spent+=(+s.amt||0) });
-    var txt=CASH_HINT[m]||'';
+    var txt=CASH_HINT[m]||'', rc=cashOf(dd);
+    if(m==='plus'&&rc)txt='משיכה או המרה — מצטרף ל-<b>'+esc(fmtCur(+rc.amt||0,rc.cur||cur))+'</b> שכבר רשומים להיום.';
     if(isFinite(amt)&&amt>0){
-      var left=m==='end'?amt:(m==='add'?prev+amt:amt)-spent;
-      txt+='<br>'+(m==='end'?'היה בארנק <b>'+esc(fmtCur(amt+spent,cur))+'</b>, יצא <b>'+esc(fmtCur(spent,cur))+'</b>':
-        (left<0?'חריגה של <b>'+esc(fmtCur(-left,cur))+'</b>':'יישאר <b>'+esc(fmtCur(left,cur))+'</b>'));
+      var rec=cashApply(m,amt,rc), pv2=cashPreview(rec,prev,spent);
+      txt+='<br>'+(rec.mode==='end'?'היה בארנק <b>'+esc(fmtCur(pv2.total,cur))+'</b>, יצא <b>'+esc(fmtCur(spent,cur))+'</b>, נשאר <b>'+esc(fmtCur(pv2.left,cur))+'</b>':
+        'בארנק <b>'+esc(fmtCur(pv2.total,cur))+'</b>'+(spent>0?', יצא <b>'+esc(fmtCur(spent,cur))+'</b>':'')+
+        (pv2.left<0?', חריגה של <b>'+esc(fmtCur(-pv2.left,cur))+'</b>':', יישאר <b>'+esc(fmtCur(pv2.left,cur))+'</b>'));
     }
     hint.innerHTML=txt;
   }
-  /* שינוי התאריך בדיאלוג מביא את הרישום של אותו יום, אם יש */
+  /* המשמעות של שדה הסכום משתנה לפי הבורר, אז גם התווית וגם הערך שבתוכו */
+  function syncAmt(){
+    if(!mi||!ai)return;
+    var m=mi.value, e=cashOf((di&&di.value)||d);
+    if(lab)lab.textContent=amtLabel(m);
+    ai.placeholder=amtPh(m);
+    ai.value=(m==='plus'||!e)?'':e.amt;
+  }
+  if(mi)mi.addEventListener('change',function(){ syncAmt(); refreshHint() });
+  /* שינוי התאריך מביא את הרישום של אותו יום — כולל רשימת האופציות, שתלויה בקיומו */
   if(di&&ai&&ci&&mi)di.addEventListener('change',function(){
-    var e=cashOf(di.value), x=e?null:cashState(di.value);
-    ai.value=e?e.amt:''; ci.value=e?e.cur:(x?x.cur:defCurFor(di.value)); mi.value=e?cashMode(e):lastCashMode();
-    refreshHint();
+    var e=cashOf(di.value), x=e?null:cashState(di.value), opts=e?CASH_MODE_HAS:CASH_MODE;
+    mi.innerHTML=opts.map(function(o){ return '<option value="'+esc(o[0])+'">'+esc(o[1])+'</option>' }).join('');
+    mi.value=e?'plus':lastCashMode();
+    ci.value=e?e.cur:(x?x.cur:defCurFor(di.value));
+    syncAmt(); refreshHint();
   });
-  [mi,ai,ci].forEach(function(el){ if(el){ el.addEventListener('change',refreshHint); el.addEventListener('input',refreshHint) } });
+  [ai,ci].forEach(function(el){ if(el){ el.addEventListener('change',refreshHint); el.addEventListener('input',refreshHint) } });
   refreshHint();
   if(ai){ ai.setAttribute('inputmode','decimal'); setTimeout(function(){ai.focus()},90) }
 }
@@ -4768,7 +4802,7 @@ function renderCash(){
   /* שורת פעולות אחת: ספירת ערב (הפעולה היומית) · עדכון הארנק · המרה. מחיקת רישום — סכום ריק בדיאלוג */
   var ops='<div class="cash-ops">'+
     (st&&isT&&!st.end?'<button type="button" class="btn ghost" data-cashdlg="'+esc(d)+'" data-cashmode="end">🌙 ספירת ערב</button>':'')+
-    (st?'<button type="button" class="btn ghost" data-cashdlg="'+esc(d)+'">'+(st.has?'✏️ עדכון הארנק':'➕ הוספנו מזומן')+'</button>':'')+
+    (st?'<button type="button" class="btn ghost" data-cashdlg="'+esc(d)+'">➕ הוספנו מזומן</button>':'')+
     (pool?'<button type="button" class="btn ghost" data-xchgdlg="">💱 המרנו כסף</button>':'')+'</div>';
   box.innerHTML=head+'<div class="cash-tiles">'+w+pl+'</div>'+notes+ops+cashHistHtml(d)+xchgHistHtml(pools);
 }
