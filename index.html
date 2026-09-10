@@ -1417,12 +1417,17 @@ body.has-upd #toTop{bottom:calc(78px + env(safe-area-inset-bottom))}
 /* עמלת ההמרה: קופסה עם שתי שורות — כמה העמלה, וכמה הסה"כ איתה. קודם זו הייתה פסקה
    אחת עם גלולה ירוקה של האחוז באמצע המשפט, ו-"לא כלולה בסה"כ" תלוי בסוף — לא היה ברור. */
 .sp-feebox{margin-top:12px;border:1px solid var(--line);border-radius:12px;background:var(--paper);padding:0 12px}
-.sp-feerow{display:flex;align-items:baseline;justify-content:space-between;gap:10px;padding:10px 0}
+.sp-feerow{padding:10px 0}
 .sp-feerow+.sp-feerow{border-top:1px solid var(--line)}
+/* התווית והמספר בשורה אחת; ההסבר מתחת ברוחב מלא — בתוך עמודת התווית הוא נשבר
+   והפריד בין מספר לתווית שלו ("+ 3,230.20 ₪" ואז "19.46 ₪" בשורה הבאה) */
+.sp-feetop{display:flex;align-items:baseline;justify-content:space-between;gap:10px}
 .sp-feelbl{font-size:13px;font-weight:600;color:var(--ink2);min-width:0}
-.sp-feelbl small{display:block;font-size:11.5px;font-weight:500;color:var(--muted);margin-top:3px;line-height:1.6}
-.sp-feerow>b{font-family:'IBM Plex Mono',monospace;font-size:14px;color:var(--ink2);unicode-bidi:isolate;white-space:nowrap}
-.sp-feerow.tot>b{font-size:16.5px;font-weight:700}
+.sp-feecalc{display:block;font-size:11.5px;font-weight:500;color:var(--muted);margin-top:4px;line-height:1.6}
+.sp-feecalc i{font-style:normal;font-family:'IBM Plex Mono',monospace;color:var(--ink2);unicode-bidi:isolate;white-space:nowrap}
+.sp-feenote{font-size:11.5px;color:var(--muted);line-height:1.6;padding:9px 0 11px;border-top:1px dashed var(--line);margin:0}
+.sp-feetop>b{font-family:'IBM Plex Mono',monospace;font-size:14px;color:var(--ink2);unicode-bidi:isolate;white-space:nowrap}
+.sp-feerow.tot .sp-feetop>b{font-size:16.5px;font-weight:700}
 .doc-tbl tr.spend-day td{background:var(--tw-soft);font-weight:700;font-size:13px}
 .spend-empty{color:var(--muted);text-align:center;padding:18px 0}
 .spend-by{display:block;font-size:11px;color:var(--muted);font-weight:500;margin-top:1px}
@@ -1610,7 +1615,7 @@ body:not(.mid-trip) .ov-mid{display:none}
   #costSum .clock.cost-tot b{color:#7FE3C4}
   .spend-filt select{background:#121A2C;color:var(--ink);border-color:var(--line)}
   .sp-tile,.sp-feebox{background:#121A2C;border-color:#26314B}
-  .sp-feerow+.sp-feerow{border-top-color:#26314B}
+  .sp-feerow+.sp-feerow,.sp-feenote{border-top-color:#26314B}
   .spend-guess{background:#3A2E12;border-color:#6B5320;color:#F2D58A}
   .spend-cnt{background:#13342C;color:#7FE3C4}
   .sp-conv{color:#3FD0A6}
@@ -4684,15 +4689,20 @@ function renderSpend(){
       '<div class="sp-tile cash"><small>'+esc(payLabel('cash'))+'</small><b dir="ltr">'+ils(byPay.cash)+' ₪</b></div>'+
       '<div class="sp-tile card"><small>'+esc(payLabel('card'))+'</small><b dir="ltr">'+ils(byPay.card)+' ₪</b></div>'+
     '</div>';
-    /* שתי שורות: מה העמלה (עם הסבר קטן מאיפה היא), ומה הסה"כ כשהיא בפנים */
+    /* כל שורה מראה את החשבון שמאחוריה. הבעלים שאל "איך הגעת ל-19 ₪?" — חסר היה
+       הבסיס (מכמה לוקחים את האחוז) והחיבור לסה"כ. שתי שורות המשנה נותנות בדיוק את זה. */
     if(cardFx)chips+='<div class="sp-feebox">'+
-      '<div class="sp-feerow"><span class="sp-feelbl">\ud83d\udcb3 עמלת המרה על האשראי'+
-        /* קצר מספיק כדי להיכנס לשורה אחת ב-390px — "שינוי האחוז" נשבר והשאיר "·" תלוי */
-        '<small>'+esc(String(feePct()))+'% על עסקאות במט"ח · '+
-        '<button type="button" class="fee-edit" id="feeEdit">שינוי</button></small></span>'+
+      '<div class="sp-feerow">'+
+        '<div class="sp-feetop"><span class="sp-feelbl">\ud83d\udcb3 עמלת המרה על האשראי</span>'+
         '<b dir="ltr">≈ '+ils(fee)+' ₪</b></div>'+
-      '<div class="sp-feerow tot"><span class="sp-feelbl">סה"כ כולל העמלה</span>'+
-        '<b dir="ltr">≈ '+ils(total+fee)+' ₪</b></div></div>';
+        '<small class="sp-feecalc">'+esc(String(feePct()))+'% מתוך <i dir="ltr">'+ils(cardFx)+' ₪</i> שחויבו באשראי במט"ח'+
+        ' · <button type="button" class="fee-edit" id="feeEdit">שינוי</button></small></div>'+
+      '<div class="sp-feerow tot">'+
+        '<div class="sp-feetop"><span class="sp-feelbl">סה"כ עם העמלה</span>'+
+        '<b dir="ltr">≈ '+ils(total+fee)+' ₪</b></div>'+
+        '<small class="sp-feecalc"><i dir="ltr">'+ils(total)+' ₪</i> הוצאות ועוד <i dir="ltr">'+ils(fee)+' ₪</i> עמלה</small></div>'+
+      '<p class="sp-feenote">זו הערכה שלנו לפי האחוז שהגדרתם, לא חיוב אמיתי מהבנק. '+
+        'בדקו בחברת האשראי מה השיעור שלכם — לרוב 1%–3%.</p></div>';
     if(nGuess)chips+='<button type="button" class="spend-guess" id="guessBtn" title="הצגת הרישומים שאמצעי התשלום שלהם נוחש לפי התיאור">❓ '+
       (nGuess===1?'רישום אחד':nGuess+' רישומים')+' עם אמצעי תשלום משוער · לבדיקה</button>';
     var cats=Object.keys(byCat).sort(function(a,b){return byCat[b]-byCat[a]});
