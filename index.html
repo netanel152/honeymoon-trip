@@ -1448,54 +1448,6 @@ body.has-upd #toTop{bottom:calc(78px + env(safe-area-inset-bottom))}
 .sp-fee-tot{display:block;color:var(--ink2);font-weight:600}
 .spend-cnt{display:inline-block;min-width:22px;padding:0 7px;border-radius:999px;background:var(--tw-soft);color:#0B7159;
   font-size:12px;font-weight:700;line-height:20px;text-align:center;vertical-align:1px;unicode-bidi:isolate}
-/* ארנק המזומן של היום */
-.cash-box{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:12px 14px;margin:0 0 14px}
-.cash-head{display:flex;align-items:baseline;justify-content:space-between;gap:8px;flex-wrap:wrap}
-.cash-when{font-size:12px;color:var(--muted)}
-/* שני אריחים זה לצד זה: בארנק היום · נשאר בסה"כ (מכל ההמרות, ומזה בצד). מספר גדול אחד לכל אריח,
-   לא שני מספרים גדולים אחד מתחת לשני — זה מה שעשה בלגן במסך */
-.cash-tiles{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
-.cash-tile{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 12px;min-width:0;display:flex;flex-direction:column;gap:2px}
-.cash-tile .cash-bar{margin-top:auto;padding-top:0}
-.cash-tile .cash-bar{margin-top:8px}
-.cash-tile small{font-size:11.5px;font-weight:600;color:var(--muted)}
-.cash-tile b{font-family:'IBM Plex Mono',monospace;font-size:clamp(16px,4.6vw,22px);line-height:1.2;color:#1F5C3A;unicode-bidi:isolate;white-space:nowrap;text-align:right;letter-spacing:-.01em}
-.cash-tile span i{white-space:nowrap}
-.cash-tile.over b{color:#AD2919}
-.cash-tile.none b{color:var(--muted)}
-.cash-tile span{font-size:12px;color:var(--muted);line-height:1.5}
-.cash-tile span i{font-style:normal;font-family:'IBM Plex Mono',monospace;color:var(--ink2);unicode-bidi:isolate}
-.cash-tile .btn{margin-top:6px;align-self:flex-start}
-.cash-bar{height:8px;border-radius:999px;background:var(--line);overflow:hidden;margin-top:8px}
-.cash-bar i{display:block;height:100%;background:#0E8A6D;border-radius:999px;transition:width .3s}
-.cash-box.warn .cash-bar i{background:#D98A00}
-.cash-box.over .cash-bar i{background:#AD2919}
-.cash-note{font-size:12px;color:var(--muted);margin-top:7px;line-height:1.5}
-.cash-empty{font-size:13px;color:var(--muted);margin:6px 0 4px;line-height:1.5}
-.cash-ops{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
-/* הכפתורים ממלאים את השורה — שלושה כפתורים בנייד לא נשארים עם אחד תלוש בצד */
-.cash-ops .btn{flex:1 1 auto;justify-content:center}
-.cash-day{display:block;font-size:11.5px;font-weight:500;color:#1F5C3A;margin-top:2px}
-.cash-day.over{color:#AD2919}
-.cash-hist{margin-top:10px;border-top:1px solid var(--line);padding-top:8px}
-.cash-hist summary{cursor:pointer;font-size:12.5px;font-weight:700;color:var(--ink2)}
-.cash-hist .tbl-wrap{margin:6px 0 0}
-.cash-tbl{font-size:12.5px}
-.cash-tbl td,.cash-tbl th{padding:6px 6px;white-space:nowrap}
-.cash-tbl td:first-child{white-space:normal;min-width:96px}
-.cash-tbl td i{font-style:normal;font-size:11px;color:var(--muted);unicode-bidi:isolate}
-.cash-tbl td small{display:block;font-size:11px;color:var(--muted);font-weight:500}
-.cash-tbl td small.over,.cash-tbl td.over{color:#AD2919}
-.cash-tbl td[dir=ltr]{font-family:'IBM Plex Mono',monospace;text-align:left}
-.cash-tbl tr.cur td{background:var(--tw-soft)}
-.xchg-tbl td:first-child{white-space:normal;min-width:110px}
-.cash-hist summary small{display:block;font-weight:500;color:var(--muted);font-size:11.5px;margin-top:2px}
-.cash-hist summary small i{font-style:normal;font-family:'IBM Plex Mono',monospace;unicode-bidi:isolate}
-.td-cash .td-pool{display:block;color:#B9C3DB;font-weight:500;font-size:12px;margin-top:1px}
-.td-cash .td-pool b{color:#D6E4F5}
-span.td-cash{font-size:12.5px;font-weight:600;color:#D6E4F5;margin-top:3px}
-.td-cash b{font-family:'IBM Plex Mono',monospace;font-size:12.5px;unicode-bidi:isolate;color:#8FE7C8}
-span.td-cash.over,span.td-cash.over b{color:#FFB3A7}
 .spend-cnt:empty{display:none}
 .td-cap{flex:1 1 100%;font-size:11px;color:#B9C3DB;margin-bottom:-2px}
 .hm-toast{position:fixed;left:50%;bottom:calc(22px + env(safe-area-inset-bottom));transform:translate(-50%,12px);z-index:60;
@@ -1651,13 +1603,7 @@ body:not(.mid-trip) .ov-mid{display:none}
   .spend-pay.cash{background:#13342C;color:#7FE3C4}
   .spend-pay.card{background:#1E2942;color:#B9C3DB}
   .spend-amt small.spend-fee,.spend-amt small.spend-fee b{color:#E8C170}
-  .cash-tile b,.cash-day,#costSum .clock.cost-tot b{color:#7FE3C4}
-  .cash-tile{background:#161F33;border-color:#26314B}
-  .cash-tile.none b{color:var(--muted)}
-  .cash-tbl td small.over,.cash-tbl td.over{color:#FF8A7A}
-  .cash-tbl tr.cur td{background:rgba(127,227,196,.12)}
-  .cash-tile.over b,.cash-day.over{color:#FF8A7A}
-  .cash-box.warn .cash-bar i{background:#E8A93A}
+  #costSum .clock.cost-tot b{color:#7FE3C4}
   .spend-filt select{background:#121A2C;color:var(--ink);border-color:var(--line)}
   .sp-tile{background:#121A2C;border-color:#26314B}
   .spend-guess{background:#3A2E12;border-color:#6B5320;color:#F2D58A}
@@ -2768,8 +2714,6 @@ body:not(.mid-trip) .ov-mid{display:none}
       <div class="spend-act">
         <button type="button" class="btn primary" id="spendAdd">➕ הוצאה חדשה</button>
       </div>
-      <!-- ארנק המזומן של היום: כמה לקחנו, כמה יצא במזומן, כמה נשאר -->
-      <div class="cash-box" id="cashBox"></div>
       <div id="spendSum"></div>
       <details class="sub-info" id="spendDetails"><summary>🧾 כל ההוצאות <span class="spend-cnt" id="spendNote"></span> <span class="chev">▾</span></summary><div class="body">
         <div class="spend-filt" role="group" aria-label="סינון ההוצאות">
@@ -4264,12 +4208,6 @@ function renderToday(){
       /* מוצג תמיד בימי הטיול — גם ב-0 ₪, כי אז דווקא צריך את הכפתור לרישום */
       '<div class="td-box"><small>💸 הוצאות היום</small><b dir="ltr">'+
          ils(spendTodayIls())+' ₪</b>'+
-         /* היתרה במזומן היא טקסט, לא כפתור (לבקשת הבעלים); כפתור רק כשאין עדיין רישום */
-         (function(){ var cs=cashState(today10()), pl=cashPoolLine();
-            /* "בסה"כ": כל המזומן שנשאר מההמרות, גם מה שבצד במלון — לא רק מה שבארנק */
-            var tot=pl?'<span class="td-pool">בסה"כ <b dir="ltr">'+esc(pl.text)+'</b>'+(pl.main.side!=null?' · בצד <b dir="ltr">'+esc(fmtCur(pl.main.side,pl.main.cur))+'</b>':'')+'</span>':'';
-            return cs?('<span class="td-cash'+(cs.left<0?' over':'')+'">\ud83d\udcb5 '+(cs.left<0?'חריגה במזומן ':'בארנק ')+'<b dir="ltr">'+esc(fmtCur(Math.abs(cs.left),cs.cur))+'</b>'+tot+'</span>')
-                     :(tot?'<span class="td-cash">\ud83d\udcb5 '+tot+'</span>':'')+('<button type="button" class="td-go td-cash" data-cashdlg="'+today10()+'">\ud83d\udcb5 כמה מזומן לקחנו היום?</button>') })()+
          '<button type="button" class="td-go" data-gotab="pane-money">כל ההוצאות ↗</button>'+
          '<div class="td-quick"><small class="td-cap">הוספה מהירה:</small>'+SPEND_QUICK.map(function(c){ var l=catLabel(c);
             return '<button type="button" class="td-qb" data-quick="'+c+'" title="הוצאה חדשה · '+esc(l)+'" aria-label="הוצאה חדשה · '+esc(l)+'">'+esc(l.split(' ')[0])+'</button>';
@@ -4604,304 +4542,6 @@ function spendTodayIls(){
   spendList().forEach(function(s){ if(s.d===t)sum+=(+s.ils||0) });
   return sum;
 }
-/* ---------- ארנק מזומן ליום ----------
-   רשומה אחת לכל תאריך (המפתח הוא התאריך): *כמה מזומן יש בארנק* באותו יום ובאיזה
-   מטבע — תמונת מצב, לא תוספת. יום בלי רישום מתחיל ממה שנשאר אתמול. רישום ליום
-   מחליף את היתרה (לא מתווסף אליה) — ככה "עדכון אחרי שהוספנו כסף" הוא פשוט הסכום
-   הכולל שיש עכשיו. היתרה לא נשמרת: בארנק − הוצאות המזומן של היום באותו מטבע.
-   mode='end' — ספירה בסוף היום, *אחרי* ההוצאות: הסכום הוא היתרה שנשארה כמו שהיא,
-   "בארנק" מחושב לאחור (ספירה + מה שיצא) ומחר מתחיל מהספירה. בלי זה, ספירת ערב
-   הייתה נספרת פעמיים — הוצאות היום ירדו ממנה שוב. */
-function fmtCur(n,cur){ return (CUR_SYM[cur]||cur)+' '+money(n,(cur==='ILS'||cur==='USD')?2:0) }
-function defCurFor(d){ var n=tripDayOf(d); return !n?'ILS':(n<=18?'TWD':'JPY') }
-function cashOf(d){ var c=data.cash&&data.cash[d]; return (c&&!c.del&&+c.amt>0)?c:null }
-/* הלדג'ר: כל הימים שיש בהם רישום או הוצאה במזומן, לפי הסדר, עם יתרה לכל מטבע.
-   ליום עם רישום: בארנק = הרישום. בלי רישום: בארנק = מה שנשאר מהיום הפעיל הקודם.
-   יתרה שלילית (יצא יותר ממה שנרשם) היא רישום חסר ולא חוב — היום הבא מתחיל מ-0
-   ומקבל dropped כדי שאפשר יהיה לתקן. */
-function cashLedger(){
-  var ev={};
-  function slot(d,c){ var x=ev[d]||(ev[d]={}); return x[c]||(x[c]={amt:0,has:false,add:false,end:false,spent:0}) }
-  Object.keys(data.cash||{}).forEach(function(k){ var c=cashOf(k); if(c){ var e=slot(k,c.cur||'ILS'); e.amt=+c.amt; e.has=true; e.add=(c.mode==='add'); e.end=(c.mode==='end') } });
-  spendList().forEach(function(s){ if(s.d&&payOf(s).pay==='cash')slot(s.d,s.cur||'ILS').spent+=(+s.amt||0) });
-  var days=Object.keys(ev).sort(), bal={}, at={};
-  days.forEach(function(d){
-    var row={}, curs=Object.keys(ev[d]);
-    Object.keys(bal).forEach(function(c){ if(bal[c]>0&&curs.indexOf(c)<0)curs.push(c) });
-    curs.forEach(function(c){
-      var e=ev[d][c]||{amt:0,has:false,add:false,end:false,spent:0}, prev=bal[c]||0;
-      /* "הוספנו" — נוסף ליתרה מאתמול; "זה מה שיש" (או רישום ישן בלי mode) — מחליף אותה;
-         "ספרנו בסוף היום" — הסכום הוא מה שנשאר, ומה שהיה בארנק = ספירה + מה שיצא */
-      var carry=(e.has&&!e.add)?0:Math.max(0,prev), total=e.end?e.amt+e.spent:carry+(e.has?e.amt:0);
-      row[c]={cur:c,has:e.has,add:e.add,end:e.end,carry:carry,amt:e.amt,total:total,spent:e.spent,left:e.end?e.amt:total-e.spent,dropped:((!e.has||e.add)&&prev<0)?-prev:0};
-      bal[c]=row[c].left;
-    });
-    at[d]=row;
-  });
-  return {days:days,at:at};
-}
-/* מצב הארנק ביום d במטבע אחד: המטבע של הרישום אם יש, אחרת המטבע של היום (TWD/JPY)
-   אם נשארה בו יתרה, אחרת כל מטבע עם יתרה. null = אין ארנק פעיל ביום הזה. */
-function cashState(d){
-  var L=cashLedger(), row=L.at[d];
-  if(!row){
-    /* יום בלי רישום ובלי הוצאות מזומן: מה שנשאר מהיום הפעיל האחרון שלפניו */
-    var prev=null; L.days.forEach(function(x){ if(x<d)prev=x });
-    row={};
-    if(prev)Object.keys(L.at[prev]).forEach(function(c){ var e=L.at[prev][c]; if(e.left){ var k=Math.max(0,e.left);
-      row[c]={cur:c,has:false,add:false,end:false,carry:k,amt:0,total:k,spent:0,left:k,dropped:e.left<0?-e.left:0} } });
-  }
-  var c=cashOf(d), live=function(x){ return !!x&&(x.total>0||x.dropped>0) }, cur=c?c.cur:(live(row[defCurFor(d)])?defCurFor(d):null);
-  if(!cur)Object.keys(row).forEach(function(k){ if(!cur&&live(row[k]))cur=k });
-  if(!cur||!row[cur])return null;
-  var e=row[cur], other=0, others=[];
-  spendList().forEach(function(s){ if(s.d===d&&payOf(s).pay==='cash'&&(s.cur||'ILS')!==cur)other++ });
-  Object.keys(row).forEach(function(k){ if(k!==cur&&row[k].left>0)others.push({cur:k,left:row[k].left}) });
-  return {d:d,cur:cur,has:e.has,add:e.add,end:e.end,carry:e.carry,amt:e.amt,total:e.total,spent:e.spent,left:e.left,dropped:e.dropped,other:other,others:others,
-          pct:e.total>0?Math.max(0,Math.min(100,Math.round(e.spent/e.total*100))):100};
-}
-var CASH_MODE=[['add','➕ הוספנו לארנק'],['set','💵 זה מה שיש עכשיו'],['end','🌙 ספרנו בסוף היום']];
-/* ליום שכבר יש לו רישום: "plus" מוסיף לסכום הרשום במקום להחליף אותו. בלי זה, משיכה
-   שנייה באותו יום מחקה את הראשונה — רשמו 2,000, הוסיפו 1,000, והארנק הראה 1,000. */
-var CASH_MODE_HAS=[['plus','➕ הוספנו עוד מזומן'],['set','✏️ תיקון · זה כל מה שיש בארנק'],
-                   ['add','✏️ תיקון · כמה הוספנו היום'],['end','🌙 ספרנו בסוף היום']];
-var CASH_HINT={add:'משיכה או המרה — מצטרף למה שנשאר מאתמול.',
-               plus:'משיכה או המרה — מצטרף לסכום שכבר רשום להיום.',
-               set:'כל מה שיש בארנק עכשיו, לפני הוצאות היום.',
-               end:'ספירה בערב, אחרי ההוצאות. זה מה שנשאר — ומחר מתחיל ממנו.'};
-function cashMode(c){ return c&&(c.mode==='add'||c.mode==='end')?c.mode:'set' }
-/* מה באמת נשמר: plus שומר על סוג הרישום הקיים ומגדיל את הסכום */
-function cashApply(mode,amt,c){
-  return (mode==='plus'&&c)?{mode:cashMode(c),amt:(+c.amt||0)+amt}:{mode:cashMode({mode:mode}),amt:amt};
-}
-/* תצוגה מקדימה של יום לפי רישום {mode,amt} — אותם כללים בדיוק כמו ב-cashLedger */
-function cashPreview(rec,prev,spent){
-  var carry=(rec.mode==='add')?Math.max(0,prev):0, total=(rec.mode==='end')?rec.amt+spent:carry+rec.amt;
-  return {carry:carry,total:total,left:(rec.mode==='end')?rec.amt:total-spent};
-}
-/* ברירת המחדל של "מה רושמים?" היא איך שרשמתם בפעם הקודמת — הרגל אישי, לא ניחוש
-   מהיתרה. ספירת ערב (end) לא נגררת כברירת מחדל: בבוקר היא הייתה מתפרשת כיתרת סגירה.
-   רישום ישן בלי mode נחשב "זה מה שיש", וזה גם הבסיס כשאין רישומים. */
-function lastCashMode(){
-  var ks=Object.keys(data.cash||{}).filter(cashOf).sort(), c=ks.length?data.cash[ks[ks.length-1]]:null;
-  return (c&&c.mode==='add')?'add':'set';
-}
-function amtLabel(m){ return m==='plus'?'כמה הוספנו':(m==='end'?'כמה נשאר עכשיו':'סכום') }
-function amtPh(m){ return m==='plus'?'למשל 1000':(m==='end'?'מה שספרתם עכשיו':'למשל 3000') }
-/* preset='end' — הכפתור "ספירת ערב": הדיאלוג נפתח כבר על ספירת סוף יום עם סכום ריק */
-function openCashDlg(d,preset){
-  d=d||today10(); var c=cashOf(d), st=cashState(d);
-  /* היתרה מאתמול לפני הרישום של היום (גם כשיש רישום, כדי שההודעה תהיה נכונה בעריכה) */
-  var prevLeft=0; if(st){ prevLeft=st.has?(st.add?st.carry:(function(){ var L=cashLedger(), pv=null; L.days.forEach(function(x){ if(x<d)pv=x }); var e=pv&&L.at[pv][st.cur]; return e?Math.max(0,e.left):0 })()):st.carry }
-  var ccur=st?st.cur:defCurFor(d), isEnd=preset==='end';
-  /* יום שכבר יש לו רישום נפתח על "הוספנו עוד" — זו הפעולה השכיחה, ותיקון הוא אופציה בבורר */
-  var mode=isEnd?'end':(c?'plus':lastCashMode());
-  openDlg({title:isEnd?'🌙 ספירת ערב':'💵 מזומן ליום',okText:'שמירה',
-    message:isEnd?'ספרו כמה מזומן יש בארנק עכשיו — זה מה שנשאר אחרי הוצאות היום.':
-      (prevLeft>0?'נשאר מאתמול '+fmtCur(prevLeft,ccur)+'. ':'')+'סכום ריק מסיר את הרישום.',
-    fields:[{k:'d',label:'תאריך',type:'date',value:d},
-            {k:'mode',label:'מה רושמים?',type:'select',value:mode,options:c?CASH_MODE_HAS:CASH_MODE},
-            {k:'amt',label:amtLabel(mode),type:'number',value:(c&&mode!=='plus'&&!isEnd)?c.amt:'',placeholder:amtPh(mode)},
-            {k:'cur',label:'מטבע',type:'select',value:c?c.cur:ccur,options:SPEND_CUR}],
-    onOk:function(v){
-      var dd=v.d||d, amt=parseFloat(String(v.amt).replace(/[^0-9.]/g,''));
-      if(!isFinite(amt)||amt<=0){ if(cashOf(dd)){drop('cash',dd); toast('הרישום של '+(fmtWhen(dd)||dd)+' הוסר')} return }
-      /* "הוספנו עוד" מצטרף לסכום של אותו יום — נקרא כאן ולא מהסגירה, כי אולי שינו תאריך */
-      var rec=cashApply(v.mode,amt,cashOf(dd));
-      put('cash',dd,{d:dd,amt:rec.amt,cur:v.cur||'ILS',mode:rec.mode,del:false});
-      var s2=cashState(dd), plus=(v.mode==='plus'&&rec.amt>amt);
-      toast(s2.end?(plus?'הוספנו '+fmtCur(amt,s2.cur)+' · ':'ספירת ערב נשמרה · ')+'נשאר '+fmtCur(s2.left,s2.cur)+(plus?'':' · מחר מתחיל מזה')
-                  :(plus?'הוספנו '+fmtCur(amt,s2.cur):'מזומן ל-'+(fmtWhen(dd)||dd))+
-                   ': בארנק '+fmtCur(s2.total,s2.cur)+' · נשאר '+fmtCur(s2.left,s2.cur));
-    }});
-  var di=dlg.querySelector('#hf_d'), ai=dlg.querySelector('#hf_amt'), ci=dlg.querySelector('#hf_cur'), mi=dlg.querySelector('#hf_mode');
-  var lab=dlg.querySelector('label[for="hf_amt"]');
-  /* רמז חי מתחת לבורר: מה הבחירה אומרת, וכמה יישאר לפי הסכום שהוקלד */
-  var hint=document.createElement('p'); hint.className='hm-hint'; hint.id='cashHint';
-  if(mi)mi.parentNode.appendChild(hint);
-  function refreshHint(){
-    if(!hint||!mi)return;
-    var dd=(di&&di.value)||d, m=mi.value, cur=(ci&&ci.value)||ccur, amt=parseFloat(String(ai?ai.value:'').replace(/[^0-9.]/g,''));
-    var L=cashLedger(), pv=null; L.days.forEach(function(x){ if(x<dd)pv=x });
-    var pe=pv&&L.at[pv][cur], prev=pe?Math.max(0,pe.left):0, spent=0;
-    spendList().forEach(function(s){ if(s.d===dd&&payOf(s).pay==='cash'&&(s.cur||'ILS')===cur)spent+=(+s.amt||0) });
-    var txt=CASH_HINT[m]||'', rc=cashOf(dd);
-    if(m==='plus'&&rc)txt='משיכה או המרה — מצטרף ל-<b>'+esc(fmtCur(+rc.amt||0,rc.cur||cur))+'</b> שכבר רשומים להיום.';
-    if(isFinite(amt)&&amt>0){
-      var rec=cashApply(m,amt,rc), pv2=cashPreview(rec,prev,spent);
-      txt+='<br>'+(rec.mode==='end'?'היה בארנק <b>'+esc(fmtCur(pv2.total,cur))+'</b>, יצא <b>'+esc(fmtCur(spent,cur))+'</b>, נשאר <b>'+esc(fmtCur(pv2.left,cur))+'</b>':
-        'בארנק <b>'+esc(fmtCur(pv2.total,cur))+'</b>'+(spent>0?', יצא <b>'+esc(fmtCur(spent,cur))+'</b>':'')+
-        (pv2.left<0?', חריגה של <b>'+esc(fmtCur(-pv2.left,cur))+'</b>':', יישאר <b>'+esc(fmtCur(pv2.left,cur))+'</b>'));
-    }
-    hint.innerHTML=txt;
-  }
-  /* המשמעות של שדה הסכום משתנה לפי הבורר, אז גם התווית וגם הערך שבתוכו */
-  function syncAmt(){
-    if(!mi||!ai)return;
-    var m=mi.value, e=cashOf((di&&di.value)||d);
-    if(lab)lab.textContent=amtLabel(m);
-    ai.placeholder=amtPh(m);
-    ai.value=(m==='plus'||!e)?'':e.amt;
-  }
-  if(mi)mi.addEventListener('change',function(){ syncAmt(); refreshHint() });
-  /* שינוי התאריך מביא את הרישום של אותו יום — כולל רשימת האופציות, שתלויה בקיומו */
-  if(di&&ai&&ci&&mi)di.addEventListener('change',function(){
-    var e=cashOf(di.value), x=e?null:cashState(di.value), opts=e?CASH_MODE_HAS:CASH_MODE;
-    mi.innerHTML=opts.map(function(o){ return '<option value="'+esc(o[0])+'">'+esc(o[1])+'</option>' }).join('');
-    mi.value=e?'plus':lastCashMode();
-    ci.value=e?e.cur:(x?x.cur:defCurFor(di.value));
-    syncAmt(); refreshHint();
-  });
-  [ai,ci].forEach(function(el){ if(el){ el.addEventListener('change',refreshHint); el.addEventListener('input',refreshHint) } });
-  refreshHint();
-  if(ai){ ai.setAttribute('inputmode','decimal'); setTimeout(function(){ai.focus()},90) }
-}
-function renderCash(){
-  var box=document.getElementById('cashBox'); if(!box)return;
-  var t=today10(), d=tripDay()?t:null;
-  /* מחוץ לטיול: היום האחרון שיש לו פעילות, כדי שהכרטיס לא יהיה ריק */
-  if(!d){ var L=cashLedger(); d=L.days.length?L.days[L.days.length-1]:t }
-  var st=cashState(d), isT=(d===t), when=(isT?'היום · ':'')+dayLabel(d);
-  /* המאגר הכולל באותו מטבע כמו הארנק; בלי ארנק — המטבע של היום, ואם אין כזה — הראשון */
-  var pools=cashPool(), pool=null;
-  if(pools.length){ var want=st?st.cur:defCurFor(d); pools.forEach(function(p){ if(!pool&&p.cur===want)pool=p }); if(!pool)pool=pools[0] }
-  box.className='cash-box'+(st?(st.left<0?' over':(st.pct>=80?' warn':'')):' none');
-  var head='<div class="cash-head"><span class="sp-lbl">💵 מזומן</span><span class="cash-when">'+esc(when)+'</span></div>';
-  /* אריח 1 — הארנק של היום: מספר אחד (נשאר), שורת משנה (יצא מתוך), פס */
-  var w=st?
-    '<div class="cash-tile'+(st.left<0?' over':'')+'"><small>'+(st.left<0?'חריגה בארנק':'בארנק'+(isT?' היום':''))+'</small>'+
-      '<b dir="ltr">'+esc(fmtCur(Math.abs(st.left),st.cur))+'</b>'+
-      '<span>'+(st.end?'🌙 ספירת ערב · יצא <i dir="ltr">'+esc(fmtCur(st.spent,st.cur))+'</i>':
-        'יצא <i dir="ltr">'+esc(fmtCur(st.spent,st.cur))+'</i> מתוך <i dir="ltr">'+esc(fmtCur(st.total,st.cur))+'</i>')+'</span>'+
-      '<div class="cash-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="'+st.pct+'"><i style="width:'+st.pct+'%"></i></div></div>':
-    '<div class="cash-tile none"><small>בארנק'+(isT?' היום':'')+'</small><b>—</b><span>עוד לא רשמתם</span>'+
-      '<button type="button" class="btn ghost sm" data-cashdlg="'+esc(d)+'">💵 כמה יש בארנק?</button></div>';
-  /* אריח 2 — נשאר בסה"כ מכל ההמרות, ומזה כמה בצד (מחוץ לארנק) */
-  var pl;
-  if(pool){
-    var others=pools.filter(function(p){ return p!==pool&&p.left>0 });
-    pl='<div class="cash-tile'+(pool.left<0?' over':'')+'"><small>'+(pool.left<0?'יצא יותר ממה שהמרנו':'נשאר בסה"כ')+'</small>'+
-      '<b dir="ltr">'+esc(fmtCur(Math.abs(pool.left),pool.cur))+'</b>'+
-      '<span>'+(pool.side!=null?'מזה בצד <i dir="ltr">'+esc(fmtCur(pool.side,pool.cur))+'</i>':'מכל ההמרות')+
-      (others.length?' · גם '+others.map(function(o){ return '<i dir="ltr">'+esc(fmtCur(o.left,o.cur))+'</i>' }).join(', '):'')+'</span></div>';
-  }else{
-    pl='<div class="cash-tile none"><small>נשאר בסה"כ</small><b>—</b><span>עוד לא רשמתם המרה</span>'+
-      '<button type="button" class="btn ghost sm" data-xchgdlg="">💱 המרנו כסף</button></div>';
-  }
-  /* הערות — רק כשיש משהו לא תקין; הסברים כלליים לא מוצגים יותר */
-  var notes='';
-  if(!st&&!pool)notes+='<p class="cash-empty">רשמו כמה מזומן יש בארנק וכמה המרתם — כל הוצאה במזומן תרד מהיתרה, ומה שנשאר בסוף היום עובר למחר.</p>';
-  if(st){
-    if(st.left<0)notes+='<p class="cash-note">יצא במזומן יותר ממה שיש בארנק — אולי משכתם עוד? עדכנו את הסכום של '+(isT?'היום':'אותו יום')+'.</p>';
-    if(st.dropped>0)notes+='<p class="cash-note">ביום הקודם יצא <b dir="ltr">'+esc(fmtCur(st.dropped,st.cur))+'</b> יותר ממה שנרשם. אם משכתם עוד באותו יום, עדכנו שם את הסכום.</p>';
-    if(st.others.length)notes+='<p class="cash-note">בארנק גם '+st.others.map(function(o){ return '<b dir="ltr">'+esc(fmtCur(o.left,o.cur))+'</b>' }).join(' · ')+' מימים קודמים.</p>';
-    if(st.other)notes+='<p class="cash-note">'+(st.other===1?'הוצאה אחת במזומן במטבע אחר לא נספרת בארנק.':st.other+' הוצאות במזומן במטבע אחר לא נספרות בארנק.')+'</p>';
-  }
-  if(pool&&pool.walletOver)notes+='<p class="cash-note">בארנק יש יותר ממה שנשאר מכל ההמרות — אולי המרתם או משכתם עוד ולא רשמתם?</p>';
-  if(pool&&pool.left<0)notes+='<p class="cash-note">נרשמו הוצאות במזומן מעבר למה שהמרתם. רשמו את ההמרה או המשיכה החסרה.</p>';
-  /* שורת פעולות אחת: ספירת ערב (הפעולה היומית) · עדכון הארנק · המרה. מחיקת רישום — סכום ריק בדיאלוג */
-  var ops='<div class="cash-ops">'+
-    (st&&isT&&!st.end?'<button type="button" class="btn ghost" data-cashdlg="'+esc(d)+'" data-cashmode="end">🌙 ספירת ערב</button>':'')+
-    (st?'<button type="button" class="btn ghost" data-cashdlg="'+esc(d)+'">➕ הוספנו מזומן</button>':'')+
-    (pool?'<button type="button" class="btn ghost" data-xchgdlg="">💱 המרנו כסף</button>':'')+'</div>';
-  box.innerHTML=head+'<div class="cash-tiles">'+w+pl+'</div>'+notes+ops+cashHistHtml(d)+xchgHistHtml(pools);
-}
-/* "לפי ימים": שורה לכל יום פעיל בארנק (ולכל מטבע בו) — בארנק / יצא / נשאר. */
-function cashHistHtml(cur){
-  var L=cashLedger(), det=document.getElementById('cashHist'), open=det?det.open:false, rows='';
-  L.days.slice().reverse().forEach(function(d){
-    Object.keys(L.at[d]).forEach(function(c){
-      var e=L.at[d][c]; if(!(e.total>0||e.spent>0||e.dropped>0))return;
-      /* המטבע פעם אחת בעמודת היום; המספרים חשופים — אחרת עמודת "נשאר" יוצאת מהמסך ב-390px */
-      var dec=(c==='ILS'||c==='USD')?2:0, num=function(n){ return money(n,dec) };
-      rows+='<tr'+(d===cur?' class="cur"':'')+'><td>'+esc(dayLabel(d).replace(/ · [^·]*$/,''))+' <i dir="ltr">'+esc(CUR_SYM[c]||c)+'</i>'+
-        (!e.has&&e.carry>0?'<small>נשאר מאתמול</small>':e.has&&e.add&&e.carry>0?'<small>'+num(e.carry)+' מאתמול + '+num(e.amt)+'</small>':e.end?'<small>🌙 ספירה בסוף היום</small>':'')+
-        (e.dropped>0?'<small class="over">חריגה של '+num(e.dropped)+' אתמול לא נגררה</small>':'')+'</td>'+
-        '<td dir="ltr">'+num(e.total)+'</td><td dir="ltr">'+num(e.spent)+'</td>'+
-        '<td dir="ltr"'+(e.left<0?' class="over"':'')+'>'+num(e.left)+'</td></tr>';
-    });
-  });
-  if(!rows)return '';
-  return '<details class="cash-hist" id="cashHist"'+(open?' open':'')+'><summary>📒 לפי ימים</summary>'+
-    '<div class="tbl-wrap"><table class="doc-tbl cash-tbl"><thead><tr><th>יום</th><th>בארנק</th><th>יצא</th><th>נשאר</th></tr></thead><tbody>'+rows+'</tbody></table></div></details>';
-}
-/* ===== המזומן בסה"כ (ספטמבר 2026) =====
-   הבעלים המיר דולרים למזומן בנחיתה, לוקח חלק לארנק כל יום והשאר נשאר בצד במלון.
-   הארנק היומי לא יודע כמה יש בסה"כ — לכן סעיף xchg: רישום לכל המרה/משיכה
-   ({d,cur,amt,paid,pcur,note}). "נשאר בסה"כ" = כל מה שהמרנו במטבע פחות כל הוצאות
-   המזומן שנרשמו בו (בלי קשר לארנק היומי, שהוא ספירה ידנית ולא מקור אמת).
-   "בארנק היום" = היתרה של הארנק היומי, "בצד" = ההפרש. */
-function xchgOf(k){ var x=data.xchg&&data.xchg[k]; return (x&&!x.del&&+x.amt>0)?x:null }
-function xchgList(){
-  var out=[];
-  Object.keys(data.xchg||{}).forEach(function(k){ var x=xchgOf(k); if(x)out.push(Object.assign({},x,{id:k})) });
-  out.sort(function(a,b){ var d=String(b.d||'').localeCompare(String(a.d||'')); return d||(createdOf(b)-createdOf(a)) });
-  return out;
-}
-/* מצב המזומן לכל מטבע שהמרנו: קיבלנו / יצא / נשאר, ומה שולם עבורו (לפי מטבע התשלום) */
-function cashPool(){
-  var by={}, order=[];
-  xchgList().forEach(function(x){
-    var c=x.cur||'ILS'; if(!by[c]){ by[c]={cur:c,got:0,spent:0,n:0,paid:{}}; order.push(c) }
-    by[c].got+=(+x.amt||0); by[c].n++;
-    if(+x.paid>0){ var pc=x.pcur||'USD'; by[c].paid[pc]=(by[c].paid[pc]||0)+(+x.paid) }
-  });
-  spendList().forEach(function(s){ var c=s.cur||'ILS'; if(by[c]&&payOf(s).pay==='cash')by[c].spent+=(+s.amt||0) });
-  var t=today10(), st=cashState(t), pref=defCurFor(t);
-  order.sort(function(a,b){ return (a===pref?0:1)-(b===pref?0:1) });
-  return order.map(function(c){
-    var p=by[c]; p.left=p.got-p.spent;
-    /* הארנק היומי באותו מטבע: כמה מהיתרה הכוללת נמצא בכיס עכשיו */
-    p.wallet=(st&&st.cur===c&&st.left>0)?st.left:null;
-    p.side=(p.wallet!=null&&p.left>0)?Math.max(0,p.left-p.wallet):null;
-    p.walletOver=(p.wallet!=null&&p.wallet>p.left);
-    return p;
-  });
-}
-/* "ההמרות שלנו": שורה לכל המרה — יום, קיבלנו, שילמנו + שער, הערה, עריכה/מחיקה */
-function xchgHistHtml(pools){
-  var list=xchgList(), det=document.getElementById('xchgHist'), open=det?det.open:false;
-  if(!list.length)return '';
-  var tot=(pools||[]).filter(function(p){ return p.got>0 }).map(function(p){ return 'המרנו <i dir="ltr">'+esc(fmtCur(p.got,p.cur))+'</i> · יצא <i dir="ltr">'+esc(fmtCur(p.spent,p.cur))+'</i>' }).join(' · ');
-  var rows=list.map(function(x){
-    var rate=(+x.paid>0)?(x.amt/x.paid):0;
-    return '<tr><td>'+esc(fmtWhen(x.d)||x.d||'')+(x.note?'<small>'+esc(x.note)+'</small>':'')+'</td>'+
-      /* שלוש עמודות — עמודת "שילמנו" נפרדת דחפה את כפתורי הפעולות מחוץ למסך ב-390px */
-      '<td dir="ltr">'+esc(fmtCur(x.amt,x.cur||'ILS'))+(+x.paid>0?'<small dir="rtl">מ-<span dir="ltr">'+esc(fmtCur(x.paid,x.pcur||'USD'))+'</span> · שער <span dir="ltr">'+money(rate,2)+'</span></small>':'')+'</td>'+
-      '<td class="cost-ops"><button type="button" class="iconbtn" data-xchgdlg="'+esc(x.id)+'" title="עריכה" aria-label="עריכת ההמרה">✏️</button>'+
-        '<button type="button" class="iconbtn danger" data-xchgdel="'+esc(x.id)+'" title="מחיקה" aria-label="מחיקת ההמרה">🗑️</button></td></tr>';
-  }).join('');
-  return '<details class="cash-hist" id="xchgHist"'+(open?' open':'')+'><summary>💱 ההמרות שלנו <span class="spend-cnt">'+list.length+'</span>'+(tot?'<small>'+tot+'</small>':'')+'</summary>'+
-    '<div class="tbl-wrap"><table class="doc-tbl cash-tbl xchg-tbl"><thead><tr><th>יום</th><th>קיבלנו</th><th></th></tr></thead><tbody>'+rows+'</tbody></table></div></details>';
-}
-/* שורה קצרה ל"נשאר במזומן" — לפאנל היום */
-function cashPoolLine(){
-  var pools=cashPool().filter(function(p){ return p.got>0 });
-  if(!pools.length)return null;
-  var p=pools[0];
-  return {main:p, all:pools, text:pools.map(function(q){ return fmtCur(Math.max(0,q.left),q.cur) }).join(' + ')};
-}
-function openXchgDlg(id){
-  var cur=id?xchgOf(id):null, t=today10();
-  openDlg({title:cur?'✏️ עריכת המרה':'💱 המרנו כסף',okText:'שמירה',
-    message:'כמה מזומן קיבלתם? מזה יורדת כל הוצאה שתרשמו במזומן, וכאן תראו כל הזמן כמה נשאר בסה"כ.',
-    fields:[{k:'d',label:'תאריך',type:'date',value:cur?cur.d:t},
-            {k:'amt',label:'קיבלנו',type:'number',value:cur?cur.amt:'',placeholder:'למשל 30000'},
-            {k:'cur',label:'מטבע',type:'select',value:cur?cur.cur:defCurFor(t),options:SPEND_CUR},
-            {k:'paid',label:'שילמנו (לא חובה)',type:'number',value:cur&&+cur.paid>0?cur.paid:'',placeholder:'למשל 960'},
-            {k:'pcur',label:'במטבע',type:'select',value:cur?(cur.pcur||'USD'):'USD',options:SPEND_CUR},
-            {k:'note',label:'הערה',value:cur?(cur.note||''):'',placeholder:'למשל: בנק בשדה, כספומט ליד המלון'}],
-    onOk:function(v){
-      var amt=parseFloat(String(v.amt).replace(/[^0-9.]/g,'')), paid=parseFloat(String(v.paid).replace(/[^0-9.]/g,''));
-      if(!isFinite(amt)||amt<=0){ toast('לא נשמר — חסר סכום'); return }
-      var k=id||('x'+Date.now().toString(36)+Math.random().toString(36).slice(2,5));
-      put('xchg',k,{d:v.d||t,amt:amt,cur:v.cur||'ILS',paid:isFinite(paid)&&paid>0?paid:0,pcur:v.pcur||'USD',note:String(v.note||'').trim().slice(0,80),del:false});
-      var p=cashPool().filter(function(q){ return q.cur===(v.cur||'ILS') })[0];
-      toast((cur?'ההמרה עודכנה':'נרשמה המרה')+': '+fmtCur(amt,v.cur||'ILS')+(p?' · נשאר בסה"כ '+fmtCur(Math.max(0,p.left),p.cur):''));
-    }});
-  var ai=dlg.querySelector('#hf_amt'); if(ai){ ai.setAttribute('inputmode','decimal'); setTimeout(function(){ai.focus()},90) }
-  var pi=dlg.querySelector('#hf_paid'); if(pi)pi.setAttribute('inputmode','decimal');
-}
 /* דיאלוג הוספה. preset.cat = הוספה מהירה: הקטגוריה כבר נבחרה והפוקוס על הסכום */
 function openSpendDlg(preset){
   preset=preset||{};
@@ -4945,33 +4585,9 @@ function initSpend(){
     ['sfCountry','sfPay','sfCat'].forEach(function(id){ var el=document.getElementById(id); if(el)el.value='all' });
     renderSpend();
   });
-  /* ארנק המזומן — הכפתורים בכרטיס ההוצאות ובפאנל היום */
-  document.addEventListener('click',function(e){
-    var b=e.target.closest?e.target.closest('[data-cashdlg]'):null;
-    if(b){ askWho().then(function(w){ if(w)openCashDlg(b.getAttribute('data-cashdlg')||today10(),b.getAttribute('data-cashmode')||'') }); return }
-    var x=e.target.closest?e.target.closest('[data-cashdel]'):null;
-    if(x){ var d=x.getAttribute('data-cashdel');
-      confirmBox('להסיר את רישום המזומן?',dayLabel(d),'הסרה').then(function(ok){ if(ok){drop('cash',d); toast('רישום המזומן הוסר')} }); return }
-    /* המרות — הכפתור בכרטיס המזומן ובשורות "ההמרות שלנו" */
-    var xb=e.target.closest?e.target.closest('[data-xchgdlg]'):null;
-    if(xb){ askWho().then(function(w){ if(w)openXchgDlg(xb.getAttribute('data-xchgdlg')||'') }); return }
-    var xd=e.target.closest?e.target.closest('[data-xchgdel]'):null;
-    if(xd){ var xid=xd.getAttribute('data-xchgdel'), xx=xchgOf(xid);
-      confirmBox('למחוק את רישום ההמרה?',xx?fmtCur(xx.amt,xx.cur||'ILS')+' · '+(fmtWhen(xx.d)||''):'','מחיקה').then(function(ok){ if(ok){drop('xchg',xid); toast('רישום ההמרה נמחק')} }) }
-  });
-  seedLandingXchg();
   onChange(renderSpend);
   renderSpend();
   onFirstPull(migrateSpendPay);
-}
-/* ההמרה הראשונה — 31,300 NT$ בנחיתה ב-2.9 (מהבעלים, 8.9) — מובנית בקוד כדי שהמספר יופיע
-   בלי להקליד. נזרעת עם ts:1 כמו הסימונים הישנים בצ'קליסט: כל עריכה או מחיקה אמיתית
-   (גם מהמכשיר השני) מנצחת אותה במיזוג, ומצבת מחיקה שכבר קיימת מונעת זריעה חוזרת. */
-var LANDING_XCHG={id:'x-landing',d:'2026-09-02',amt:31300,cur:'TWD',paid:0,pcur:'USD',note:'המרה בנחיתה בטאיוואן'};
-function seedLandingXchg(){
-  if(data.xchg[LANDING_XCHG.id])return;
-  var x=Object.assign({},LANDING_XCHG,{ts:1,created:new Date(2026,8,2).getTime()}); delete x.id;
-  data.xchg[LANDING_XCHG.id]=x; data.updated=Date.now(); jset(KEY,data); schedulePush();
 }
 /* רישומים שנשמרו לפני שהיה שדה אמצעי תשלום מקבלים אותו לפי התיאור, פעם אחת,
    ומסומנים payAuto כדי שיהיה ברור שזה ניחוש עד שעורכים. רץ רק אחרי משיכה
@@ -5021,9 +4637,7 @@ function renderSpend(){
   shown.forEach(function(s){
     if(s.d!==lastDay){
       lastDay=s.d;
-      var cs=cashState(s.d);
       rows+='<tr class="spend-day"><td colspan="2">'+esc(dayLabel(s.d))+
-        (cs?'<small class="cash-day'+(cs.left<0?' over':'')+'">\ud83d\udcb5 '+(cs.left<0?'חריגה של ':'נשאר במזומן ')+esc(fmtCur(Math.abs(cs.left),cs.cur))+' מתוך '+esc(fmtCur(cs.total,cs.cur))+'</small>':'')+
         '</td><td dir="ltr">'+ils(fdays[s.d])+' ₪</td></tr>';
     }
     var lbl=catLabel(s.cat), ic=lbl.split(' ')[0], p=payOf(s);
@@ -5092,7 +4706,6 @@ function renderSpend(){
   if(det&&!det._auto&&list.length){ det._auto=1; det.open=true }
   var note=document.getElementById('spendNote');
   if(note)note.textContent=list.length?String(list.length):'';
-  renderCash();
 }
 document.addEventListener('click',function(e){
   var btn=e.target.closest?e.target.closest('[data-sact]'):null;
